@@ -5,141 +5,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartCarDocs Chile - Documentos Digitales</title>
     <style>
-        /* Estilos ultra rápidos para carga en carretera con mala señal */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+        * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: '-apple-system', BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
         .container {
             width: 100%;
             max-width: 400px;
             text-align: center;
-            background: #1e293b;
+            background: #111827;
             padding: 30px 20px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1f2937;
         }
-        h1 { font-size: 24px; margin-bottom: 5px; color: #38bdf8; }
-        .patente {
-            font-size: 22px;
-            font-weight: bold;
-            background: #fef08a;
-            color: #1e293b;
-            padding: 5px 15px;
-            border-radius: 6px;
-            display: inline-block;
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             margin-bottom: 25px;
-            border: 2px solid #eab308;
-            letter-spacing: 1px;
         }
-        .btn {
-            display: block;
-            background: #0284c7;
-            color: white;
-            text-decoration: none;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            font-weight: 600;
+
+        .welcome {
             font-size: 16px;
-            transition: background 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            color: #e5e7eb;
+            margin-bottom: 15px;
         }
-        .btn:hover { background: #0369a1; }
-        .btn.disabled {
-            background: #475569;
-            cursor: not-allowed;
-            opacity: 0.6;
+
+        /* Estilo Patente Chilena */
+        .patente-box {
+            background-color: #f3f4f6;
+            color: #111827;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 4px solid #111827;
+            box-shadow: inset 0 0 0 2px #d1d5db, 0 4px 10px rgba(0,0,0,0.3);
+            display: inline-block;
+            margin-bottom: 30px;
+            text-transform: uppercase;
         }
-        .loading { font-size: 16px; color: #94a3b8; }
-        .error { color: #f87171; font-weight: bold; }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            padding: 18px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 16px;
+            transition: transform 0.2s, background-color 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-icon {
+            font-size: 22px;
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Colores de los botones */
+        .btn-revision { background-color: #1e3a8a; }
+        .btn-revision:hover { background-color: #1d4ed8; }
+
+        .btn-soap { background-color: #7c2d12; }
+        .btn-soap:hover { background-color: #ea580c; }
+
+        .btn-permiso { background-color: #065f46; }
+        .btn-permiso:hover { background-color: #059669; }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 11px;
+            color: #4b5563;
+        }
     </style>
 </head>
 <body>
 
-<div class="container" id="app">
-    <div id="loader" class="loading">Cargando documentos del vehículo...</div>
-    <div id="content" style="display: none;">
-        <h1>SmartCarDocs</h1>
-        <div class="patente" id="txt-patente">-</div>
+    <div class="container">
+        <div class="logo">SmartCarDocs</div>
+        <div class="subtitle">Chile 🇨🇱</div>
+
+        <div class="welcome">Vehículo de: <strong id="client-name">Cargando...</strong></div>
         
-        <a href="#" id="btn-soap" class="btn" target="_blank">📄 Seguro Obligatorio (SOAP)</a>
-        <a href="#" id="btn-revision" class="btn" target="_blank">🔍 Revisión Técnica</a>
-        <a href="#" id="btn-permiso" class="btn" target="_blank">🚗 Permiso de Circulación</a>
+        <div class="patente-box" id="license-plate">- - - - - -</div>
+
+        <div class="buttons-container">
+            <a href="#" id="link-revision" class="btn btn-revision" target="_blank">
+                <span class="btn-icon">🚗</span> Revisión Técnica
+            </a>
+            <a href="#" id="link-soap" class="btn btn-soap" target="_blank">
+                <span class="btn-icon">🛡️</span> Seguro Obligatorio SOAP
+            </a>
+            <a href="#" id="link-permiso" class="btn btn-permiso" target="_blank">
+                <span class="btn-icon">📜</span> Permiso de Circulación
+            </a>
+        </div>
+
+        <div class="footer">
+            Documentación protegida bajo la Ley 19.799<br>SmartCarDocs Chile © 2026
+        </div>
     </div>
-</div>
 
-<script>
-    // Configuración secreta de tu proyecto en Supabase
-    const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co";
-    // Tu API Key pública (Anon Key) la usaremos en el próximo paso de forma segura
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ"; 
+    <script>
+        // CONFIGURACIÓN DE TU SUPABASE
+        const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
 
-    // Capturar la patente directamente desde el enlace (Ej: /?p=KFJP62)
-    const urlParams = new URLSearchParams(window.location.search);
-    const patente = urlParams.get('p') ? urlParams.get('p').toUpperCase() : null;
+        // Obtener la patente desde la URL de la página (Ejemplo: tuweb.vercel.app/?p=DDGG22)
+        const urlParams = new URLSearchParams(window.location.search);
+        const patenteUrl = urlParams.get('p');
 
-    const loader = document.getElementById('loader');
-    const content = document.getElementById('content');
-
-    if (!patente) {
-        loader.className = "error";
-        loader.innerText = "Error: No se escaneó ninguna patente válida.";
-    } else {
-        // Viajar a Supabase a buscar los links de los PDFs de esta patente
-        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}`, {
-            method: 'GET',
-            headers: {
-                'apikey': SUPABASE_KEY,
-                'Authorization': `Bearer ${SUPABASE_KEY}`
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.length === 0) {
-                loader.className = "error";
-                loader.innerText = `Vehículo con patente ${patente} no registrado.`;
-                return;
-            }
-
-            const vehiculo = data[0];
-            document.getElementById('txt-patente').innerText = patente;
-
-            // Asignar las URLs reales de los PDFs a los botones
-            configurarBoton('btn-soap', vehiculo.url_soap);
-            configurarBoton('btn-revision', vehiculo.url_revision);
-            configurarBoton('btn-permiso', vehiculo.url_permiso);
-
-            loader.style.display = 'none';
-            content.style.display = 'block';
-        })
-        .catch(err => {
-            loader.className = "error";
-            loader.innerText = "Error de conexión al obtener los documentos.";
-            console.error(err);
-        });
-    }
-
-    function configurarBoton(id, url) {
-        const btn = document.getElementById(id);
-        if (url) {
-            btn.href = url;
+        if (patenteUrl) {
+            const patenteLimpia = patenteUrl.toUpperCase().replace(/[^A-Z0-9]/g, "");
+            
+            // Consultar a Supabase mediante su API REST directa (Ultra rápido, sin instalar librerías)
+            fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patenteLimpia}`, {
+                method: 'GET',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const vehiculo = data[0];
+                    
+                    // Inyectar datos en la pantalla
+                    document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
+                    document.getElementById('license-plate').innerText = vehiculo.patente;
+                    
+                    // Asignar los enlaces de los PDFs de tu Storage a los botones
+                    if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
+                    if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
+                    if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
+                } else {
+                    document.getElementById('client-name').innerText = "No encontrado";
+                    document.getElementById('license-plate').innerText = "ERROR";
+                }
+            })
+            .catch(error => {
+                console.error("Error cargando Supabase:", error);
+                document.getElementById('client-name').innerText = "Error de red";
+            });
         } else {
-            btn.className = "btn disabled";
-            btn.innerText += " (No disponible)";
-            btn.addEventListener('click', (e) => e.preventDefault());
+            document.getElementById('client-name').innerText = "Sin Patente";
+            document.getElementById('license-plate').innerText = "NFC vacío";
         }
-    }
-</script>
-
+    </script>
 </body>
 </html>

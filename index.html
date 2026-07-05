@@ -152,20 +152,21 @@
         </div>
     </div>
 
-    <script>
+   <script>
     const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
-    // Ahora extraemos el ID único de la tarjeta en vez de la patente
+
     const urlParams = new URLSearchParams(window.location.search);
     const idUrl = urlParams.get('id');
 
     if (idUrl) {
-        // Consultamos a Supabase buscando por la columna 'id'
+        // Buscamos directamente el ID limpio
         fetch(`${SUPABASE_URL}/rest/v1/vehiculos?id=eq.${idUrl}`, {
             method: 'GET',
             headers: {
                 'apikey': SUPABASE_ANON_KEY,
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Accept': 'application/json'
             }
         })
         .then(response => response.json())
@@ -173,26 +174,26 @@
             if (data && data.length > 0) {
                 const vehiculo = data[0];
                 
-                // El carabinero sigue viendo la patente e información real en pantalla de forma interna
                 document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
-                document.getElementById('license-plate').innerText = vehiculo.patente;
+                document.getElementById('license-plate').innerText = vehiculo.patente || "- - - -";
                 
                 if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
                 if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
                 if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
             } else {
-                document.getElementById('client-name').innerText = "No encontrado";
+                document.getElementById('client-name').innerText = "Vehículo no encontrado";
                 document.getElementById('license-plate').innerText = "ERROR";
             }
         })
         .catch(error => {
             console.error("Error:", error);
-            document.getElementById('client-name').innerText = "Error de red";
+            document.getElementById('client-name').innerText = "Error de conexión";
         });
     } else {
         document.getElementById('client-name').innerText = "Acceso Inválido";
         document.getElementById('license-plate').innerText = "Sin ID";
     }
 </script>
+    
 </body>
 </html>

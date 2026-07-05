@@ -153,51 +153,46 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE TU SUPABASE
-        const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+    const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+    // Ahora extraemos el ID único de la tarjeta en vez de la patente
+    const urlParams = new URLSearchParams(window.location.search);
+    const idUrl = urlParams.get('id');
 
-        // Obtener la patente desde la URL de la página (Ejemplo: tuweb.vercel.app/?p=DDGG22)
-        const urlParams = new URLSearchParams(window.location.search);
-        const patenteUrl = urlParams.get('p');
-
-        if (patenteUrl) {
-            const patenteLimpia = patenteUrl.toUpperCase().replace(/[^A-Z0-9]/g, "");
-            
-            // Consultar a Supabase mediante su API REST directa (Ultra rápido, sin instalar librerías)
-            fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patenteLimpia}`, {
-                method: 'GET',
-                headers: {
-                    'apikey': SUPABASE_ANON_KEY,
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    const vehiculo = data[0];
-                    
-                    // Inyectar datos en la pantalla
-                    document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
-                    document.getElementById('license-plate').innerText = vehiculo.patente;
-                    
-                    // Asignar los enlaces de los PDFs de tu Storage a los botones
-                    if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
-                    if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
-                    if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
-                } else {
-                    document.getElementById('client-name').innerText = "No encontrado";
-                    document.getElementById('license-plate').innerText = "ERROR";
-                }
-            })
-            .catch(error => {
-                console.error("Error cargando Supabase:", error);
-                document.getElementById('client-name').innerText = "Error de red";
-            });
-        } else {
-            document.getElementById('client-name').innerText = "Sin Patente";
-            document.getElementById('license-plate').innerText = "NFC vacío";
-        }
-    </script>
+    if (idUrl) {
+        // Consultamos a Supabase buscando por la columna 'id'
+        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?id=eq.${idUrl}`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const vehiculo = data[0];
+                
+                // El carabinero sigue viendo la patente e información real en pantalla de forma interna
+                document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
+                document.getElementById('license-plate').innerText = vehiculo.patente;
+                
+                if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
+                if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
+                if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
+            } else {
+                document.getElementById('client-name').innerText = "No encontrado";
+                document.getElementById('license-plate').innerText = "ERROR";
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            document.getElementById('client-name').innerText = "Error de red";
+        });
+    } else {
+        document.getElementById('client-name').innerText = "Acceso Inválido";
+        document.getElementById('license-plate').innerText = "Sin ID";
+    }
+</script>
 </body>
 </html>

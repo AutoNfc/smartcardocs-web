@@ -160,8 +160,8 @@
     const idUrl = urlParams.get('id');
 
     if (idUrl) {
-        // Buscamos directamente el ID limpio
-        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?id=eq.${idUrl}`, {
+        // SEGURIDAD MÁXIMA: Buscamos por la columna del código aleatorio UUID
+        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?codigo_seguro=eq.${idUrl}`, {
             method: 'GET',
             headers: {
                 'apikey': SUPABASE_ANON_KEY,
@@ -181,17 +181,17 @@
                 if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
                 if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
             } else {
-                document.getElementById('client-name').innerText = "Vehículo no encontrado";
+                document.getElementById('client-name').innerText = "Acceso Denegado";
                 document.getElementById('license-plate').innerText = "ERROR";
             }
         })
         .catch(error => {
             console.error("Error:", error);
-            document.getElementById('client-name').innerText = "Error de conexión";
+            document.getElementById('client-name').innerText = "Error de sistema";
         });
     } else {
         document.getElementById('client-name').innerText = "Acceso Inválido";
-        document.getElementById('license-plate').innerText = "Sin ID";
+        document.getElementById('license-plate').innerText = "Sin Credenciales";
     }
 </script>
     

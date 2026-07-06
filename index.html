@@ -1,234 +1,1023 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CL">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartCarDocs Chile - Documentación Automotriz Digital</title>
-    <style>
-        :root {
-            --bg-color: #080809;
-            --card-bg: linear-gradient(145deg, #111114, #17171c);
-            --accent: #ff4a4a;
-            --accent-hover: #e03e3e;
-            --text-main: #ffffff;
-            --text-muted: #8a8a93;
-            --border: #222227;
-            --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartCarDocs — Los papeles de tu auto, siempre al día</title>
+<meta name="description" content="Sticker, tarjeta o llavero con NFC. Un toque y aparecen el Permiso de Circulación, el SOAP y la Revisión Técnica vigentes de tu auto. Cumple con la Ley 19.799.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=500;600;700&family=Inter:wght=400;500;600;700&family=JetBrains+Mono:wght=500;600;700&display=swap" rel="stylesheet">
+<style>
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-stack);
-            margin: 0; padding: 0;
-            box-sizing: border-box;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
+  /* ================= TOKENS ================= */
+  :root{
+    --bg-void:#0a0a0b;
+    --bg-surface:#131316;
+    --bg-surface-2:#1a1a1e;
+    --border-subtle:rgba(255,255,255,0.08);
+    --border-strong:rgba(255,255,255,0.16);
+    --text-primary:#f5f5f7;
+    --text-secondary:#a1a1aa;
+    --text-tertiary:#6b6b74;
+    --accent-red:#ff4a4a;
+    --accent-red-dim:rgba(255,74,74,0.14);
+    --accent-red-glow:rgba(255,74,74,0.35);
+    --accent-green:#34d399;
+    --accent-amber:#fbbf24;
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'JetBrains Mono', monospace;
+    --radius-sm:10px;
+    --radius-md:16px;
+    --radius-lg:24px;
+    --ease:cubic-bezier(.16,.84,.44,1);
+  }
 
-        /* ─── HEADER PREMIUM ─── */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 25px;
-            border-bottom: 1px solid var(--border);
-            background-color: rgba(8, 8, 9, 0.8);
-            backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100;
-        }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg-void);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+  ul{list-style:none;}
+  section{position:relative;}
+  ::selection{background:var(--accent-red-dim);color:var(--accent-red);}
+  :focus-visible{outline:2px solid var(--accent-red);outline-offset:3px;}
 
-        .menu-hamburguesa {
-            background: none; border: none; color: var(--text-main);
-            font-size: 26px; cursor: pointer; padding: 5px;
-            transition: color 0.2s;
-        }
-        .menu-hamburguesa:hover { color: var(--accent); }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent-red);
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:6px;height:6px;border-radius:50%;
+    background:var(--accent-red);
+    box-shadow:0 0 10px var(--accent-red-glow);
+  }
+  h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;letter-spacing:-0.02em;color:var(--text-primary);}
+  .section-head{max-width:640px;margin:0 auto 56px;text-align:center;}
+  .section-head h2{font-size:clamp(28px,4vw,42px);margin-top:14px;line-height:1.15;}
+  .section-head p{color:var(--text-secondary);margin-top:16px;font-size:16.5px;}
+  section{padding:104px 0;}
+  @media (max-width:720px){ section{padding:72px 0;} }
 
-        .logo { font-size: 22px; font-weight: 800; letter-spacing: -0.8px; }
-        .logo span { color: var(--accent); }
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:14px 26px;border-radius:100px;
+    font-weight:600;font-size:15px;
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .25s ease, border-color .25s ease;
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background:var(--accent-red);color:#140505;
+    box-shadow:0 8px 26px -8px var(--accent-red-glow);
+  }
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px var(--accent-red-glow);}
+  .btn-ghost{
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--border-strong);
+    color:var(--text-primary);
+  }
+  .btn-ghost:hover{background:rgba(255,255,255,0.08);transform:translateY(-2px);}
 
-        .btn-login-icon {
-            background: #141417; border: 1px solid var(--border); color: var(--text-main);
-            font-size: 18px; cursor: pointer; width: 42px; height: 42px;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-        }
-        .btn-login-icon:hover { border-color: var(--accent); color: var(--accent); background: #1c1c22; }
+  /* ================= HEADER ================= */
+  header.site-header{
+    position:sticky;top:0;z-index:60;
+    backdrop-filter:blur(16px) saturate(140%);
+    background:rgba(10,10,11,0.72);
+    border-bottom:1px solid var(--border-subtle);
+  }
+  .header-inner{
+    max-width:1180px;margin:0 auto;padding:14px 24px;
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  }
+  .icon-btn{
+    width:42px;height:42px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--border-subtle);
+    transition:background .25s ease, border-color .25s ease, transform .25s ease;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,0.09);border-color:var(--border-strong);transform:translateY(-1px);}
+  .icon-btn svg{width:19px;height:19px;stroke:var(--text-primary);}
+  .brand{
+    justify-self:center;
+    display:flex;align-items:center;gap:9px;
+    font-family:var(--font-display);font-weight:700;font-size:18px;letter-spacing:-0.01em;
+  }
+  .brand .brand-mark{
+    width:26px;height:26px;border-radius:7px;
+    background:linear-gradient(155deg, var(--accent-red), #7a1414);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 16px var(--accent-red-glow);
+  }
+  .brand .brand-mark svg{width:14px;height:14px;stroke:#0a0a0b;stroke-width:2.6;}
+  .header-right{justify-self:end;}
 
-        /* ─── MENÚ LATERAL FLOATING ─── */
-        .nav-lateral {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background-color: #0f0f12; border-right: 1px solid var(--border);
-            transition: left 0.3s cubic-bezier(0.77,0.2,0.05,1); z-index: 200; 
-            padding: 30px 25px; box-sizing: border-box;
-            box-shadow: 20px 0 40px rgba(0,0,0,0.7);
-        }
-        .nav-lateral.active { left: 0; }
-        .nav-lateral .close-menu { text-align: right; margin-bottom: 40px; font-size: 28px; cursor: pointer; color: var(--text-muted); transition: color 0.2s; }
-        .nav-lateral .close-menu:hover { color: var(--text-main); }
-        .nav-lateral a { display: block; color: var(--text-main); text-decoration: none; padding: 16px 0; font-size: 16px; font-weight: 500; border-bottom: 1px solid #16161c; transition: color 0.2s; }
-        .nav-lateral a:hover { color: var(--accent); }
+  /* ================= NAV LATERAL ================= */
+  .nav-overlay{
+    position:fixed;inset:0;background:rgba(5,5,6,0.6);
+    backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;transition:opacity .35s var(--ease);
+    z-index:70;
+  }
+  .nav-overlay.active{opacity:1;pointer-events:auto;}
+  #menuLateral{
+    position:fixed;top:0;left:0;height:100%;width:320px;max-width:84vw;
+    background:#0d0d0f;
+    border-right:1px solid var(--border-subtle);
+    transform:translateX(-100%);
+    transition:transform .45s var(--ease);
+    z-index:80;
+    display:flex;flex-direction:column;
+    padding:26px 26px 34px;
+  }
+  #menuLateral.active{transform:translateX(0);}
+  .nav-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:38px;}
+  .nav-close svg{width:18px;height:18px;stroke:var(--text-secondary);}
+  #menuLateral nav{display:flex;flex-direction:column;gap:3px;flex:1;}
+  #menuLateral nav a{
+    padding:13px 12px;border-radius:10px;
+    color:var(--text-secondary);font-weight:500;font-size:15.5px;
+    transition:background .2s ease, color .2s ease, padding-left .2s ease;
+  }
+  #menuLateral nav a:hover{background:rgba(255,255,255,0.05);color:var(--text-primary);padding-left:16px;}
+  .nav-cta{
+    margin-top:18px;padding:16px;border-radius:14px;
+    background:linear-gradient(160deg, var(--accent-red-dim), rgba(255,74,74,0.03));
+    border:1px solid rgba(255,74,74,0.3);
+  }
+  .nav-cta p{font-size:13px;color:var(--text-secondary);margin-bottom:10px;line-height:1.4;}
+  .nav-cta button{width:100%;}
 
-        /* ─── SECCIÓN COMERCIAL SEÑORIAL ─── */
-        main {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 60px 20px; text-align: center; max-width: 800px; margin: 0 auto;
-        }
-        
-        .badge {
-            background: rgba(255, 74, 74, 0.1); border: 1px solid rgba(255, 74, 74, 0.2);
-            color: var(--accent); padding: 6px 14px; border-radius: 20px;
-            font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
-            margin-bottom: 25px; display: inline-block;
-        }
+  /* ================= HERO ================= */
+  .hero{
+    padding:88px 0 60px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";position:absolute;top:-220px;left:50%;transform:translateX(-50%);
+    width:900px;height:560px;
+    background:radial-gradient(ellipse at center, var(--accent-red-dim) 0%, transparent 68%);
+    pointer-events:none;
+    z-index:0;
+  }
+  .hero-inner{
+    position:relative;z-index:1;
+    display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center;
+  }
+  @media (max-width:900px){ .hero-inner{grid-template-columns:1fr;} }
+  .hero-copy h1{
+    font-size:clamp(34px,5.4vw,58px);
+    line-height:1.06;margin:20px 0 22px;
+  }
+  .hero-copy h1 span{color:var(--accent-red);}
+  .hero-copy p.lead{color:var(--text-secondary);font-size:17.5px;max-width:480px;margin-bottom:32px;}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:34px;}
+  .hero-trust{display:flex;gap:22px;flex-wrap:wrap;color:var(--text-tertiary);font-size:13px;}
+  .hero-trust span{display:flex;align-items:center;gap:7px;}
+  .hero-trust svg{width:15px;height:15px;stroke:var(--accent-green);}
 
-        h1 { font-size: 48px; font-weight: 800; margin: 0 0 20px 0; line-height: 1.1; letter-spacing: -1.5px; }
-        p.desc { color: var(--text-muted); font-size: 18px; line-height: 1.6; margin: 0 auto 40px auto; max-width: 600px; }
+  /* Signature visual: NFC tap moment */
+  .tap-stage{
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+    height:440px;
+  }
+  .plate-card{
+    position:relative;
+    width:250px;height:158px;
+    border-radius:18px;
+    background:linear-gradient(155deg,#1c1c20,#101012);
+    border:1px solid var(--border-strong);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,0.7);
+    padding:20px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    transform:rotate(-6deg);
+    z-index:2;
+  }
+  .plate-card .stripe{
+    position:absolute;left:0;top:0;bottom:0;width:8px;
+    border-radius:18px 0 0 18px;
+    background:var(--accent-red);
+  }
+  .plate-card .nfc-mark{
+    width:30px;height:30px;border-radius:50%;
+    border:1.5px solid var(--text-tertiary);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .plate-card .nfc-mark svg{width:15px;height:15px;stroke:var(--text-secondary);}
+  .plate-card .plate-id{
+    font-family:var(--font-mono);font-weight:700;font-size:22px;letter-spacing:.06em;
+    color:var(--text-primary);
+  }
+  .plate-card .plate-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--text-tertiary);letter-spacing:.08em;text-transform:uppercase;}
+  .phone{
+    position:absolute;
+    width:120px;height:230px;
+    border-radius:26px;
+    background:#0f0f11;
+    border:2px solid #2a2a2f;
+    right:14%;top:8%;
+    box-shadow:0 24px 50px -18px rgba(0,0,0,0.8);
+    z-index:3;
+    animation:phoneTap 3.2s var(--ease) infinite;
+  }
+  .phone::before{
+    content:"";position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    width:32px;height:4px;border-radius:4px;background:#26262b;
+  }
+  .wave{
+    position:absolute;left:50%;top:50%;
+    width:60px;height:60px;border-radius:50%;
+    border:1.5px solid var(--accent-red);
+    transform:translate(-50%,-50%) scale(0.4);
+    opacity:0;
+    z-index:1;
+  }
+  .wave.w1{animation:pulse 3.2s var(--ease) infinite;}
+  .wave.w2{animation:pulse 3.2s var(--ease) infinite; animation-delay:.35s;}
+  .wave.w3{animation:pulse 3.2s var(--ease) infinite; animation-delay:.7s;}
+  @keyframes pulse{
+    0%{transform:translate(-50%,-50%) scale(.4);opacity:0;}
+    28%{opacity:.55;}
+    75%{transform:translate(-50%,-50%) scale(2.6);opacity:0;}
+    100%{opacity:0;}
+  }
+  @keyframes phoneTap{
+    0%,100%{transform:translateY(0) rotate(4deg);}
+    45%{transform:translateY(46px) rotate(1deg);}
+    58%{transform:translateY(46px) rotate(1deg);}
+    80%{transform:translateY(0) rotate(4deg);}
+  }
+  .status-chip{
+    position:absolute;bottom:6%;left:8%;
+    background:var(--bg-surface);border:1px solid var(--border-subtle);
+    border-radius:12px;padding:10px 14px;
+    display:flex;align-items:center;gap:9px;
+    font-size:12.5px;font-weight:600;
+    box-shadow:0 20px 40px -18px rgba(0,0,0,0.6);
+    z-index:4;
+    animation:chipIn 3.2s var(--ease) infinite;
+  }
+  .status-chip .dot{width:7px;height:7px;border-radius:50%;background:var(--accent-green);box-shadow:0 0 8px var(--accent-green);}
+  @keyframes chipIn{
+    0%,40%{opacity:0;transform:translateY(8px);}
+    58%,88%{opacity:1;transform:translateY(0);}
+    100%{opacity:0;transform:translateY(8px);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .phone,.wave,.status-chip{animation:none !important;}
+  }
+  @media (max-width:900px){ .tap-stage{height:320px;transform:scale(.86);} }
 
-        .btn-new-client {
-            background-color: var(--text-main); color: #000000;
-            border: none; padding: 18px 36px; border-radius: 14px;
-            font-size: 16px; font-weight: 700; cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 8px 24px rgba(255,255,255,0.08);
-        }
-        .btn-new-client:hover { background-color: #e4e4e7; transform: translateY(-2px); box-shadow: 0 12px 30px rgba(255,255,255,0.12); }
+  /* ================= LOGOS / STRIP ================= */
+  .trust-strip{
+    padding:34px 0;border-top:1px solid var(--border-subtle);border-bottom:1px solid var(--border-subtle);
+  }
+  .trust-strip .wrap{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;
+    color:var(--text-tertiary);font-family:var(--font-mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;
+  }
 
-        /* ─── MODAL PREMIUM ─── */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(4, 4, 5, 0.85); backdrop-filter: blur(8px);
-            align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; z-index: 300;
-        }
-        .modal-content {
-            background: var(--card-bg); border: 1px solid var(--border);
-            padding: 40px 30px; border-radius: 24px; max-width: 400px; width: 100%; text-align: center; position: relative;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
-        }
-        .close-modal { position: absolute; top: 18px; right: 22px; color: var(--text-muted); font-size: 26px; cursor: pointer; transition: color 0.2s; }
-        .close-modal:hover { color: var(--text-main); }
-        
-        h2 { font-size: 24px; margin: 0 0 10px 0; font-weight: 700; letter-spacing: -0.5px; }
-        .modal p { color: var(--text-muted); font-size: 14px; margin: 0 0 25px 0; line-height: 1.5; }
+  /* ================= COMO FUNCIONA ================= */
+  .steps{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
+    counter-reset:step;
+  }
+  @media (max-width:820px){ .steps{grid-template-columns:1fr;} }
+  .step-card{
+    background:var(--bg-surface);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--radius-lg);
+    padding:32px 28px;
+    position:relative;
+    transition:border-color .3s ease, transform .3s ease;
+  }
+  .step-card:hover{border-color:var(--border-strong);transform:translateY(-4px);}
+  .step-num{
+    font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--accent-red);
+    letter-spacing:.08em;
+  }
+  .step-card h3{font-size:19px;margin:14px 0 10px;}
+  .step-card p{color:var(--text-secondary);font-size:14.5px;}
+  @media (min-width:821px){
+    .step-card:not(:last-child)::after{
+      content:"";position:absolute;top:50%;right:-28px;width:28px;height:1px;
+      background:linear-gradient(90deg, var(--border-strong), transparent);
+    }
+  }
 
-        input {
-            width: 100%; padding: 14px; background: #0c0c0e; border: 1px solid #2d2d35;
-            border-radius: 10px; color: var(--text-main); text-align: center; font-size: 16px;
-            font-weight: 600; box-sizing: border-box; margin-bottom: 20px; text-transform: uppercase;
-            letter-spacing: 1px; transition: border-color 0.2s;
-        }
-        input:focus { border-color: var(--accent); outline: none; background: #111114; }
+  /* ================= BENEFICIOS ================= */
+  .benefits-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
+  }
+  @media (max-width:960px){ .benefits-grid{grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:620px){ .benefits-grid{grid-template-columns:1fr;} }
+  .benefit-card{
+    background:var(--bg-surface);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--radius-md);
+    padding:26px;
+    transition:transform .3s ease, border-color .3s ease, background .3s ease;
+  }
+  .benefit-card:hover{transform:translateY(-3px);border-color:rgba(255,74,74,0.35);background:var(--bg-surface-2);}
+  .benefit-icon{
+    width:44px;height:44px;border-radius:12px;
+    background:var(--accent-red-dim);
+    display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+  }
+  .benefit-icon svg{width:21px;height:21px;stroke:var(--accent-red);}
+  .benefit-card h3{font-size:17px;margin-bottom:8px;}
+  .benefit-card p{color:var(--text-secondary);font-size:14px;}
 
-        .btn-submit { 
-            width: 100%; background-color: var(--accent); color: var(--text-main); 
-            border: none; padding: 14px; border-radius: 10px; 
-            font-size: 15px; font-weight: 700; cursor: pointer; 
-            transition: background 0.2s; 
-        }
-        .btn-submit:hover { background-color: var(--accent-hover); }
-        
-        footer.corporative { text-align: center; padding: 30px; color: #44444a; font-size: 11px; letter-spacing: 1.5px; font-weight: 700; border-top: 1px solid var(--border); margin-top: auto; }
-    </style>
+  /* ================= PRODUCTOS ================= */
+  .products-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:24px;
+  }
+  @media (max-width:900px){ .products-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto;} }
+  .product-card{
+    background:linear-gradient(165deg, var(--bg-surface), var(--bg-void));
+    border:1px solid var(--border-subtle);
+    border-radius:var(--radius-lg);
+    padding:30px 26px 26px;
+    text-align:left;
+  }
+  .product-visual{
+    height:140px;border-radius:14px;margin-bottom:22px;
+    background:radial-gradient(circle at 30% 20%, rgba(255,74,74,0.16), transparent 60%), var(--bg-void);
+    border:1px solid var(--border-subtle);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .product-visual svg{width:52px;height:52px;stroke:var(--accent-red);stroke-width:1.3;}
+  .product-card h3{font-size:19px;margin-bottom:8px;}
+  .product-card p{color:var(--text-secondary);font-size:14px;margin-bottom:16px;}
+  .product-tag{
+    display:inline-block;font-family:var(--font-mono);font-size:11px;letter-spacing:.06em;
+    color:var(--accent-green);background:rgba(52,211,153,0.1);
+    border:1px solid rgba(52,211,153,0.25);
+    padding:5px 10px;border-radius:100px;
+  }
+
+  /* ================= PRECIOS ================= */
+  .pricing-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:26px;align-items:stretch;
+  }
+  @media (max-width:960px){ .pricing-grid{grid-template-columns:1fr;max-width:420px;margin:0 auto;} }
+  .price-plate{
+    position:relative;
+    background:var(--bg-surface);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--radius-lg);
+    padding:30px 26px 30px;
+    display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+  .price-plate.featured{
+    border-color:rgba(255,74,74,0.5);
+    background:linear-gradient(180deg, rgba(255,74,74,0.06), var(--bg-surface) 40%);
+    box-shadow:0 30px 60px -30px var(--accent-red-glow);
+  }
+  .price-plate .plate-strip{
+    position:absolute;top:0;left:0;right:0;height:6px;
+    background:linear-gradient(90deg, var(--accent-red), #7a1414);
+  }
+  .plate-label{
+    font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;color:var(--text-tertiary);text-transform:uppercase;margin-top:8px;
+  }
+  .price-plate .plate-number{
+    font-family:var(--font-mono);font-weight:700;font-size:30px;letter-spacing:.05em;
+    border:1.5px dashed var(--border-strong);
+    border-radius:10px;padding:10px 14px;display:inline-block;margin:14px 0 18px;
+    background:rgba(255,255,255,0.02);
+  }
+  .price-plate .price{font-size:34px;font-family:var(--font-display);font-weight:700;margin-bottom:4px;}
+  .price-plate .price span{font-size:14px;color:var(--text-tertiary);font-weight:500;font-family:var(--font-body);}
+  .price-plate ul{margin:22px 0 26px;display:flex;flex-direction:column;gap:11px;flex:1;}
+  .price-plate li{display:flex;gap:10px;font-size:14px;color:var(--text-secondary);align-items:flex-start;}
+  .price-plate li svg{width:16px;height:16px;stroke:var(--accent-green);flex-shrink:0;margin-top:2px;}
+  .price-plate .btn{width:100%;}
+  .badge-pop{
+    position:absolute;top:16px;right:16px;
+    background:var(--accent-red);color:#140505;font-size:11px;font-weight:700;
+    padding:5px 11px;border-radius:100px;letter-spacing:.03em;
+  }
+
+  /* ================= TESTIMONIOS ================= */
+  .testi-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
+  }
+  @media (max-width:960px){ .testi-grid{grid-template-columns:1fr;max-width:520px;margin:0 auto;} }
+  .testi-card{
+    background:var(--bg-surface);border:1px solid var(--border-subtle);
+    border-radius:var(--radius-md);padding:26px;
+  }
+  .testi-quote{color:var(--text-secondary);font-size:14.5px;margin-bottom:20px;}
+  .testi-person{display:flex;align-items:center;gap:12px;}
+  .avatar{
+    width:38px;height:38px;border-radius:50%;
+    background:linear-gradient(155deg, var(--accent-red), #3a0d0d);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--font-mono);font-weight:700;font-size:13px;color:#fff;
+  }
+  .testi-person .name{font-weight:600;font-size:14px;}
+  .testi-person .role{font-size:12.5px;color:var(--text-tertiary);}
+  .stars{color:var(--accent-amber);font-size:13px;letter-spacing:1px;margin-bottom:12px;}
+
+  /* ================= FAQ ================= */
+  .faq-list{max-width:760px;margin:0 auto;}
+  .faq-item{
+    border-bottom:1px solid var(--border-subtle);
+  }
+  .faq-q{
+    width:100%;display:flex;justify-content:space-between;align-items:center;
+    padding:22px 4px;text-align:left;font-size:16px;font-weight:600;
+    color:var(--text-primary);
+  }
+  .faq-q svg{width:18px;height:18px;stroke:var(--text-secondary);flex-shrink:0;transition:transform .35s var(--ease);}
+  .faq-item.open .faq-q svg{transform:rotate(45deg);stroke:var(--accent-red);}
+  .faq-a{
+    max-height:0;overflow:hidden;transition:max-height .4s var(--ease), padding .4s var(--ease);
+    color:var(--text-secondary);font-size:14.5px;line-height:1.65;
+  }
+  .faq-item.open .faq-a{max-height:240px;padding-bottom:22px;}
+
+  /* ================= CTA FINAL ================= */
+  .cta-final{
+    text-align:center;
+    border-radius:var(--radius-lg);
+    background:radial-gradient(ellipse at top, rgba(255,74,74,0.14), var(--bg-surface) 70%);
+    border:1px solid var(--border-subtle);
+    padding:70px 30px;
+    margin:0 24px;
+  }
+  .cta-final h2{font-size:clamp(26px,4vw,38px);margin-bottom:14px;}
+  .cta-final p{color:var(--text-secondary);margin-bottom:30px;}
+
+  /* ================= FOOTER ================= */
+  footer{padding:60px 0 40px;border-top:1px solid var(--border-subtle);margin-top:40px;}
+  .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:32px;margin-bottom:40px;}
+  @media (max-width:720px){ .footer-grid{grid-template-columns:1fr 1fr;} }
+  .footer-grid h4{font-size:13px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;font-family:var(--font-mono);}
+  .footer-grid a{display:block;color:var(--text-secondary);font-size:14px;margin-bottom:10px;transition:color .2s ease;}
+  .footer-grid a:hover{color:var(--text-primary);}
+  .footer-bottom{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+    padding-top:26px;border-top:1px solid var(--border-subtle);
+    color:var(--text-tertiary);font-size:13px;
+  }
+
+  /* ================= MODAL ACCESO ================= */
+  #modalAcceso{
+    display:none;position:fixed;inset:0;z-index:100;
+    align-items:center;justify-content:center;
+    background:rgba(6,6,7,0.72);backdrop-filter:blur(6px);
+    padding:20px;
+  }
+  .modal-box{
+    width:100%;max-width:400px;
+    background:#131316;border:1px solid var(--border-strong);
+    border-radius:20px;padding:32px 28px 28px;
+    position:relative;
+    box-shadow:0 40px 80px -20px rgba(0,0,0,0.7);
+    animation:modalIn .35s var(--ease);
+  }
+  @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.98);} to{opacity:1;transform:translateY(0) scale(1);}}
+  .modal-close{position:absolute;top:16px;right:16px;}
+  .modal-close svg{width:16px;height:16px;stroke:var(--text-secondary);}
+  .modal-icon{
+    width:48px;height:48px;border-radius:14px;background:var(--accent-red-dim);
+    display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+  }
+  .modal-icon svg{width:22px;height:22px;stroke:var(--accent-red);}
+  .modal-box h3{font-size:20px;margin-bottom:8px;}
+  .modal-box p.hint{color:var(--text-secondary);font-size:13.5px;margin-bottom:22px;line-height:1.5;}
+  .field-label{font-size:12.5px;color:var(--text-tertiary);margin-bottom:8px;display:block;font-weight:600;letter-spacing:.02em;}
+  #input-patente{
+    width:100%;padding:16px;border-radius:12px;
+    background:var(--bg-void);border:1.5px solid var(--border-strong);
+    color:var(--text-primary);font-family:var(--font-mono);font-size:22px;font-weight:700;
+    text-align:center;text-transform:uppercase;letter-spacing:.12em;
+    transition:border-color .2s ease;
+  }
+  #input-patente:focus{border-color:var(--accent-red);}
+  #input-otp{
+    width:100%;padding:16px;border-radius:12px;
+    background:var(--bg-void);border:1.5px solid var(--border-strong);
+    color:var(--text-primary);font-family:var(--font-mono);font-size:22px;font-weight:700;
+    text-align:center;letter-spacing:.4em;
+    transition:border-color .2s ease;
+  }
+  #input-otp:focus{border-color:var(--accent-red);}
+  .modal-box .btn{width:100%;margin-top:18px;}
+  .modal-foot{margin-top:18px;text-align:center;font-size:12.5px;color:var(--text-tertiary);}
+  .modal-foot button{color:var(--accent-red);font-weight:600;}
+
+  /* ================= REVEAL ON SCROLL ================= */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease), transform .7s var(--ease);}
+  .reveal.in{opacity:1;transform:translateY(0);}
+
+</style>
 </head>
 <body>
 
-    <header>
-        <button class="menu-hamburguesa" onclick="toggleMenu(true)">☰</button>
-        <div class="logo">SmartCar<span>Docs</span></div>
-        <button class="btn-login-icon" onclick="abrirModal()" title="Área de Clientes">👤</button>
-    </header>
+<header class="site-header">
+  <div class="header-inner">
+    <button class="icon-btn" aria-label="Abrir menú" onclick="toggleMenu(true)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="brand">
+      <span class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 15-4M20 12a8 8 0 0 1-15 4"/><path d="M17 4v4h-4M7 20v-4h4"/></svg>
+      </span>
+      SmartCarDocs
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" aria-label="Acceder a mi panel" onclick="abrirModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4.5 5-6 8-6s6.5 1.5 8 6"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
 
-    <div id="menuLateral" class="nav-lateral">
-        <div class="close-menu" onclick="toggleMenu(false)">&times;</div>
-        <a href="#" onclick="toggleMenu(false)">Inicio</a>
-        <a href="#" onclick="alert('Aquí irá tu link de Tally para registrar nuevos autos'); toggleMenu(false);">Contratar Tarjeta NFC</a>
-        <a href="#" onclick="abrirModal(); toggleMenu(false);">Actualizar mis Documentos</a>
+<div class="nav-overlay" id="navOverlay" onclick="toggleMenu(false)"></div>
+<aside id="menuLateral" aria-label="Menú principal">
+  <div class="nav-top">
+    <div class="brand" style="font-size:16px;">
+      <span class="brand-mark" style="width:22px;height:22px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 15-4M20 12a8 8 0 0 1-15 4"/><path d="M17 4v4h-4M7 20v-4h4"/></svg>
+      </span>
+      SmartCarDocs
+    </div>
+    <button class="nav-close" aria-label="Cerrar menú" onclick="toggleMenu(false)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <nav>
+    <a href="#como-funciona" onclick="toggleMenu(false)">Cómo funciona</a>
+    <a href="#beneficios" onclick="toggleMenu(false)">Beneficios</a>
+    <a href="#productos" onclick="toggleMenu(false)">Productos</a>
+    <a href="#precios" onclick="toggleMenu(false)">Planes y precios</a>
+    <a href="#testimonios" onclick="toggleMenu(false)">Testimonios</a>
+    <a href="#faq" onclick="toggleMenu(false)">Preguntas frecuentes</a>
+  </nav>
+  <div class="nav-cta">
+    <p>¿Se te vence el Permiso, el SOAP o la Revisión Técnica? Actualízalo tú mismo, sin ir a ninguna parte.</p>
+    <button class="btn btn-primary" onclick="toggleMenu(false); abrirModal();">Actualizar mis Documentos</button>
+  </div>
+</aside>
+
+<main>
+
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div class="hero-copy reveal in">
+        <span class="eyebrow">Ley 19.799 · Firma digital</span>
+        <h1>Los papeles de tu auto,<br>a un <span>toque</span> de distancia.</h1>
+        <p class="lead">Sticker, tarjeta o llavero con tecnología NFC. Un carabinero o la planta de Revisión Técnica acerca el teléfono y aparecen tu Permiso de Circulación, SOAP y Revisión Técnica vigentes. Sin imprimir, sin buscar carpetas.</p>
+        <div class="hero-actions">
+          <button class="btn btn-primary" onclick="abrirModal()">Actualizar mis documentos</button>
+          <a href="#como-funciona" class="btn btn-ghost">Ver cómo funciona</a>
+        </div>
+        <div class="hero-trust">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Válido ante fiscalización</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Documentos siempre vigentes</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Hecho en Chile</span>
+        </div>
+      </div>
+      <div class="tap-stage reveal in">
+        <div class="wave w1"></div>
+        <div class="wave w2"></div>
+        <div class="wave w3"></div>
+        <div class="plate-card">
+          <div class="stripe"></div>
+          <div class="nfc-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M6 8a8 8 0 0 1 12 0M9 11a4 4 0 0 1 6 0"/><circle cx="12" cy="15" r="1"/></svg>
+          </div>
+          <div>
+            <div class="plate-id">SC · 4271</div>
+            <div class="plate-sub">Toca para ver documentos</div>
+          </div>
+        </div>
+        <div class="phone"></div>
+        <div class="status-chip"><span class="dot"></span> Documentos al día</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-strip">
+    <div class="wrap">
+      <span>Permiso de Circulación</span>
+      <span>SOAP</span>
+      <span>Revisión Técnica</span>
+      <span>Ley 19.799</span>
+      <span>Panel privado 24/7</span>
+    </div>
+  </div>
+
+  <section id="como-funciona">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Cómo funciona</span>
+        <h2>De la guantera a un solo toque</h2>
+        <p>Tres pasos, sin apps que instalar del lado de quien fiscaliza.</p>
+      </div>
+      <div class="steps">
+        <div class="step-card reveal">
+          <span class="step-num">01</span>
+          <h3>Pega tu sticker o lleva tu llavero</h3>
+          <p>Eliges el formato: sticker para el parabrisas, tarjeta para la guantera o llavero. Cada uno trae un chip NFC vinculado a tu vehículo.</p>
+        </div>
+        <div class="step-card reveal">
+          <span class="step-num">02</span>
+          <h3>Acercan el teléfono</h3>
+          <p>Un carabinero o inspector de la planta revisora acerca su celular al sticker. No necesita ninguna app: cualquier smartphone moderno lo lee.</p>
+        </div>
+        <div class="step-card reveal">
+          <span class="step-num">03</span>
+          <h3>Se abre el perfil de tu auto</h3>
+          <p>Aparecen tres botones limpios con los PDF vigentes: Permiso de Circulación, SOAP y Revisión Técnica. Todo firmado bajo la Ley 19.799.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="beneficios">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Beneficios</span>
+        <h2>Menos papeleo, cero excusas</h2>
+        <p>Diseñado para que tus documentos estén donde los necesitas: en tu auto, siempre vigentes.</p>
+      </div>
+      <div class="benefits-grid">
+        <div class="benefit-card reveal">
+          <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <h3>Válido ante fiscalización</h3>
+          <p>Cumple con la Ley 19.799 sobre documentos electrónicos y firma digital, reconocida en todo Chile.</p>
+        </div>
+        <div class="benefit-card reveal">
+          <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div>
+          <h3>Actualiza en segundos</h3>
+          <p>Cuando renuevas el SOAP o la Revisión Técnica, subes el PDF a tu panel privado y el sticker muestra la versión nueva al instante.</p>
+        </div>
+        <div class="benefit-card reveal">
+          <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11Z"/></svg></div>
+          <h3>Evita multas por olvido</h3>
+          <p>Se acabó el "no encontré la carpeta". Tus tres documentos viven en un mismo lugar, protegidos y siempre a mano.</p>
+        </div>
+        <div class="benefit-card reveal">
+          <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h5"/></svg></div>
+          <h3>Panel privado propio</h3>
+          <p>Entra con tu patente y un código temporal enviado a tu correo. Solo tú puedes cambiar los documentos de tu auto.</p>
+        </div>
+        <div class="benefit-card reveal">
+          <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+          <h3>Funciona en la calle</h3>
+          <p>La lectura NFC no depende de señal ni de que tú estés presente: el perfil se abre directo en el navegador del teléfono.</p>
+        </div>
+        <div class="benefit-card reveal">
+          <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></div>
+          <h3>Hecho para dueños de auto en Chile</h3>
+          <p>Pensado para nuestras plantas revisoras, nuestros controles y el formato real de tus documentos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="productos">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Productos</span>
+        <h2>Elige cómo lo llevas contigo</h2>
+        <p>Mismo chip, mismo perfil digital, tres formatos para distintos autos y estilos de vida.</p>
+      </div>
+      <div class="products-grid">
+        <div class="product-card reveal">
+          <div class="product-visual">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2.5"/><path d="M6 6V4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V6"/></svg>
+          </div>
+          <h3>Sticker de parabrisas</h3>
+          <p>Adhesivo resistente al sol y a la lluvia. Se instala en segundos, visible para quien fiscaliza desde afuera del auto.</p>
+          <span class="product-tag">Más elegido</span>
+        </div>
+        <div class="product-card reveal">
+          <div class="product-visual">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <h3>Tarjeta para la guantera</h3>
+          <p>Del tamaño de una tarjeta de crédito. Ideal para guardarla junto a la documentación física que aún conserves.</p>
+          <span class="product-tag">Discreta</span>
+        </div>
+        <div class="product-card reveal">
+          <div class="product-visual">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M12 11v10M9 17h6"/></svg>
+          </div>
+          <h3>Llavero NFC</h3>
+          <p>Va donde van tus llaves. Resistente al agua y a los golpes, pensado para el uso diario.</p>
+          <span class="product-tag">Compacto</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="precios">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Planes</span>
+        <h2>Un precio claro, sin letra chica</h2>
+        <p>Pago único por el dispositivo. El panel de actualización de documentos no tiene costo mensual.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-plate reveal">
+          <div class="plate-strip"></div>
+          <span class="plate-label">Plan</span>
+          <div class="plate-number">SC·CARD</div>
+          <div class="price">$9.990 <span>pago único</span></div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> 1 tarjeta NFC</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Panel privado incluido</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Actualizaciones ilimitadas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> 1 vehículo</li>
+          </ul>
+          <button class="btn btn-ghost" onclick="abrirModal()">Elegir Card</button>
+        </div>
+        <div class="price-plate featured reveal">
+          <span class="badge-pop">Más elegido</span>
+          <div class="plate-strip"></div>
+          <span class="plate-label">Plan</span>
+          <div class="plate-number">SC·STICKER</div>
+          <div class="price">$12.990 <span>pago único</span></div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> 1 sticker de parabrisas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Panel privado incluido</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Actualizaciones ilimitadas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Resistente a la intemperie</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> 1 vehículo</li>
+          </ul>
+          <button class="btn btn-primary" onclick="abrirModal()">Elegir Sticker</button>
+        </div>
+        <div class="price-plate reveal">
+          <div class="plate-strip"></div>
+          <span class="plate-label">Plan</span>
+          <div class="plate-number">SC·FLOTA</div>
+          <div class="price">Desde $8.990 <span>por vehículo</span></div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Sticker o llavero, a elección</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Panel para múltiples vehículos</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Ideal para empresas de transporte</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg> Soporte prioritario</li>
+          </ul>
+          <button class="btn btn-ghost" onclick="abrirModal()">Cotizar Flota</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="testimonios">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Testimonios</span>
+        <h2>Dueños de auto en todo Chile</h2>
+        <p>Historias de clientes que dejaron de andar buscando papeles en la guantera.</p>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card reveal">
+          <div class="stars">★★★★★</div>
+          <p class="testi-quote">"Me pararon en un control en la Costanera y el carabinero acercó el teléfono al sticker. Todo listo en 10 segundos, ni bajé la ventana del todo."</p>
+          <div class="testi-person">
+            <div class="avatar">MP</div>
+            <div><div class="name">Mauricio Pinto</div><div class="role">Providencia, Santiago</div></div>
+          </div>
+        </div>
+        <div class="testi-card reveal">
+          <div class="stars">★★★★★</div>
+          <p class="testi-quote">"Se me venció la Revisión Técnica un jueves y actualicé el PDF desde el celular esa misma tarde, sin tener que reimprimir nada."</p>
+          <div class="testi-person">
+            <div class="avatar">CF</div>
+            <div><div class="name">Carolina Fuentes</div><div class="role">Concepción</div></div>
+          </div>
+        </div>
+        <div class="testi-card reveal">
+          <div class="stars">★★★★★</div>
+          <p class="testi-quote">"Tengo una flota de 12 furgones y ahora todos los conductores llevan el llavero. Se acabaron los reclamos por documentos vencidos."</p>
+          <div class="testi-person">
+            <div class="avatar">RS</div>
+            <div><div class="name">Rodrigo Silva</div><div class="role">Transportes del Sur, Temuco</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2>Todo lo que quieres saber</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="toggleFaq(this)">¿Esto reemplaza legalmente los documentos físicos? <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq-a">Los PDF que muestra SmartCarDocs corresponden a los mismos documentos digitales emitidos por las entidades correspondientes, presentados bajo la Ley 19.799 de firma electrónica. Recomendamos siempre revisar los requisitos vigentes de tu comuna.</div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="toggleFaq(this)">¿Qué pasa si mi celular no tiene NFC o el otro no lo activa? <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq-a">Cada sticker, tarjeta y llavero también incluye un código QR de respaldo que abre el mismo perfil del vehículo desde cualquier cámara de celular.</div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="toggleFaq(this)">¿Cómo actualizo mis documentos cuando se vencen? <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq-a">Entras a tu panel privado con tu patente y un código temporal que llega a tu correo, subes el nuevo PDF y queda disponible al instante en tu sticker, tarjeta o llavero.</div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="toggleFaq(this)">¿Mis datos quedan expuestos si alguien roba el sticker? <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq-a">El perfil público solo muestra los tres documentos vigentes del vehículo, sin datos personales del propietario. Solo tú puedes editarlos desde tu panel privado.</div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="toggleFaq(this)">¿Cómo actualizo mis documentos cuando se vencen? <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <div class="faq-a">Entras a tu panel privado con tu patente y un código temporal que llega a tu correo, subes el nuevo PDF y queda disponible al instante en tu sticker, tarjeta o llavero.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="cta-final reveal">
+        <h2>Deja de buscar papeles en la guantera</h2>
+        <p>Pide tu sticker, tarjeta o llavero SmartCarDocs y ten tus documentos siempre a un toque.</p>
+        <div class="hero-actions" style="justify-content:center;">
+          <button class="btn btn-primary" onclick="abrirModal()">Actualizar mis documentos</button>
+          <a href="#precios" class="btn btn-ghost">Ver planes</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="justify-content:flex-start;margin-bottom:14px;">
+          <span class="brand-mark">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 15-4M20 12a8 8 0 0 1-15 4"/><path d="M17 4v4h-4M7 20v-4h4"/></svg>
+          </span>
+          SmartCarDocs
+        </div>
+        <p style="color:var(--text-secondary);font-size:14px;max-width:280px;">Los documentos de tu auto, digitalizados y siempre vigentes. Ley 19.799.</p>
+      </div>
+      <div>
+        <h4>Producto</h4>
+        <a href="#como-funciona">Cómo funciona</a>
+        <a href="#productos">Productos</a>
+        <a href="#precios">Planes y precios</a>
+      </div>
+      <div>
+        <h4>Empresa</h4>
+        <a href="#testimonios">Testimonios</a>
+        <a href="#faq">Preguntas frecuentes</a>
+        <a href="#" onclick="abrirModal();return false;">Actualizar documentos</a>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <a href="mailto:hola@smartcardocs.cl">hola@smartcardocs.cl</a>
+        <a href="tel:+56900000000">+56 9 0000 0000</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 SmartCarDocs SpA. Todos los derechos reservados.</span>
+      <span>Santiago, Chile</span>
+    </div>
+  </div>
+</footer>
+
+<div id="modalAcceso">
+  <div class="modal-box">
+    <button class="modal-close" aria-label="Cerrar" onclick="cerrarModal()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    <div id="paso-patente" style="display:block;">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2.5"/><path d="M6 6V4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V6"/></svg>
+      </div>
+      <h3>Actualiza tus documentos</h3>
+      <p class="hint">Ingresa la patente de tu vehículo y te enviaremos una clave temporal a tu correo registrado.</p>
+      <label class="field-label" for="input-patente">Patente</label>
+      <input id="input-patente" type="text" maxlength="6" placeholder="AB1234" autocomplete="off" oninput="this.value=this.value.toUpperCase()">
+      <button class="btn btn-primary" onclick="solicitarClaveConPatente()">Enviar clave al correo</button>
+      <div class="modal-foot">¿No tienes tu dispositivo aún? <button onclick="cerrarModal()">Ver planes</button></div>
     </div>
 
-    <main>
-        <div class="hero">
-            <div class="badge">NFC Tecnología • Chile</div>
-            <h1>La evolución digital de tu <span style="color: var(--accent);">padrón vehicular</span></h1>
-            <p class="desc">Lleva el Permiso de Circulación, SOAP y Revisión Técnica en un elegante dispositivo inteligente para tu parabrisas o llavero. Olvídate para siempre de los papeles perdidos.</p>
-            <button class="btn-new-client" onclick="alert('Aquí irá tu link de Tally para registrar nuevos autos')">Obtener mi SmartCarDocs</button>
-        </div>
-    </main>
-
-    <div id="modalAcceso" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="cerrarModal()">&times;</span>
-            
-            <div id="paso-patente">
-                <h2>Portal de Clientes</h2>
-                <p>Ingresa la patente de tu vehículo para solicitar tu código de seguridad temporal.</p>
-                <input type="text" id="input-patente" placeholder="EJ: BBCC11 o BCCC11" maxlength="6">
-                <button class="btn-submit" onclick="solicitarClaveConPatente()">Enviar Clave al Correo</button>
-            </div>
-
-            <div id="paso-otp" style="display: none;">
-                <h2>Verifica tu Identidad</h2>
-                <p style="color: #00ff88; font-weight: 500;">✓ Vehículo encontrado. Hemos despachado un código de 6 dígitos a tu email registrado.</p>
-                <input type="text" id="input-otp" placeholder="000000" maxlength="6">
-                <button class="btn-submit" style="background-color: var(--text-main); color: #000000;" onclick="verificarOtpYEntrar()">Verificar e Ingresar</button>
-            </div>
-        </div>
+    <div id="paso-otp" style="display:none;">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      </div>
+      <h3>Revisa tu correo</h3>
+      <p class="hint">Enviamos un código temporal de 6 dígitos al correo registrado para tu vehículo. Ingrésalo para entrar a tu panel.</p>
+      <label class="field-label" for="input-otp">Código de 6 dígitos</label>
+      <input id="input-otp" type="text" maxlength="6" placeholder="······" autocomplete="off" inputmode="numeric">
+      <button class="btn btn-primary" onclick="verificarOtpYEntrar()">Ingresar</button>
+      <div class="modal-foot">¿No llegó el código? <button onclick="solicitarClaveConPatente()">Reenviar</button></div>
     </div>
 
-    <footer class="corporative">SMARTCARDOCS CHILE • LEY 19.799 DIGITAL</footer>
+  </div>
+</div>
 
-    <script>
-        const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
-        
-        let idSeguroVehiculo = "";
+<script>
+  // FAQ accordion
+  function toggleFaq(btn){
+    const item = btn.closest('.faq-item');
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if(!wasOpen) item.classList.add('open');
+  }
 
-        function toggleMenu(abrir) {
-            const menu = document.getElementById('menuLateral');
-            if(abrir) menu.classList.add('active');
-            else menu.classList.remove('active');
-        }
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el => io.observe(el));
 
-        function abrirModal() { document.getElementById('modalAcceso').style.display = 'flex'; }
-        function cerrarModal() { 
-            document.getElementById('modalAcceso').style.display = 'none'; 
-            document.getElementById('paso-patente').style.display = 'block';
-            document.getElementById('paso-otp').style.display = 'none';
-        }
-        
-        function solicitarClaveConPatente() {
-            const patente = document.getElementById('input-patente').value.trim().toUpperCase();
-            if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
-            
-            fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}`, {
-                method: 'GET',
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    idSeguroVehiculo = data[0].codigo_seguro;
-                    document.getElementById('paso-patente').style.display = 'none';
-                    document.getElementById('paso-otp').style.display = 'block';
-                } else {
-                    alert("❌ La patente ingresada no se encuentra registrada.");
-                }
-            })
-            .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
-        }
+  // Keep overlay in sync with nav lateral
+  const _menuObserver = new MutationObserver(() => {
+    const menu = document.getElementById('menuLateral');
+    const overlay = document.getElementById('navOverlay');
+    if(menu.classList.contains('active')) overlay.classList.add('active');
+    else overlay.classList.remove('active');
+  });
+  if (document.getElementById('menuLateral')) {
+    _menuObserver.observe(document.getElementById('menuLateral'), { attributes:true, attributeFilter:['class'] });
+  }
+</script>
 
-        function verificarOtpYEntrar() {
-            const otp = document.getElementById('input-otp').value.trim();
-            if(!otp) { alert("⚠️ Por favor, ingresa el código temporal."); return; }
-            window.location.href = `/panel.html?id=${idSeguroVehiculo}`;
-        }
+<script>
+    const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+    
+    let idSeguroVehiculo = "";
 
-        window.onclick = function(event) {
-            const modal = document.getElementById('modalAcceso');
-            if (event.target == modal) cerrarModal();
-        }
-    </script>
+    function toggleMenu(abrir) {
+        const menu = document.getElementById('menuLateral');
+        if(abrir) menu.classList.add('active');
+        else menu.classList.remove('active');
+    }
+    function abrirModal() { document.getElementById('modalAcceso').style.display = 'flex'; }
+    function cerrarModal() { 
+        document.getElementById('modalAcceso').style.display = 'none'; 
+        document.getElementById('paso-patente').style.display = 'block';
+        document.getElementById('paso-otp').style.display = 'none';
+    }
+    function solicitarClaveConPatente() {
+        const patente = document.getElementById('input-patente').value.trim().toUpperCase();
+        if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
+        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}`, {
+            method: 'GET',
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                idSeguroVehiculo = data[0].codigo_seguro;
+                document.getElementById('paso-patente').style.display = 'none';
+                document.getElementById('paso-otp').style.display = 'block';
+            } else { alert("❌ La patente ingresada no está registrada."); }
+        })
+        .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
+    }
+    function verificarOtpYEntrar() {
+        const otp = document.getElementById('input-otp').value.trim();
+        if(!otp) { alert("⚠️ Por favor, ingresa el código temporal."); return; }
+        window.location.href = `/panel.html?id=${idSeguroVehiculo}`;
+    }
+    window.onclick = function(event) {
+        const modal = document.getElementById('modalAcceso');
+        if (event.target == modal) cerrarModal();
+    }
+</script>
+
 </body>
 </html>

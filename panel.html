@@ -39,18 +39,51 @@
         .info-row:last-child { margin-bottom: 0; }
         .label { color: #666670; }
         .value { font-weight: bold; color: #ffffff; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; color: #8a8a93; margin-bottom: 8px; }
+        
+        /* Estilos para las secciones de documentos independientes */
+        .doc-section {
+            background: #111112;
+            border: 1px solid #232329;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .doc-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .doc-header input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            accent-color: #ff4a4a;
+        }
+        .doc-title { font-size: 14px; font-weight: bold; color: #e4e4e7; }
+        
+        .doc-body { display: none; margin-top: 10px; }
+        
+        label { display: block; font-size: 12px; color: #8a8a93; margin-bottom: 5px; margin-top: 10px; }
         input[type="file"] {
             width: 100%;
             padding: 10px;
-            background: #111112;
+            background: #161618;
             border: 1px dashed #3a3a44;
             border-radius: 8px;
             color: #8a8a93;
             box-sizing: border-box;
-            cursor: pointer;
         }
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            background: #161618;
+            border: 1px solid #3a3a44;
+            border-radius: 8px;
+            color: #ffffff;
+            box-sizing: border-box;
+        }
+        
         button {
             width: 100%;
             background-color: #ffffff;
@@ -62,7 +95,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s;
-            margin-top: 10px;
+            margin-top: 15px;
         }
         button:hover { background-color: #e4e4e7; }
         .footer { text-align: center; color: #44444a; font-size: 11px; margin-top: 25px; letter-spacing: 0.5px; }
@@ -76,7 +109,7 @@
 
     <div id="contenedor-panel" class="panel-container" style="display: none;">
         <h1>Mi SmartCarDocs</h1>
-        <p class="subtitle">Gestiona y actualiza los documentos vigentes de tu vehículo.</p>
+        <p class="subtitle">Selecciona los documentos vencidos que deseas actualizar.</p>
 
         <div class="info-box">
             <div class="info-row">
@@ -90,19 +123,47 @@
         </div>
 
         <form id="form-actualizar">
-            <div class="form-group">
-                <label>Actualizar Revisión Técnica (PDF)</label>
-                <input type="file" id="file-revision" accept="application/pdf">
+            
+            <div class="doc-section">
+                <div class="doc-header" onclick="toggleDocumento('rev')">
+                    <input type="checkbox" id="chk-rev" onchange="actualizarEstadoDoc('rev')">
+                    <span class="doc-title">Actualizar Revisión Técnica</span>
+                </div>
+                <div id="body-rev" class="doc-body">
+                    <label>Nuevo archivo PDF</label>
+                    <input type="file" id="file-revision" accept="application/pdf">
+                    <label>Nueva Fecha de Vencimiento</label>
+                    <input type="date" id="date-revision">
+                </div>
             </div>
-            <div class="form-group">
-                <label>Actualizar SOAP (PDF)</label>
-                <input type="file" id="file-soap" accept="application/pdf">
+
+            <div class="doc-section">
+                <div class="doc-header" onclick="toggleDocumento('soap')">
+                    <input type="checkbox" id="chk-soap" onchange="actualizarEstadoDoc('soap')">
+                    <span class="doc-title">Actualizar SOAP</span>
+                </div>
+                <div id="body-soap" class="doc-body">
+                    <label>Nuevo archivo PDF</label>
+                    <input type="file" id="file-soap" accept="application/pdf">
+                    <label>Nueva Fecha de Vencimiento</label>
+                    <input type="date" id="date-soap">
+                </div>
             </div>
-            <div class="form-group">
-                <label>Actualizar Permiso de Circulación (PDF)</label>
-                <input type="file" id="file-permiso" accept="application/pdf">
+
+            <div class="doc-section">
+                <div class="doc-header" onclick="toggleDocumento('permiso')">
+                    <input type="checkbox" id="chk-permiso" onchange="actualizarEstadoDoc('permiso')">
+                    <span class="doc-title">Actualizar Permiso de Circulación</span>
+                </div>
+                <div id="body-permiso" class="doc-body">
+                    <label>Nuevo archivo PDF</label>
+                    <input type="file" id="file-permiso" accept="application/pdf">
+                    <label>Nueva Fecha de Vencimiento</label>
+                    <input type="date" id="date-permiso">
+                </div>
             </div>
-            <button type="submit">Guardar Nuevos Documentos</button>
+
+            <button type="submit">Guardar Cambios Seleccionados</button>
         </form>
 
         <p class="footer">SMARTCARDOCS CHILE • PANEL PRIVADO</p>
@@ -115,8 +176,35 @@
         const urlParams = new URLSearchParams(window.location.search);
         const idUrl = urlParams.get('id');
 
+        // Funciones visuales para abrir y cerrar secciones dinámicamente
+        function toggleDocumento(tipo) {
+            // Previene que se dispare doble si hacen clic directo en el cuadradito checkbox
+            if (event.target.type === 'checkbox') return;
+            const checkbox = document.getElementById(`chk-${tipo}`);
+            checkbox.checked = !checkbox.checked;
+            actualizarEstadoDoc(tipo);
+        }
+
+        function actualizarEstadoDoc(tipo) {
+            const checkbox = document.getElementById(`chk-${tipo}`);
+            const body = document.getElementById(`body-${`body-${tipo}` ? tipo : ''}`);
+            const inputFile = document.getElementById(`file-${tipo === 'rev' ? 'revision' : tipo}`);
+            const inputDate = document.getElementById(`date-${tipo === 'rev' ? 'revision' : tipo}`);
+            
+            if (checkbox.checked) {
+                body.style.display = 'block';
+                inputFile.required = true;
+                inputDate.required = true;
+            } else {
+                body.style.display = 'none';
+                inputFile.required = false;
+                inputFile.value = '';
+                inputDate.required = false;
+                inputDate.value = '';
+            }
+        }
+
         if (idUrl) {
-            // Validamos que el código exista en Supabase
             fetch(`${SUPABASE_URL}/rest/v1/vehiculos?codigo_seguro=eq.${idUrl}`, {
                 method: 'GET',
                 headers: {
@@ -129,11 +217,9 @@
                 if (data && data.length > 0) {
                     const vehiculo = data[0];
 
-                    // 🔒 ESCUDO DEL PANEL: Si el estado no es "A" (Activo), no entra
                     if (vehiculo.estado_cuenta !== "A") {
-                        mostrarError("Acceso Denegado", "Tu cuenta debe estar Activa para poder gestionar los documentos.");
+                        mostrarError("Acceso Denegado", "Tu cuenta debe estar Activa para gestionar documentos.");
                     } else {
-                        // 🟢 TODO CORRECTO: Mostramos el panel y pintamos los datos
                         document.getElementById('pantalla-carga').style.display = 'none';
                         document.getElementById('contenedor-panel').style.display = 'block';
                         
@@ -141,7 +227,7 @@
                         document.getElementById('txt-patente').innerText = vehiculo.patente || "- - - -";
                     }
                 } else {
-                    mostrarError("Firma Inválida", "Las credenciales de este panel no existen en nuestros registros seguros.");
+                    mostrarError("Firma Inválida", "Las credenciales no existen en nuestros registros.");
                 }
             })
             .catch(err => {
@@ -149,22 +235,32 @@
                 mostrarError("Error de Conexión", "No pudimos conectar con la base de datos.");
             });
         } else {
-            mostrarError("Enlace Incompleto", "Para entrar al panel necesitas usar el link privado enviado a tu correo.");
+            mostrarError("Enlace Incompleto", "Para entrar al panel necesitas usar el link privado enviado a tu WhatsApp.");
         }
 
         function mostrarError(titulo, mensaje) {
             document.body.innerHTML = `
-                <div style="background: linear-gradient(145deg, #141416, #1a1a1e); border: 1px solid #ff4a4a; border-radius: 20px; padding: 35px 25px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div style="background: linear-gradient(145deg, #141416, #1a1a1e); border: 1px solid #ff4a4a; border-radius: 20px; padding: 35px 25px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
                     <h2 style="color: #ff4a4a; font-size: 22px; margin: 0 0 15px 0;">${titulo}</h2>
                     <p style="color: #8a8a93; font-size: 14px; line-height: 1.6; margin: 0;">${mensaje}</p>
                 </div>
             `;
         }
 
-        // El envío del formulario lo configuraremos en la Fase 3 conectado a Make
         document.getElementById('form-actualizar').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert("🔒 Formulario listo. En la Fase 3 lo conectaremos a tu robot de Make para procesar los PDFs.");
+            
+            // Validar que al menos haya seleccionado uno
+            const chkRev = document.getElementById('chk-rev').checked;
+            const chkSoap = document.getElementById('chk-soap').checked;
+            const chkPermiso = document.getElementById('chk-permiso').checked;
+            
+            if(!chkRev && !chkSoap && !chkPermiso) {
+                alert("⚠️ Por favor, selecciona al menos un documento para actualizar.");
+                return;
+            }
+            
+            alert("🔒 ¡Formulario validado! En la Fase 3 conectaremos este envío exacto a tu robot de Make para recibir los PDFs y las nuevas fechas.");
         });
     </script>
 </body>

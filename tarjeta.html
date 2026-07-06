@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartCarDocs Chile - Documentos Digitales</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: '-apple-system', BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            background: #111827;
+            padding: 30px 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1f2937;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+        }
+
+        .welcome {
+            font-size: 16px;
+            color: #e5e7eb;
+            margin-bottom: 15px;
+        }
+
+        /* Estilo Patente Chilena */
+        .patente-box {
+            background-color: #f3f4f6;
+            color: #111827;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 4px solid #111827;
+            box-shadow: inset 0 0 0 2px #d1d5db, 0 4px 10px rgba(0,0,0,0.3);
+            display: inline-block;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            padding: 18px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 16px;
+            transition: transform 0.2s, background-color 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-icon {
+            font-size: 22px;
+            margin-right: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Colores de los botones */
+        .btn-revision { background-color: #1e3a8a; }
+        .btn-revision:hover { background-color: #1d4ed8; }
+
+        .btn-soap { background-color: #7c2d12; }
+        .btn-soap:hover { background-color: #ea580c; }
+
+        .btn-permiso { background-color: #065f46; }
+        .btn-permiso:hover { background-color: #059669; }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 11px;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo">SmartCarDocs</div>
+        <div class="subtitle">Chile 🇨🇱</div>
+
+        <div class="welcome">Vehículo de: <strong id="client-name">Cargando...</strong></div>
+        
+        <div class="patente-box" id="license-plate">- - - - - -</div>
+
+        <div class="buttons-container">
+            <a href="#" id="link-revision" class="btn btn-revision" target="_blank">
+                <span class="btn-icon">🚗</span> Revisión Técnica
+            </a>
+            <a href="#" id="link-soap" class="btn btn-soap" target="_blank">
+                <span class="btn-icon">🛡️</span> Seguro Obligatorio SOAP
+            </a>
+            <a href="#" id="link-permiso" class="btn btn-permiso" target="_blank">
+                <span class="btn-icon">📜</span> Permiso de Circulación
+            </a>
+        </div>
+
+        <div class="footer">
+            Documentación protegida bajo la Ley 19.799<br>SmartCarDocs Chile © 2026
+        </div>
+    </div>
+
+   <script>
+    const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const idUrl = urlParams.get('id');
+
+    if (idUrl) {
+        // Buscamos por la columna de código aleatorio seguro
+        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?codigo_seguro=eq.${idUrl}`, {
+            method: 'GET',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                const vehiculo = data[0];
+                
+                // 🚫 EL ESCUDO DE SEGURIDAD: Validar si la cuenta está Pendiente o Activa
+                if (vehiculo.estado_cuenta === "P") {
+                    mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${vehiculo.patente || ''} se registró con éxito, pero está en proceso de activación por el administrador.`);
+                } else {
+                    // 🟢 SI ESTÁ ACTIVO: Rellena los datos en tu diseño premium
+                    document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
+                    document.getElementById('license-plate').innerText = vehiculo.patente || "- - - -";
+                    
+                    if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
+                    if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
+                    if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
+                }
+            } else {
+                mostrarPantallaError("🔒 Acceso Denegado", "Esta tarjeta no contiene una firma digital válida en nuestros registros.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            mostrarPantallaError("⚠️ Error de Conexión", "No pudimos conectar con el servidor seguro de SmartCarDocs.");
+        });
+    } else {
+        mostrarPantallaError("❌ Acceso Inválido", "No se detectó ninguna credencial digital. Escanea una tarjeta válida.");
+    }
+
+    // Función que limpia la pantalla y muestra el escudo de error Dark Mode si no está activo
+    function mostrarPantallaError(titulo, mensaje) {
+        document.body.innerHTML = `
+            <div style="background-color: #0b0b0c; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: sans-serif; box-sizing: border-box;">
+                <div style="background: linear-gradient(145deg, #141416, #1a1a1e); border: 1px solid #ff4a4a; border-radius: 20px; padding: 35px 25px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    <h2 style="color: #ff4a4a; font-size: 22px; margin: 0 0 15px 0; font-weight: 600; letter-spacing: 0.5px;">${titulo}</h2>
+                    <p style="color: #8a8a93; font-size: 14px; line-height: 1.6; margin: 0 0 25px 0;">${mensaje}</p>
+                    <hr style="border: 0; border-top: 1px solid #2d2d34; margin: 20px 0;">
+                    <p style="color: #555; font-size: 11px; margin: 0; letter-spacing: 0.5px;">SMARTCARDOCS CHILE • SEGURIDAD</p>
+                </div>
+            </div>
+        `;
+    }
+</script>
+    
+</body>
+</html>

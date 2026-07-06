@@ -160,7 +160,7 @@
     const idUrl = urlParams.get('id');
 
     if (idUrl) {
-        // SEGURIDAD MÁXIMA: Buscamos por la columna del código aleatorio UUID
+        // Buscamos por la columna de código aleatorio seguro
         fetch(`${SUPABASE_URL}/rest/v1/vehiculos?codigo_seguro=eq.${idUrl}`, {
             method: 'GET',
             headers: {
@@ -174,24 +174,42 @@
             if (data && data.length > 0) {
                 const vehiculo = data[0];
                 
-                document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
-                document.getElementById('license-plate').innerText = vehiculo.patente || "- - - -";
-                
-                if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
-                if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
-                if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
+                // 🚫 EL ESCUDO DE SEGURIDAD: Validar si la cuenta está Pendiente o Activa
+                if (vehiculo.estado_cuenta === "Pendiente") {
+                    mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${vehiculo.patente || ''} se registró con éxito, pero está en proceso de activación por el administrador.`);
+                } else {
+                    // 🟢 SI ESTÁ ACTIVO: Rellena los datos en tu diseño premium
+                    document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
+                    document.getElementById('license-plate').innerText = vehiculo.patente || "- - - -";
+                    
+                    if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
+                    if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
+                    if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
+                }
             } else {
-                document.getElementById('client-name').innerText = "Acceso Denegado";
-                document.getElementById('license-plate').innerText = "ERROR";
+                mostrarPantallaError("🔒 Acceso Denegado", "Esta tarjeta no contiene una firma digital válida en nuestros registros.");
             }
         })
         .catch(error => {
             console.error("Error:", error);
-            document.getElementById('client-name').innerText = "Error de sistema";
+            mostrarPantallaError("⚠️ Error de Conexión", "No pudimos conectar con el servidor seguro de SmartCarDocs.");
         });
     } else {
-        document.getElementById('client-name').innerText = "Acceso Inválido";
-        document.getElementById('license-plate').innerText = "Sin Credenciales";
+        mostrarPantallaError("❌ Acceso Inválido", "No se detectó ninguna credencial digital. Escanea una tarjeta válida.");
+    }
+
+    // Función que limpia la pantalla y muestra el escudo de error Dark Mode si no está activo
+    function mostrarPantallaError(titulo, mensaje) {
+        document.body.innerHTML = `
+            <div style="background-color: #0b0b0c; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: sans-serif; box-sizing: border-box;">
+                <div style="background: linear-gradient(145deg, #141416, #1a1a1e); border: 1px solid #ff4a4a; border-radius: 20px; padding: 35px 25px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    <h2 style="color: #ff4a4a; font-size: 22px; margin: 0 0 15px 0; font-weight: 600; letter-spacing: 0.5px;">${titulo}</h2>
+                    <p style="color: #8a8a93; font-size: 14px; line-height: 1.6; margin: 0 0 25px 0;">${mensaje}</p>
+                    <hr style="border: 0; border-top: 1px solid #2d2d34; margin: 20px 0;">
+                    <p style="color: #555; font-size: 11px; margin: 0; letter-spacing: 0.5px;">SMARTCARDOCS CHILE • SEGURIDAD</p>
+                </div>
+            </div>
+        `;
     }
 </script>
     

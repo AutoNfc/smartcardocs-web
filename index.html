@@ -175,7 +175,7 @@
                 const vehiculo = data[0];
                 
                 // 🚫 EL ESCUDO DE SEGURIDAD: Validar si la cuenta está Pendiente o Activa
-                if (vehiculo.estado_cuenta === "Pendiente") {
+                if (vehiculo.estado_cuenta === "P") {
                     mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${vehiculo.patente || ''} se registró con éxito, pero está en proceso de activación por el administrador.`);
                 } else {
                     // 🟢 SI ESTÁ ACTIVO: Rellena los datos en tu diseño premium

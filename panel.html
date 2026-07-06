@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control - SmartCarDocs</title>
+    <style>
+        body {
+            background-color: #0b0b0c;
+            color: #ffffff;
+            font-family: sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .panel-container {
+            background: linear-gradient(145deg, #141416, #1a1a1e);
+            border: 1px solid #2d2d34;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 { font-size: 24px; margin-bottom: 5px; color: #ffffff; font-weight: 600; }
+        .subtitle { color: #8a8a93; font-size: 14px; margin-bottom: 25px; }
+        .info-box {
+            background-color: #111112;
+            border: 1px solid #232329;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .info-row:last-child { margin-bottom: 0; }
+        .label { color: #666670; }
+        .value { font-weight: bold; color: #ffffff; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-size: 13px; color: #8a8a93; margin-bottom: 8px; }
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            background: #111112;
+            border: 1px dashed #3a3a44;
+            border-radius: 8px;
+            color: #8a8a93;
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            background-color: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover { background-color: #e4e4e7; }
+        .footer { text-align: center; color: #44444a; font-size: 11px; margin-top: 25px; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+    <div id="pantalla-carga">
+        <p style="color: #8a8a93; font-size: 15px;">Validando credenciales seguras...</p>
+    </div>
+
+    <div id="contenedor-panel" class="panel-container" style="display: none;">
+        <h1>Mi SmartCarDocs</h1>
+        <p class="subtitle">Gestiona y actualiza los documentos vigentes de tu vehículo.</p>
+
+        <div class="info-box">
+            <div class="info-row">
+                <span class="label">Propietario:</span>
+                <span id="txt-cliente" class="value">-</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Patente:</span>
+                <span id="txt-patente" class="value">-</span>
+            </div>
+        </div>
+
+        <form id="form-actualizar">
+            <div class="form-group">
+                <label>Actualizar Revisión Técnica (PDF)</label>
+                <input type="file" id="file-revision" accept="application/pdf">
+            </div>
+            <div class="form-group">
+                <label>Actualizar SOAP (PDF)</label>
+                <input type="file" id="file-soap" accept="application/pdf">
+            </div>
+            <div class="form-group">
+                <label>Actualizar Permiso de Circulación (PDF)</label>
+                <input type="file" id="file-permiso" accept="application/pdf">
+            </div>
+            <button type="submit">Guardar Nuevos Documentos</button>
+        </form>
+
+        <p class="footer">SMARTCARDOCS CHILE • PANEL PRIVADO</p>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const idUrl = urlParams.get('id');
+
+        if (idUrl) {
+            // Validamos que el código exista en Supabase
+            fetch(`${SUPABASE_URL}/rest/v1/vehiculos?codigo_seguro=eq.${idUrl}`, {
+                method: 'GET',
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const vehiculo = data[0];
+
+                    // 🔒 ESCUDO DEL PANEL: Si el estado no es "A" (Activo), no entra
+                    if (vehiculo.estado_cuenta !== "A") {
+                        mostrarError("Acceso Denegado", "Tu cuenta debe estar Activa para poder gestionar los documentos.");
+                    } else {
+                        // 🟢 TODO CORRECTO: Mostramos el panel y pintamos los datos
+                        document.getElementById('pantalla-carga').style.display = 'none';
+                        document.getElementById('contenedor-panel').style.display = 'block';
+                        
+                        document.getElementById('txt-cliente').innerText = vehiculo.nombre_cliente || "Propietario";
+                        document.getElementById('txt-patente').innerText = vehiculo.patente || "- - - -";
+                    }
+                } else {
+                    mostrarError("Firma Inválida", "Las credenciales de este panel no existen en nuestros registros seguros.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                mostrarError("Error de Conexión", "No pudimos conectar con la base de datos.");
+            });
+        } else {
+            mostrarError("Enlace Incompleto", "Para entrar al panel necesitas usar el link privado enviado a tu correo.");
+        }
+
+        function mostrarError(titulo, mensaje) {
+            document.body.innerHTML = `
+                <div style="background: linear-gradient(145deg, #141416, #1a1a1e); border: 1px solid #ff4a4a; border-radius: 20px; padding: 35px 25px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    <h2 style="color: #ff4a4a; font-size: 22px; margin: 0 0 15px 0;">${titulo}</h2>
+                    <p style="color: #8a8a93; font-size: 14px; line-height: 1.6; margin: 0;">${mensaje}</p>
+                </div>
+            `;
+        }
+
+        // El envío del formulario lo configuraremos en la Fase 3 conectado a Make
+        document.getElementById('form-actualizar').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert("🔒 Formulario listo. En la Fase 3 lo conectaremos a tu robot de Make para procesar los PDFs.");
+        });
+    </script>
+</body>
+</html>

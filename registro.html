@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activa tu SmartCarDocs — Registro de Nuevo Vehículo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-void: #0a0a0b;
+            --bg-surface: #131316;
+            --border-subtle: rgba(255,255,255,0.08);
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1aa;
+            --accent-red: #ff4a4a;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background: var(--bg-void);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            margin: 0; padding: 20px;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .register-box {
+            width: 100%; max-width: 460px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px; padding: 40px 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        .brand {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-family: var(--font-display); font-weight: 700; font-size: 20px; margin-bottom: 25px;
+        }
+        .brand span { color: var(--accent-red); }
+
+        h2 { font-family: var(--font-display); font-size: 24px; text-align: center; margin-bottom: 8px; }
+        p.subtitle { color: var(--text-secondary); font-size: 14px; text-align: center; margin-bottom: 30px; line-height: 1.5; }
+
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+        
+        input {
+            width: 100%; padding: 14px; background: #0c0c0e; border: 1px solid #2d2d35;
+            border-radius: 10px; color: var(--text-primary); font-size: 15px; box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        input:focus { border-color: var(--accent-red); outline: none; }
+
+        /* Inputs especiales con tipografía Mono */
+        .input-mono { font-family: var(--font-mono); font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
+        #input-code { font-size: 18px; letter-spacing: 2px; color: var(--accent-red); }
+
+        .btn-submit {
+            width: 100%; background: var(--accent-red); color: #fff;
+            border: none; padding: 16px; border-radius: 100px;
+            font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px;
+            box-shadow: 0 8px 24px rgba(255, 74, 74, 0.2);
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn-submit:hover { background: #e03e3e; transform: translateY(-1px); }
+
+        footer { text-align: center; margin-top: 30px; font-size: 12px; color: #44444a; font-weight: bold; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+
+    <div class="register-box">
+        <div class="brand">SmartCar<span>Docs</span></div>
+        <h2>Activa tu Dispositivo</h2>
+        <p class="subtitle">Vincula tu nueva tarjeta, sticker o llavero NFC ingresando tus datos y el código de activación.</p>
+
+        <form id="form-registro">
+            <div class="form-group">
+                <label for="input-nombre">Nombre Completo del Propietario</label>
+                <input type="text" id="input-nombre" placeholder="Ej: Juan Pérez Silva" required autocomplete="name">
+            </div>
+
+            <div class="form-group">
+                <label for="input-email">Correo Electrónico registrado</label>
+                <input type="email" id="input-email" placeholder="juan.perez@email.com" required autocomplete="email">
+            </div>
+
+            <div class="form-group">
+                <label for="input-patente">Patente del Vehículo (6 caracteres)</label>
+                <input type="text" id="input-patente" class="input-mono" placeholder="AB1234 o BCCC11" maxlength="6" required autocomplete="off" oninput="this.value=this.value.toUpperCase()">
+            </div>
+
+            <div class="form-group">
+                <label for="input-code">Código de Activación de 8 dígitos</label>
+                <input type="text" id="input-code" class="input-mono" placeholder="EJ: AF92D4A0" maxlength="8" required autocomplete="off" oninput="this.value=this.value.toUpperCase()">
+            </div>
+
+            <button type="submit" class="btn-submit">Vincular y Activar Mi Cuenta</button>
+        </form>
+
+        <footer>SMARTCARDOCS CHILE • REGISTRO SEGURO</footer>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+
+        document.getElementById('form-registro').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const nombre = document.getElementById('input-nombre').value.trim();
+            const email = document.getElementById('input-email').value.trim();
+            const patente = document.getElementById('input-patente').value.trim().toUpperCase();
+            const codigo = document.getElementById('input-code').value.trim().toUpperCase();
+
+            // 🔍 VALIDACIÓN: Preguntamos a Supabase si el código de 8 dígitos existe y no está usado
+            fetch(`${SUPABASE_URL}/rest/v1/codigos_activacion?codigo=eq.${codigo}&usado=eq.false`, {
+                method: 'GET',
+                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    // El código es válido. En la Fase 3, Make enganchará este envío para quemar el código, 
+                    // crear el vehículo y generar su UUID seguro.
+                    alert(`🔒 ¡Código Válido! Formulario procesado con éxito.\n\nEn la Fase 3 conectaremos este gatillo a Make para registrar tu patente ${patente} en la tabla principal.`);
+                } else {
+                    alert("❌ Código inválido o ya fue utilizado en otro vehículo. Por favor, revisa el número impreso en tu tarjeta.");
+                }
+            })
+            .catch(err => alert("⚠️ Error de conexión al verificar el código."));
+        });
+    </script>
+</body>
+</html>

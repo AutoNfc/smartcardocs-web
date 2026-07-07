@@ -947,53 +947,80 @@
 </div>
 
 <script>
-  // FAQ accordion
-  function toggleFaq(btn){
-    const item = btn.closest('.faq-item');
-    const wasOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
-    if(!wasOpen) item.classList.add('open');
-  }
-
-  // Scroll reveal
-  const revealEls = document.querySelectorAll('.reveal');
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.12 });
-  revealEls.forEach(el => io.observe(el));
-
-  // Keep overlay in sync with nav lateral
-  const _menuObserver = new MutationObserver(() => {
-    const menu = document.getElementById('menuLateral');
-    const overlay = document.getElementById('navOverlay');
-    if(menu.classList.contains('active')) overlay.classList.add('active');
-    else overlay.classList.remove('active');
-  });
-  if (document.getElementById('menuLateral')) {
-    _menuObserver.observe(document.getElementById('menuLateral'), { attributes:true, attributeFilter:['class'] });
-  }
-</script>
-
-<script>
     const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
     
     let idSeguroVehiculo = "";
 
+    // 📱 PON AQUÍ TU NÚMERO DE WHATSAPP REAL (Ej: 56912345678 sin el +)
+    const WHATSAPP_NUMERO = "56948786739"; 
+
+    // FAQ accordion
+    function toggleFaq(btn){
+        const item = btn.closest('.faq-item');
+        const wasOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+        if(!wasOpen) item.classList.add('open');
+    }
+
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => io.observe(el));
+
+    // Keep overlay in sync with nav lateral
+    const _menuObserver = new MutationObserver(() => {
+        const menu = document.getElementById('menuLateral');
+        const overlay = document.getElementById('navOverlay');
+        if(menu.classList.contains('active')) overlay.classList.add('active');
+        else overlay.classList.remove('active');
+    });
+    if (document.getElementById('menuLateral')) {
+        _menuObserver.observe(document.getElementById('menuLateral'), { attributes:true, attributeFilter:['class'] });
+    }
+
+    // Funciones del menú lateral
     function toggleMenu(abrir) {
         const menu = document.getElementById('menuLateral');
         if(abrir) menu.classList.add('active');
         else menu.classList.remove('active');
     }
+    
+    // Abrir y cerrar portal de clientes
     function abrirModal() { document.getElementById('modalAcceso').style.display = 'flex'; }
     function cerrarModal() { 
         document.getElementById('modalAcceso').style.display = 'none'; 
         document.getElementById('paso-patente').style.display = 'block';
         document.getElementById('paso-otp').style.display = 'none';
     }
+
+    // ─── 🛒 CASO A: DIRECCIÓN INMEDIATA A WHATSAPP PARA PAGO ───
+    function irAlWhatsApp(plan) {
+        const textoMensaje = encodeURIComponent(`Hola SmartCarDocs Chile! Quiero contratar el [${plan}]. ¿Me envías los datos para transferir y activar mi dispositivo?`);
+        window.open(`https://wa.me/${WHATSAPP_NUMERO}?text=${textoMensaje}`, '_blank');
+    }
+
+    // Enlazamos todos los botones comerciales para que ejecuten el salto directo
+    document.addEventListener("DOMContentLoaded", function() {
+        const botonesPrecios = document.querySelectorAll('#precios .btn, .btn-new-client, .cta-final .btn-ghost');
+        
+        if(botonesPrecios[0]) botonesPrecios[0].setAttribute('onclick', "irAlWhatsApp('Plan CARD - $9.990')");
+        if(botonesPrecios[1]) botonesPrecios[1].setAttribute('onclick', "irAlWhatsApp('Plan STICKER - $12.990')");
+        if(botonesPrecios[2]) botonesPrecios[2].setAttribute('onclick', "irAlWhatsApp('Plan FLOTA - Cotización')");
+        
+        const btnHero = document.querySelector('.btn-primary'); // Botón principal del Hero
+        if(btnHero && !btnHero.getAttribute('onclick')) {
+            btnHero.setAttribute('onclick', "irAlWhatsApp('Sticker Inteligente')");
+        }
+    });
+
+    // LÓGICA DE VALIDACIÓN PORTAL DE CLIENTES (Supabase)
     function solicitarClaveConPatente() {
         const patente = document.getElementById('input-patente').value.trim().toUpperCase();
         if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
+        
         fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}`, {
             method: 'GET',
             headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
@@ -1008,11 +1035,13 @@
         })
         .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
     }
+
     function verificarOtpYEntrar() {
         const otp = document.getElementById('input-otp').value.trim();
         if(!otp) { alert("⚠️ Por favor, ingresa el código temporal."); return; }
         window.location.href = `/panel.html?id=${idSeguroVehiculo}`;
     }
+
     window.onclick = function(event) {
         const modal = document.getElementById('modalAcceso');
         if (event.target == modal) cerrarModal();

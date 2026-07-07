@@ -175,12 +175,50 @@
             .catch(err => alert("⚠️ Error de conexión al verificar el código."));
         }
 
-        // PASO 2: Envío final de los datos y documentos
+        // PASO 2: Envío final de los datos y documentos REAL a Make
         document.getElementById('form-registro-final').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            const btn = e.target.querySelector('.btn-submit');
+            btn.innerText = "Subiendo documentos... Espera por favor";
+            btn.disabled = true;
+
+            // Preparamos el paquete con los archivos y textos
+            const formData = new FormData();
+            formData.append('nombre', document.getElementById('input-nombre').value.trim());
+            formData.append('email', document.getElementById('input-email').value.trim());
+            formData.append('patente', patenteGuardada);
+            formData.append('codigo_activacion', codigoGuardado);
             
-            // En la Fase 3, Make recibirá esto. Por ahora frena confirmando los datos guardados:
-            alert(`🔒 ¡Éxito!\n\nLos archivos se subieron correctamente.\nMake asociará automáticamente la patente [${patenteGuardada}] y quemará el código [${codigoGuardado}] en Supabase.`);
+            formData.append('file_permiso', document.getElementById('file-permiso').files[0]);
+            formData.append('date_permiso', document.getElementById('date-permiso').value);
+            
+            formData.append('file_soap', document.getElementById('file-soap').files[0]);
+            formData.append('date_soap', document.getElementById('date-soap').value);
+            
+            formData.append('file_revision', document.getElementById('file-revision').files[0]);
+            formData.append('date_revision', document.getElementById('date-revision').value);
+
+            // Mandamos el paquete directo a la antena de Make
+            fetch("https://hook.us2.make.com/1ma4iv64oiwh4cswac0ionnhgg09irnv", {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if(res.ok) {
+                    alert("✨ ¡Felicidades! Tus datos y documentos han sido cargados con éxito.\n\nPronto nos comunicaremos contigo para coordinar la entrega de tu dispositivo físico SmartCarDocs.");
+                    window.location.href = "/"; // Lo regresa al home corporativo
+                } else {
+                    alert("❌ Hubo un problema al subir los archivos al servidor central.");
+                    btn.innerText = "Guardar y Activar Tarjeta";
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                alert("⚠️ Error de red. Inténtalo nuevamente.");
+                btn.innerText = "Guardar y Activar Tarjeta";
+                btn.disabled = false;
+            });
         });
     </script>
 </body>

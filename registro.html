@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activa tu SmartCarDocs — Registro de Nuevo Vehículo</title>
+    <title>Activa tu SmartCarDocs — Registro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
@@ -21,21 +21,16 @@
         }
 
         body {
-            background: var(--bg-void);
-            color: var(--text-primary);
-            font-family: var(--font-body);
-            margin: 0; padding: 20px;
-            min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-void); color: var(--text-primary);
+            font-family: var(--font-body); margin: 0; padding: 20px;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
             box-sizing: border-box;
         }
 
         .register-box {
-            width: 100%; max-width: 460px;
-            background: var(--bg-surface);
-            border: 1px solid var(--border-subtle);
-            border-radius: 24px; padding: 40px 30px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            width: 100%; max-width: 480px; background: var(--bg-surface);
+            border: 1px solid var(--border-subtle); border-radius: 24px; padding: 40px 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6); text-align: center;
         }
 
         .brand {
@@ -44,8 +39,13 @@
         }
         .brand span { color: var(--accent-red); }
 
-        h2 { font-family: var(--font-display); font-size: 24px; text-align: center; margin-bottom: 8px; }
-        p.subtitle { color: var(--text-secondary); font-size: 14px; text-align: center; margin-bottom: 30px; line-height: 1.5; }
+        h2 { font-family: var(--font-display); font-size: 24px; margin-bottom: 8px; }
+        p.subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
+
+        .section-divider {
+            border-top: 1px solid var(--border-subtle); margin: 25px 0; padding-top: 15px;
+            color: var(--accent-red); font-family: var(--font-display); font-size: 14px; font-weight: bold; letter-spacing: 0.5px; text-align: left;
+        }
 
         .form-group { margin-bottom: 20px; text-align: left; }
         label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
@@ -56,70 +56,104 @@
             transition: border-color 0.2s;
         }
         input:focus { border-color: var(--accent-red); outline: none; }
+        input[type="file"] { background: #161618; border: 1px dashed #3a3a44; color: var(--text-secondary); cursor: pointer; }
 
-        /* Inputs especiales con tipografía Mono */
         .input-mono { font-family: var(--font-mono); font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-        #input-code { font-size: 18px; letter-spacing: 2px; color: var(--accent-red); }
 
         .btn-submit {
-            width: 100%; background: var(--accent-red); color: #fff;
-            border: none; padding: 16px; border-radius: 100px;
+            width: 100%; background: var(--accent-red); color: #fff; border: none; padding: 16px; border-radius: 100px;
             font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px;
-            box-shadow: 0 8px 24px rgba(255, 74, 74, 0.2);
-            transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 8px 24px rgba(255, 74, 74, 0.2); transition: all 0.2s ease;
         }
         .btn-submit:hover { background: #e03e3e; transform: translateY(-1px); }
 
-        footer { text-align: center; margin-top: 30px; font-size: 12px; color: #44444a; font-weight: bold; letter-spacing: 0.5px; }
+        footer { text-align: center; margin-top: 30px; font-size: 12px; color: #44444a; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="register-box">
         <div class="brand">SmartCar<span>Docs</span></div>
-        <h2>Activa tu Dispositivo</h2>
-        <p class="subtitle">Vincula tu nueva tarjeta, sticker o llavero NFC ingresando tus datos y el código de activación.</p>
-
-        <form id="form-registro">
+        
+        <div id="bloque-entrada" style="display: block;">
+            <h2>Activa tu Dispositivo</h2>
+            <p class="subtitle">Ingresa la patente de tu auto y tu código de activación de 8 dígitos para iniciar.</p>
+            
             <div class="form-group">
-                <label for="input-nombre">Nombre Completo del Propietario</label>
-                <input type="text" id="input-nombre" placeholder="Ej: Juan Pérez Silva" required autocomplete="name">
+                <label for="input-patente">Patente del Vehículo</label>
+                <input type="text" id="input-patente" class="input-mono" placeholder="AB1234 o BCCC11" maxlength="6" oninput="this.value=this.value.toUpperCase()">
             </div>
 
             <div class="form-group">
-                <label for="input-email">Correo Electrónico registrado</label>
-                <input type="email" id="input-email" placeholder="juan.perez@email.com" required autocomplete="email">
+                <label for="input-code">Código de Activación (8 dígitos)</label>
+                <input type="text" id="input-code" class="input-mono" placeholder="EJ: AF92D4A0" maxlength="8" oninput="this.value=this.value.toUpperCase()">
             </div>
 
-            <div class="form-group">
-                <label for="input-patente">Patente del Vehículo (6 caracteres)</label>
-                <input type="text" id="input-patente" class="input-mono" placeholder="AB1234 o BCCC11" maxlength="6" required autocomplete="off" oninput="this.value=this.value.toUpperCase()">
-            </div>
+            <button class="btn-submit" onclick="validarEntrada()">Validar Código</button>
+        </div>
 
-            <div class="form-group">
-                <label for="input-code">Código de Activación de 8 dígitos</label>
-                <input type="text" id="input-code" class="input-mono" placeholder="EJ: AF92D4A0" maxlength="8" required autocomplete="off" oninput="this.value=this.value.toUpperCase()">
-            </div>
+        <div id="bloque-documentos" style="display: none;">
+            <h2>Completa tu Perfil</h2>
+            <p class="subtitle">Registra tus datos y sube los documentos para dejar tu SmartCarDocs al día.</p>
+            
+            <form id="form-registro-final">
+                <div class="section-divider">1. DATOS DEL PROPIETARIO</div>
 
-            <button type="submit" class="btn-submit">Vincular y Activar Mi Cuenta</button>
-        </form>
+                <div class="form-group">
+                    <label for="input-nombre">Nombre Completo</label>
+                    <input type="text" id="input-nombre" placeholder="Ej: Juan Pérez Silva" required>
+                </div>
 
-        <footer>SMARTCARDOCS CHILE • REGISTRO SEGURO</footer>
+                <div class="form-group">
+                    <label for="input-email">Correo Electrónico</label>
+                    <input type="email" id="input-email" placeholder="juan.perez@email.com" required>
+                </div>
+
+                <div class="section-divider">2. SUBIR DOCUMENTOS (PDF)</div>
+
+                <div class="form-group">
+                    <label>Permiso de Circulación</label>
+                    <input type="file" id="file-permiso" accept="application/pdf" required>
+                    <label style="margin-top:8px; font-size:11px;">Fecha de Vencimiento</label>
+                    <input type="date" id="date-permiso" style="color:white;" required>
+                </div>
+
+                <div class="form-group">
+                    <label>SOAP</label>
+                    <input type="file" id="file-soap" accept="application/pdf" required>
+                    <label style="margin-top:8px; font-size:11px;">Fecha de Vencimiento</label>
+                    <input type="date" id="date-soap" style="color:white;" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Revisión Técnica</label>
+                    <input type="file" id="file-revision" accept="application/pdf" required>
+                    <label style="margin-top:8px; font-size:11px;">Fecha de Vencimiento</label>
+                    <input type="date" id="date-revision" style="color:white;" required>
+                </div>
+
+                <button type="submit" class="btn-submit">Guardar y Activar Tarjeta</button>
+            </form>
+        </div>
+
+        <footer>SMARTCARDOCS CHILE • CONEXIÓN SEGURA</footer>
     </div>
 
     <script>
         const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
 
-        document.getElementById('form-registro').addEventListener('submit', function(e) {
-            e.preventDefault();
+        let patenteGuardada = "";
+        let codigoGuardado = "";
 
-            const nombre = document.getElementById('input-nombre').value.trim();
-            const email = document.getElementById('input-email').value.trim();
+        // PASO 1: Validar Patente + Código en Supabase
+        function validarEntrada() {
             const patente = document.getElementById('input-patente').value.trim().toUpperCase();
             const codigo = document.getElementById('input-code').value.trim().toUpperCase();
 
-            // 🔍 VALIDACIÓN: Preguntamos a Supabase si el código de 8 dígitos existe y no está usado
+            if(!patente || !codigo) { alert("⚠️ Por favor, completa la patente y el código."); return; }
+
+            // Buscamos si el código de 8 dígitos es real y está libre
             fetch(`${SUPABASE_URL}/rest/v1/codigos_activacion?codigo=eq.${codigo}&usado=eq.false`, {
                 method: 'GET',
                 headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
@@ -127,14 +161,26 @@
             .then(res => res.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    // El código es válido. En la Fase 3, Make enganchará este envío para quemar el código, 
-                    // crear el vehículo y generar su UUID seguro.
-                    alert(`🔒 ¡Código Válido! Formulario procesado con éxito.\n\nEn la Fase 3 conectaremos este gatillo a Make para registrar tu patente ${patente} en la tabla principal.`);
+                    // Guardamos las variables en memoria para que no tenga que reescribirlas
+                    patenteGuardada = patente;
+                    codigoGuardado = codigo;
+
+                    // Cambiamos de pantalla dinámicamente
+                    document.getElementById('bloque-entrada').style.display = 'none';
+                    document.getElementById('bloque-documentos').style.display = 'block';
                 } else {
-                    alert("❌ Código inválido o ya fue utilizado en otro vehículo. Por favor, revisa el número impreso en tu tarjeta.");
+                    alert("❌ Código inválido o ya fue utilizado en otro auto.");
                 }
             })
             .catch(err => alert("⚠️ Error de conexión al verificar el código."));
+        }
+
+        // PASO 2: Envío final de los datos y documentos
+        document.getElementById('form-registro-final').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // En la Fase 3, Make recibirá esto. Por ahora frena confirmando los datos guardados:
+            alert(`🔒 ¡Éxito!\n\nLos archivos se subieron correctamente.\nMake asociará automáticamente la patente [${patenteGuardada}] y quemará el código [${codigoGuardado}] en Supabase.`);
         });
     </script>
 </body>

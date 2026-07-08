@@ -1016,6 +1016,7 @@
         }
     });
 
+    // PASO 1: SOLICITAR CÓDIGO
     function solicitarClaveConPatente() {
         const patente = document.getElementById('input-patente').value.trim().toUpperCase();
         if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
@@ -1028,9 +1029,10 @@
         .then(res => res.json())
         .then(data => {
             if (data && data.length > 0) {
+                // Guardamos momentáneamente el código_seguro
                 idSeguroVehiculo = data[0].codigo_seguro;
 
-                // 🚀 ¡CONEXIÓN PERFECTA CON MAKE! Enviando en formato clásico de formulario
+                // 🚀 ¡CONEXIÓN CON MAKE! Enviando en formato clásico de formulario para activar el robot
                 fetch('https://hook.us2.make.com/cpsppais4rspq2s3h41kq9arua49dl49', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1038,7 +1040,7 @@
                 })
                 .then(makeRes => {
                     if (makeRes.ok) {
-                        // Si Make acepta el viaje, avanzamos al paso del OTP en la pantalla
+                        // Cambiamos visualmente el modal al paso del código OTP
                         document.getElementById('paso-patente').style.display = 'none';
                         document.getElementById('paso-otp').style.display = 'block';
                         alert("📧 ¡Vehículo verificado! Te acabamos de enviar el código de seguridad a tu correo.");
@@ -1053,6 +1055,38 @@
             }
         })
         .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
+    }
+
+    // PASO 2: VERIFICAR CÓDIGO E INGRESA AL PANEL
+    function verificarOtpYEntrar() {
+        const otpInput = document.getElementById('input-otp').value.trim();
+        if(!otpInput) { alert("⚠️ Por favor, ingresa el código temporal."); return; }
+
+        const patente = document.getElementById('input-patente').value.trim().toUpperCase();
+        
+        // Consultamos a Supabase si calza la patente Y el código que metió el usuario
+        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}&codigo_seguro_otp=eq.${otpInput}`, {
+            method: 'GET',
+            headers: { 
+                'apikey': SUPABASE_ANON_KEY, 
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}` 
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                // El código es correcto. Rescatamos el codigo_seguro real para pasarlo a la URL del panel
+                idSeguroVehiculo = data[0].codigo_seguro;
+                alert("🔒 Código verificado con éxito. Ingresando a tu panel...");
+                window.location.href = `./panel.html?id=${idSeguroVehiculo}`;
+            } else {
+                alert("❌ El código ingresado es incorrecto o ya expiró. Revisa tu correo e inténtalo de nuevo.");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("⚠️ Error de conexión al validar el código.");
+        });
     }
 </script>
 

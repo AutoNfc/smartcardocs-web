@@ -255,13 +255,55 @@
             const chkSoap = document.getElementById('chk-soap').checked;
             const chkPermiso = document.getElementById('chk-permiso').checked;
             
-            if(!chkRev && !chkSoap && !chkPermiso) {
-                alert("⚠️ Por favor, selecciona al menos un documento para actualizar.");
-                return;
-            }
-            
-            alert("🔒 ¡Formulario validado! En la Fase 3 conectaremos este envío exacto a tu robot de Make para recibir los PDFs y las nuevas fechas.");
-        });
+            // PEGA ESTE CÓDIGO DEFINITIVO EN SU LUGAR:
+if(!chkRev && !chkSoap && !chkPermiso) {
+    alert("⚠️ Por favor, selecciona al menos un documento para actualizar.");
+    return;
+}
+
+// 1. Agarramos el texto de la patente que Supabase ya cargó en tu pantalla
+const patenteVehiculo = document.getElementById('txt-patente').innerText;
+
+// 2. Creamos la caja FormData para meter los archivos reales
+const formData = new FormData();
+formData.append('patente', patenteVehiculo);
+
+// Si marcó Revisión Técnica, adjuntamos el archivo y su fecha
+if (chkRev) {
+    formData.append('revision_tecnica', document.getElementById('file-revision').files[0]);
+    formData.append('fecha_revision', document.getElementById('date-revision').value);
+}
+// Si marcó SOAP, adjuntamos el archivo y su fecha
+if (chkSoap) {
+    formData.append('soap', document.getElementById('file-soap').files[0]);
+    formData.append('fecha_soap', document.getElementById('date-soap').value);
+}
+// Si marcó Permiso, adjuntamos el archivo y su fecha
+if (chkPermiso) {
+    formData.append('permiso_circulacion', document.getElementById('file-permiso').files[0]);
+    formData.append('fecha_permiso', document.getElementById('date-permiso').value);
+}
+
+alert("⏳ Subiendo documentos y guardando cambios, por favor espere...");
+
+// 3. Disparamos directo a tu Webhook Real de Make
+fetch('https://hook.us2.make.com/cpsppais4rspq2s3h41kq9arua49dl49', {
+    method: 'POST',
+    body: formData
+})
+.then(res => {
+    if(res.ok) {
+        alert("✅ ¡Éxito! Tus documentos se han actualizado correctamente.");
+        location.reload(); // Recarga la pantalla para mostrar los cambios
+    } else {
+        alert("❌ Error en el servidor al intentar subir los archivos.");
+    }
+})
+.catch(err => {
+    console.error(err);
+    alert("⚠️ Hubo un problema de conexión al enviar los datos.");
+});
+});
     </script>
 </body>
 </html>

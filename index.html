@@ -1057,37 +1057,53 @@
         .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
     }
 
-    // PASO 2: VERIFICAR CÓDIGO E INGRESA AL PANEL
-    function verificarOtpYEntrar() {
-        const otpInput = document.getElementById('input-otp').value.trim();
-        if(!otpInput) { alert("⚠️ Por favor, ingresa el código temporal."); return; }
+    // PASO 2: VERIFICAR CÓDIGO EN MAKE Y ENTRAR
+function verificarOtpYEntrar() {
+    const otpInput = document.getElementById('input-otp').value.trim();
+    if(!otpInput) { alert("⚠️ Por favor, ingresa el código temporal."); return; }
 
-        const patente = document.getElementById('input-patente').value.trim().toUpperCase();
-        
-        // Consultamos a Supabase si calza la patente Y el código que metió el usuario
-        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}&codigo_seguro_otp=eq.${otpInput}`, {
-            method: 'GET',
-            headers: { 
-                'apikey': SUPABASE_ANON_KEY, 
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}` 
-            }
+    const patente = document.getElementById('input-patente').value.trim().toUpperCase();
+    
+    alert("⏳ Validando código de seguridad...");
+
+    // 🚀 AHORA SÍ: Le enviamos la patente Y el código juntos a Make
+    fetch('https://hook.us2.make.com/cpsppais4rspq2s3h41kq9arua49dl49', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ 
+            patente: patente,
+            codigo: otpInput 
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data && data.length > 0) {
-                // El código es correcto. Rescatamos el codigo_seguro real para pasarlo a la URL del panel
-                idSeguroVehiculo = data[0].codigo_seguro;
-                alert("🔒 Código verificado con éxito. Ingresando a tu panel...");
-                window.location.href = `./panel.html?id=${idSeguroVehiculo}`;
-            } else {
-                alert("❌ El código ingresado es incorrecto o ya expiró. Revisa tu correo e inténtalo de nuevo.");
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert("⚠️ Error de conexión al validar el código.");
-        });
-    }
+    })
+    .then(res => {
+        if (res.ok) {
+            // Si Make responde que el código es correcto, dejamos pasar a Supabase
+            fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}&codigo_seguro_otp=eq.${otpInput}`, {
+                method: 'GET',
+                headers: { 
+                    'apikey': SUPABASE_ANON_KEY, 
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}` 
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    idSeguroVehiculo = data[0].codigo_seguro;
+                    alert("🔒 Código verificado con éxito. Ingresando a tu panel...");
+                    window.location.href = `./panel.html?id=${idSeguroVehiculo}`;
+                } else {
+                    alert("❌ El código ingresado es incorrecto o ya expiró.");
+                }
+            });
+        } else {
+            alert("❌ Código incorrecto según el sistema de seguridad.");
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("⚠️ Hubo un problema al validar con el servidor.");
+    });
+}
 </script>
 
 </body>

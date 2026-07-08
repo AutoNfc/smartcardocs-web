@@ -1066,8 +1066,8 @@ function verificarOtpYEntrar() {
     
     alert("⏳ Validando código de seguridad...");
 
-    // 🚀 AHORA SÍ: Le enviamos la patente Y el código juntos a Make
-    fetch('https://hook.us2.make.com/cpsppais4rspq2s3h41kq9arua49dl49', {
+    // 🚀 NUEVA ANTENA: Le enviamos la patente Y el código juntos al nuevo Webhook de Make
+    fetch('https://hook.us2.make.com/99p1ejgh4nkgoh6tb0sqiijf3ilcgj49', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ 
@@ -1077,7 +1077,7 @@ function verificarOtpYEntrar() {
     })
     .then(res => {
         if (res.ok) {
-            // Si Make responde que el código es correcto, dejamos pasar a Supabase
+            // Si Make responde que el código es correcto (Status 200), dejamos pasar a Supabase
             fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}&codigo_seguro_otp=eq.${otpInput}`, {
                 method: 'GET',
                 headers: { 

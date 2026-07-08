@@ -1017,43 +1017,43 @@
     });
 
     function solicitarClaveConPatente() {
-    const patente = document.getElementById('input-patente').value.trim().toUpperCase();
-    if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
-    
-    // 1. Primero verificamos si el vehículo existe en Supabase
-    fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}`, {
-        method: 'GET',
-        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data && data.length > 0) {
-            idSeguroVehiculo = data[0].codigo_seguro;
+        const patente = document.getElementById('input-patente').value.trim().toUpperCase();
+        if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
+        
+        // 1. Primero verificamos si el vehículo existe en Supabase
+        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}`, {
+            method: 'GET',
+            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.length > 0) {
+                idSeguroVehiculo = data[0].codigo_seguro;
 
-            // 🚀 ¡CONEXIÓN CON MAKE! Le avisamos al robot que envíe el correo
-            fetch('https://hook.us2.make.com/cpsppais4rspq2s3h41kq9arua49dl49', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ patente: patente })
-            })
-            .then(makeRes => {
-                if (makeRes.ok) {
-                    // Si Make acepta el viaje, avanzamos al paso del OTP en la pantalla
-                    document.getElementById('paso-patente').style.display = 'none';
-                    document.getElementById('paso-otp').style.display = 'block';
-                    alert("📧 ¡Vehículo verificado! Te acabamos de enviar el código de seguridad a tu correo.");
-                } else {
-                    alert("❌ Hubo un problema al generar el código de seguridad en el sistema.");
-                }
-            })
-            .catch(err => alert("⚠️ Error al conectar con el servidor de correos."));
+                // 🚀 ¡CONEXIÓN PERFECTA CON MAKE! Enviando en formato clásico de formulario
+                fetch('https://hook.us2.make.com/cpsppais4rspq2s3h41kq9arua49dl49', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ patente: patente })
+                })
+                .then(makeRes => {
+                    if (makeRes.ok) {
+                        // Si Make acepta el viaje, avanzamos al paso del OTP en la pantalla
+                        document.getElementById('paso-patente').style.display = 'none';
+                        document.getElementById('paso-otp').style.display = 'block';
+                        alert("📧 ¡Vehículo verificado! Te acabamos de enviar el código de seguridad a tu correo.");
+                    } else {
+                        alert("❌ Hubo un problema al generar el código de seguridad en el sistema.");
+                    }
+                })
+                .catch(err => alert("⚠️ Error al conectar con el servidor de correos."));
 
-        } else { 
-            alert("❌ La patente ingresada no está registrada en SmartCarDocs Chile."); 
-        }
-    })
-    .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
-}
+            } else { 
+                alert("❌ La patente ingresada no está registrada en SmartCarDocs Chile."); 
+            }
+        })
+        .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
+    }
 </script>
 
 </body>

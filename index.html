@@ -1016,20 +1016,48 @@
         }
     });
 
+    // 🔔 NUEVO: Motor de Notificaciones Premium (Reemplaza a los molestos alerts)
+    function mostrarNotificacion(mensaje, esExito = false) {
+        let toastAnterior = document.getElementById("toast-smartcardocs");
+        if (toastAnterior) toastAnterior.remove();
+
+        let toast = document.createElement("div");
+        toast.id = "toast-smartcardocs";
+        toast.innerText = mensaje;
+        toast.style.position = "fixed";
+        toast.style.top = "20px";
+        toast.style.left = "50%";
+        toast.style.transform = "translateX(-50%)";
+        toast.style.backgroundColor = esExito ? "#10B981" : "#E53E3E"; // Verde elegante o Rojo elegante
+        toast.style.color = "#FFFFFF";
+        toast.style.padding = "12px 24px";
+        toast.style.borderRadius = "8px";
+        toast.style.fontFamily = "'Inter', sans-serif";
+        toast.style.fontSize = "14px";
+        toast.style.fontWeight = "500";
+        toast.style.zIndex = "10000";
+        toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.5)";
+        toast.style.transition = "opacity 0.3s ease";
+
+        document.body.appendChild(toast);
+
+        // Desaparece solo después de 3 segundos
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
     // PASO 1: SOLICITAR CÓDIGO
     function solicitarClaveConPatente() {
         const patente = document.getElementById('input-patente').value.trim().toUpperCase();
-        if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
+        if(!patente) { mostrarNotificacion("Por favor, ingresa tu patente."); return; }
         
-        // --- 1. BLOQUEAMOS EL BOTÓN AUTOMÁTICAMENTE ---
-        // Busca el botón que acabas de apretar para apagarlo temporalmente
+        // --- 1. BLOQUEAMOS EL BOTÓN AUTOMÁTICAMENTE Y EN SILENCIO ---
         const btnPedir = document.querySelector('button[onclick="solicitarClaveConPatente()"]') || document.activeElement;
-        let textoOriginal = "Pedir Código";
         if(btnPedir) {
-            textoOriginal = btnPedir.innerText;
             btnPedir.disabled = true;
-            btnPedir.innerText = "Enviando... ⏳";
-            btnPedir.style.opacity = "0.7";
+            // Quitamos el cambio de texto para mantener la elegancia
         }
         
         // 2. Primero verificamos si el vehículo existe en Supabase
@@ -1040,10 +1068,9 @@
         .then(res => res.json())
         .then(data => {
             if (data && data.length > 0) {
-                // Guardamos momentáneamente el código_seguro
                 idSeguroVehiculo = data[0].codigo_seguro;
 
-                // 🚀 ¡CONEXIÓN CON MAKE! (Usando tu URL exacta)
+                // 🚀 ¡CONEXIÓN CON MAKE! 
                 fetch('https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1051,86 +1078,89 @@
                 })
                 .then(makeRes => {
                     if (makeRes.ok) {
-                        // Cambiamos visualmente el modal al paso del código OTP
                         document.getElementById('paso-patente').style.display = 'none';
                         document.getElementById('paso-otp').style.display = 'block';
-                        alert("📧 ¡Vehículo verificado! Te acabamos de enviar el código de seguridad a tu correo.");
+                        mostrarNotificacion("Código enviado a tu correo.", true);
                     } else {
-                        alert("❌ Hubo un problema al generar el código de seguridad en el sistema.");
+                        mostrarNotificacion("Hubo un problema al generar el código.");
                     }
                     
                     // --- 3. REACTIVAMOS EL BOTÓN DESPUÉS DE 10 SEGUNDOS ---
                     if(btnPedir) {
                         setTimeout(() => {
                             btnPedir.disabled = false;
-                            btnPedir.innerText = textoOriginal;
-                            btnPedir.style.opacity = "1";
                         }, 10000);
                     }
                 })
                 .catch(err => {
-                    alert("⚠️ Error al conectar con el servidor de correos.");
-                    if(btnPedir) { btnPedir.disabled = false; btnPedir.innerText = textoOriginal; btnPedir.style.opacity = "1"; }
+                    mostrarNotificacion("Error al conectar con el servidor.");
+                    if(btnPedir) btnPedir.disabled = false;
                 });
 
             } else { 
-                alert("❌ La patente ingresada no está registrada en SmartCarDocs Chile."); 
-                if(btnPedir) { btnPedir.disabled = false; btnPedir.innerText = textoOriginal; btnPedir.style.opacity = "1"; }
+                mostrarNotificacion("La patente ingresada no está registrada."); 
+                if(btnPedir) btnPedir.disabled = false; 
             }
         })
         .catch(err => {
-            alert("⚠️ Error de conexión al verificar el vehículo.");
-            if(btnPedir) { btnPedir.disabled = false; btnPedir.innerText = textoOriginal; btnPedir.style.opacity = "1"; }
+            mostrarNotificacion("Error de conexión al verificar el vehículo.");
+            if(btnPedir) btnPedir.disabled = false; 
         });
     }
 
     // PASO 2: VERIFICAR CÓDIGO EN MAKE Y ENTRAR
-function verificarOtpYEntrar() {
-    const otpInput = document.getElementById('input-otp').value.trim();
-    if(!otpInput) { alert("⚠️ Por favor, ingresa el código temporal."); return; }
+    function verificarOtpYEntrar() {
+        const otpInput = document.getElementById('input-otp').value.trim();
+        if(!otpInput) { mostrarNotificacion("Por favor, ingresa el código temporal."); return; }
 
-    const patente = document.getElementById('input-patente').value.trim().toUpperCase();
-    
-    alert("⏳ Validando código de seguridad...");
+        const patente = document.getElementById('input-patente').value.trim().toUpperCase();
+        
+        // Bloqueamos el botón silenciosamente
+        const btnVerificar = document.querySelector('button[onclick="verificarOtpYEntrar()"]') || document.activeElement;
+        if(btnVerificar) btnVerificar.disabled = true;
 
-    // 🚀 NUEVA ANTENA: Le enviamos la patente Y el código juntos al nuevo Webhook de Make
-    fetch('https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ 
-            patente: patente,
-            codigo: otpInput 
-        })
-    })
-    .then(res => {
-        if (res.ok) {
-            // Si Make responde que el código es correcto (Status 200), dejamos pasar a Supabase
-            fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}&codigo_seguro_otp=eq.${otpInput}`, {
-                method: 'GET',
-                headers: { 
-                    'apikey': SUPABASE_ANON_KEY, 
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}` 
-                }
+        fetch('https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ 
+                patente: patente,
+                codigo: otpInput 
             })
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    idSeguroVehiculo = data[0].codigo_seguro;
-                    alert("🔒 Código verificado con éxito. Ingresando a tu panel...");
-                    window.location.href = `./panel.html?id=${idSeguroVehiculo}`;
-                } else {
-                    alert("❌ El código ingresado es incorrecto o ya expiró.");
-                }
-            });
-        } else {
-            alert("❌ Código incorrecto según el sistema de seguridad.");
-        }
-    })
-    .catch(err => {
-        console.error(err);
-        alert("⚠️ Hubo un problema al validar con el servidor.");
-    });
-}
+        })
+        .then(res => {
+            if (res.ok) {
+                fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}&codigo_seguro_otp=eq.${otpInput}`, {
+                    method: 'GET',
+                    headers: { 
+                        'apikey': SUPABASE_ANON_KEY, 
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}` 
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        idSeguroVehiculo = data[0].codigo_seguro;
+                        mostrarNotificacion("Código verificado con éxito.", true);
+                        
+                        // Pequeña pausa para que se vea el mensaje verde antes de cambiar
+                        setTimeout(() => {
+                            window.location.href = `./panel.html?id=${idSeguroVehiculo}`;
+                        }, 1000);
+                    } else {
+                        mostrarNotificacion("El código ingresado es incorrecto o expiró.");
+                        if(btnVerificar) btnVerificar.disabled = false;
+                    }
+                });
+            } else {
+                mostrarNotificacion("Código incorrecto según el sistema.");
+                if(btnVerificar) btnVerificar.disabled = false;
+            }
+        })
+        .catch(err => {
+            mostrarNotificacion("Hubo un problema al validar con el servidor.");
+            if(btnVerificar) btnVerificar.disabled = false;
+        });
+    }
 </script>
 
 </body>

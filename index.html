@@ -1021,7 +1021,18 @@
         const patente = document.getElementById('input-patente').value.trim().toUpperCase();
         if(!patente) { alert("⚠️ Por favor, ingresa tu patente."); return; }
         
-        // 1. Primero verificamos si el vehículo existe en Supabase
+        // --- 1. BLOQUEAMOS EL BOTÓN AUTOMÁTICAMENTE ---
+        // Busca el botón que acabas de apretar para apagarlo temporalmente
+        const btnPedir = document.querySelector('button[onclick="solicitarClaveConPatente()"]') || document.activeElement;
+        let textoOriginal = "Pedir Código";
+        if(btnPedir) {
+            textoOriginal = btnPedir.innerText;
+            btnPedir.disabled = true;
+            btnPedir.innerText = "Enviando... ⏳";
+            btnPedir.style.opacity = "0.7";
+        }
+        
+        // 2. Primero verificamos si el vehículo existe en Supabase
         fetch(`${SUPABASE_URL}/rest/v1/vehiculos?patente=eq.${patente}`, {
             method: 'GET',
             headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
@@ -1032,7 +1043,7 @@
                 // Guardamos momentáneamente el código_seguro
                 idSeguroVehiculo = data[0].codigo_seguro;
 
-                // 🚀 ¡CONEXIÓN CON MAKE! Enviando en formato clásico de formulario para activar el robot
+                // 🚀 ¡CONEXIÓN CON MAKE! (Usando tu URL exacta)
                 fetch('https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1047,14 +1058,30 @@
                     } else {
                         alert("❌ Hubo un problema al generar el código de seguridad en el sistema.");
                     }
+                    
+                    // --- 3. REACTIVAMOS EL BOTÓN DESPUÉS DE 10 SEGUNDOS ---
+                    if(btnPedir) {
+                        setTimeout(() => {
+                            btnPedir.disabled = false;
+                            btnPedir.innerText = textoOriginal;
+                            btnPedir.style.opacity = "1";
+                        }, 10000);
+                    }
                 })
-                .catch(err => alert("⚠️ Error al conectar con el servidor de correos."));
+                .catch(err => {
+                    alert("⚠️ Error al conectar con el servidor de correos.");
+                    if(btnPedir) { btnPedir.disabled = false; btnPedir.innerText = textoOriginal; btnPedir.style.opacity = "1"; }
+                });
 
             } else { 
                 alert("❌ La patente ingresada no está registrada en SmartCarDocs Chile."); 
+                if(btnPedir) { btnPedir.disabled = false; btnPedir.innerText = textoOriginal; btnPedir.style.opacity = "1"; }
             }
         })
-        .catch(err => alert("⚠️ Error de conexión al verificar el vehículo."));
+        .catch(err => {
+            alert("⚠️ Error de conexión al verificar el vehículo.");
+            if(btnPedir) { btnPedir.disabled = false; btnPedir.innerText = textoOriginal; btnPedir.style.opacity = "1"; }
+        });
     }
 
     // PASO 2: VERIFICAR CÓDIGO EN MAKE Y ENTRAR

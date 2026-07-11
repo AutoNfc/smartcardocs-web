@@ -214,8 +214,9 @@
                             if(fechaVencimiento) {
                                 // Toma la fecha y hora exacta del celular en este mismo segundo
                                 const hoy = new Date(); 
-                                // Transforma el texto "2028-07-09" de tu Supabase a un objeto de fecha real
-                                const fechaVen = new Date(fechaVencimiento); 
+                                
+                                // 🛠️ EL TRUCO: Le sumamos "T23:59:59" para que venza en el último segundo de ese día
+                                const fechaVen = new Date(fechaVencimiento + "T23:59:59"); 
                                 
                                 const spanEstado = document.createElement('span');
                                 spanEstado.className = 'badge';

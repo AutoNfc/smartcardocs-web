@@ -123,6 +123,27 @@
             font-size: 11px;
             color: #4b5563;
         }
+        /* Estilos para las etiquetas de estado (Vigente / Vencido) */
+        .badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: auto; /* Esto empuja la etiqueta hacia la derecha del botón */
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .badge-vigente {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid #059669;
+        }
+
+        .badge-vencido {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid #dc2626;
+        }
     </style>
 </head>
 <body>
@@ -182,9 +203,46 @@
                     document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
                     document.getElementById('license-plate').innerText = vehiculo.patente || "- - - -";
                     
-                    if(vehiculo.url_revision) document.getElementById('link-revision').href = vehiculo.url_revision;
-                    if(vehiculo.url_soap) document.getElementById('link-soap').href = vehiculo.url_soap;
-                    if(vehiculo.url_permiso) document.getElementById('link-permiso').href = vehiculo.url_permiso;
+                    // Función interna para calcular si está vencido y poner el letrerito
+                    function aplicarEstado(btnId, urlPdf, fechaVencimiento) {
+                        const btn = document.getElementById(btnId);
+                        
+                        if(urlPdf) {
+                            btn.href = urlPdf; // Le ponemos el link al PDF
+                            
+                            // Si existe una fecha de vencimiento en Supabase, la evaluamos
+                            if(fechaVencimiento) {
+                                // Toma la fecha y hora exacta del celular en este mismo segundo
+                                const hoy = new Date(); 
+                                // Transforma el texto "2028-07-09" de tu Supabase a un objeto de fecha real
+                                const fechaVen = new Date(fechaVencimiento); 
+                                
+                                const spanEstado = document.createElement('span');
+                                spanEstado.className = 'badge';
+
+                                // Comparamos las fechas en tiempo real
+                                if (hoy > fechaVen) {
+                                    spanEstado.innerText = "VENCIDO";
+                                    spanEstado.classList.add('badge-vencido');
+                                    btn.style.border = "1px solid #dc2626"; // Borde rojo de alerta
+                                } else {
+                                    spanEstado.innerText = "VIGENTE";
+                                    spanEstado.classList.add('badge-vigente');
+                                }
+                                
+                                // Metemos la etiqueta adentro del botón
+                                btn.appendChild(spanEstado);
+                            }
+                        } else {
+                            // Si no hay PDF subido en Supabase, ocultamos el botón
+                            btn.style.display = 'none'; 
+                        }
+                    }
+
+                    // Aplicamos la magia a los 3 botones con TUS nombres de columnas exactos
+                    aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision);
+                    aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap);
+                    aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso);
                 }
             } else {
                 mostrarPantallaError("🔒 Acceso Denegado", "Esta tarjeta no contiene una firma digital válida en nuestros registros.");

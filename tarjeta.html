@@ -57,19 +57,81 @@
             margin-bottom: 15px;
         }
 
-        /* Estilo Patente Chilena */
-        .patente-box {
-            background-color: #f3f4f6;
+        /* ==========================================================
+           NUEVO ESTILO PATENTE CHILENA CON CONTROLES DE POSICIÓN
+           ========================================================== */
+       .patente-box {
+            /* 👇 ESTAS 4 LÍNEAS AGREGAN TU IMAGEN */
+            background-image: url('fondo-patente.svg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
+            /* 👇 ESTO QUITA EL BORDE Y FONDO BLANCO ANTERIOR (ya que tu imagen los trae) */
+            background-color: transparent; 
+            border: none;
+            box-shadow: none;
+
             color: #111827;
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 4px solid #111827;
-            box-shadow: inset 0 0 0 2px #d1d5db, 0 4px 10px rgba(0,0,0,0.3);
+            border-radius: 12px;
             display: inline-block;
+            width: 290px;
+            height: 125px;
+            position: relative;
             margin-bottom: 30px;
+            text-transform: uppercase;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* 🎛️ CONTROL VERTICAL GENERAL: 
+           Modifica el 'margin-top' para subir o bajar todo el bloque de letras a la vez */
+        .patente-wrapper-vertical {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: auto;
+            margin-top: 12px; /* <-- CAMBIA ESTO PARA CONTROLAR LA POSICIÓN VERTICAL GENERAl */
+        }
+
+        /* Base para los caracteres */
+        .par-letras, .par-numeros {
+            font-family: 'Arial Black', Gadget, sans-serif; /* Tipografía gruesa estilo placa */
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1;
+            display: inline-block;
+        }
+
+        /* 🎛️ CONTROLES HORIZONTALES POR SEPARADO (Márgenes por pares) */
+        
+        #par1 {
+            margin-right: 12px; /* <-- Separación horizontal del primer par de letras */
+            margin-left: 0px;
+        }
+
+        #par2 {
+            margin-right: 16px; /* Solución para el espacio del medio (el punto de la patente) */
+            margin-left: 0px;
+        }
+
+        #par3 {
+            margin-left: 0px;   /* <-- Ajuste fino para el par de números final */
+        }
+
+        /* Texto fijo de CHILE en la parte inferior */
+        .patente-pais {
+            font-family: 'Arial', sans-serif;
+            font-size: 11px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: 5px;
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
+            text-align: center;
             text-transform: uppercase;
         }
 
@@ -154,7 +216,15 @@
 
         <div class="welcome">Vehículo de: <strong id="client-name">Cargando...</strong></div>
         
-        <div class="patente-box" id="license-plate">- - - - - -</div>
+        <!-- Nueva estructura con control de posición por bloques -->
+<div class="patente-box">
+    <div class="patente-wrapper-vertical" id="patente-posicion-vertical">
+        <span class="par-letras" id="par1">- -</span>
+        <span class="par-letras" id="par2">- -</span>
+        <span class="par-numeros" id="par3">- -</span>
+    </div>
+    <div class="patente-pais">Chile</div>
+</div>
 
         <div class="buttons-container">
             <a href="#" id="link-revision" class="btn btn-revision" target="_blank">
@@ -201,7 +271,14 @@
                 } else {
                     // 🟢 SI ESTÁ ACTIVO: Rellena los datos en tu diseño premium
                     document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
-                    document.getElementById('license-plate').innerText = vehiculo.patente || "- - - -";
+                    
+                    // 🔮 PROCESAMIENTO DINÁMICO DE PATENTE POR BLOQUES
+const patenteLimpia = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, ""); // Limpia puntos/guiones[cite: 1]
+
+// Inyección directa asumiendo el estándar de 6 caracteres[cite: 1]
+document.getElementById('par1').innerText = patenteLimpia.substring(0, 2); // Primeros 2 caracteres[cite: 1]
+document.getElementById('par2').innerText = patenteLimpia.substring(2, 4); // Segundos 2 caracteres[cite: 1]
+document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); // Últimos 2 caracteres (Números)[cite: 1]
                     
                     // Función interna para calcular si está vencido y poner el letrerito
                     function aplicarEstado(btnId, urlPdf, fechaVencimiento) {

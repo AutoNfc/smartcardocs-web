@@ -66,7 +66,7 @@
         .header-curve img {
             height: 45%; /* Ajusta el tamaño del logo superior aquí */
             max-width: 80%;
-            margin-top: 25px;
+            margin-top: 0px;
         }
 
         /* CONTENEDOR PRINCIPAL */
@@ -155,17 +155,17 @@
             border-radius: 30px;
             display: flex;
             align-items: center;
-            padding: 20px 25px; 
+            padding: 20px 20px; 
             text-decoration: none;
             color: #ffffff;
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            font-size: 0.95rem;
             
             /* 👇 Transición un poco más rápida para que no se sienta lenta */
             transition: all 0.3s ease;
             -webkit-transition: all 0.3s ease;
         }
+
 
         /* 👇 Esta regla evita que se quede pegado en el teléfono. Solo funciona en PC con mouse */
         @media (hover: hover) {
@@ -195,21 +195,30 @@
             margin-right: 15px;
         }
 
-        /* Texto centrado a la izquierda */
+        /* Texto centrado a la izquierda con ajuste universal */
         .btn-text {
             flex-grow: 1;
             text-align: left;
+            
+            /* 👇 LA MAGIA UNIVERSAL: clamp(Mínimo, Ideal adaptativo, Máximo) */
+            font-size: clamp(0.75rem, 3.5vw, 0.95rem); 
+            
+            /* 👇 Prohíbe absolutamente que el texto salte a una segunda línea */
+            white-space: nowrap; 
+            overflow: hidden;
+            
+            /* Si la pantalla es extremadamente enana, pondrá "..." en vez de desarmar el botón */
+            text-overflow: ellipsis; 
         }
 
         /* =========================================
-           CIRCULOS DE ESTADO (VIGENTE / VENCIDO)
+           CIRCULOS DE ESTADO MINIMALISTAS
            ========================================= */
         .badge {
             width: 16px;
             height: 16px;
             border-radius: 50%;
             display: inline-block;
-            font-size: 0; /* Esto oculta el texto que inyecta JS, dejando solo el círculo de color */
             flex-shrink: 0;
             margin-left: auto;
         }
@@ -219,9 +228,69 @@
             box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
         }
 
+        .badge-alerta {
+            background-color: #F59E0B;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
+
         .badge-vencido {
             background-color: #EF4444;
             box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        /* =========================================
+           POPUP DE ALERTA FLOTANTE
+           ========================================= */
+        #popup-vencimiento {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: rgba(17, 34, 47, 0.85); /* Fondo oscuro semitransparente */
+            display: none; /* Oculto por defecto */
+            align-items: center; justify-content: center;
+            z-index: 10000; /* Por encima de toda la app */
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-box {
+            background-color: #ffffff;
+            border-radius: 24px;
+            padding: 35px 25px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .popup-box h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #D97706;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .popup-box p {
+            font-family: 'Inter', sans-serif;
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .popup-btn {
+            background-color: #D97706;
+            color: #ffffff;
+            border: none;
+            padding: 14px 0;
+            width: 100%;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
         }
 
         /* =========================================
@@ -240,25 +309,59 @@
     padding: 0 15px;
         }
 
-        /* Ajustes para pantallas muy estrechas (Galaxy Fold, iPhone SE, etc.) */
-        @media (max-width: 350px) {
-            .btn {
-                padding: 15px 15px; /* Reduce el grosor del botón */
-            }
-            .btn-text {
-                font-size: 0.80rem; /* Achica un poco la letra */
-                line-height: 1.2;   /* Evita que si hay 2 líneas se vea gigante */
-            }
-            .btn-icon {
-                margin-right: 10px; /* Acerca el ícono al texto */
-            }
-            .welcome {
-                font-size: 1.1rem; /* Achica un poco el nombre también */
-            }
+    /* =========================================
+           PANTALLA DE CARGA (ANTI-FLICKER)
+           ========================================= */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100dvh;
+            background-color: #fafafa; /* Mismo fondo de la app */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid rgba(17, 34, 47, 0.1);
+            border-top: 4px solid #11222F; /* Tu azul oscuro */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Ocultamos el contenedor principal por defecto para que no parpadee */
+        .container {
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
     </style>
 </head>
 <body>
+
+    <div id="loading-screen">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="popup-vencimiento">
+        <div class="popup-box" id="popup-caja">
+            <h3>⚠️ Alerta de Ruta</h3>
+            <p id="popup-mensaje">Tienes documentos próximos a vencer.</p>
+            <button class="popup-btn" onclick="cerrarPopup()">Entendido</button>
+        </div>
+    </div>
+
 
     <!-- FONDO CURVO SUPERIOR -->
     <div class="header-curve">
@@ -282,17 +385,17 @@
 
         <!-- BOTONES POPPINS SEMI BOLD (Mismo orden que en tu imagen) -->
         <div class="buttons-container">
-            <a href="#" id="link-permiso" class="btn" target="_blank">
+            <a href="#" id="link-permiso" class="btn" target="_blank" rel="noopener noreferrer">
                 <img src="img/tarjeta/Icono Permiso Circulacion.svg" class="btn-icon" alt="Permiso">
                 <span class="btn-text">Permiso de Circulación</span>
             </a>
             
-            <a href="#" id="link-revision" class="btn" target="_blank">
+            <a href="#" id="link-revision" class="btn" target="_blank" rel="noopener noreferrer">
                 <img src="img/tarjeta/Icono Revision.svg" class="btn-icon" alt="Revisión">
                 <span class="btn-text">Revisión Técnica</span>
             </a>
             
-            <a href="#" id="link-soap" class="btn" target="_blank">
+            <a href="#" id="link-soap" class="btn" target="_blank" rel="noopener noreferrer">
                 <img src="img/tarjeta/Icono Soap.svg" class="btn-icon" alt="SOAP">
                 <span class="btn-text">Seguro Obligatorio (SOAP)</span>
             </a>
@@ -306,6 +409,28 @@
     </div>
 
    <script>
+
+    function cerrarPopup() {
+        const popup = document.getElementById('popup-vencimiento');
+        const caja = document.getElementById('popup-caja');
+        popup.style.opacity = '0';
+        caja.style.transform = 'scale(0.9)';
+        setTimeout(() => { popup.style.display = 'none'; }, 300);
+    }
+
+    // Función para ocultar el cargador y revelar la app con suavidad
+    function quitarCargador() {
+        const loader = document.getElementById('loading-screen');
+        const container = document.querySelector('.container');
+        
+        if (loader) {
+            loader.style.opacity = '0';
+            loader.style.visibility = 'hidden';
+        }
+        if (container) {
+            container.style.opacity = '1';
+        }
+    }
     // ==========================================
     // LOGICA SUPABASE INTACTA
     // ==========================================
@@ -316,21 +441,37 @@
     const idUrl = urlParams.get('id');
 
     if (idUrl) {
-        fetch(`${SUPABASE_URL}/rest/v1/vehiculos?codigo_seguro=eq.${idUrl}`, {
-            method: 'GET',
+        // 1. Iniciamos un "reloj de arena" de 9 segundos
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
+
+        const idSanitizado = encodeURIComponent(idUrl);
+
+        // Llamamos a la función RPC segura de Supabase pasando el UUID como parámetro limpio
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/obtener_vehiculo_publico`, {
+            method: 'POST', // Las funciones RPC de Supabase se llaman siempre con POST
             headers: {
                 'apikey': SUPABASE_ANON_KEY,
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
                 'Accept': 'application/json'
-            }
+            },
+            body: JSON.stringify({ id_tarjeta: idUrl }), // Enviamos el UUID de forma directa y estructurada
+            signal: controller.signal
         })
-        .then(response => response.json())
+        .then(response => {
+            // 3. Si el servidor responde a tiempo, cancelamos la cuenta regresiva
+            clearTimeout(timeoutId);
+            return response.json();
+        })
         .then(data => {
             if (data && data.length > 0) {
                 const vehiculo = data[0];
                 
                 if (vehiculo.estado_cuenta === "P") {
-                    mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${vehiculo.patente || ''} se registró con éxito, pero está en proceso de activación por el administrador.`);
+                    // Limpiamos la patente de símbolos extraños por seguridad antes de imprimirla en el error
+                    const patenteSegura = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, "");
+                    mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${patenteSegura} se registró con éxito, pero está en proceso de activación por el administrador.`);
                 } else {
                     document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
                     
@@ -340,7 +481,10 @@
                     document.getElementById('par2').innerText = patenteLimpia.substring(2, 4); 
                     document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); 
                     
-                    function aplicarEstado(btnId, urlPdf, fechaVencimiento) {
+                    // Lista silenciosa para el popup
+                    let documentosPorVencer = [];
+
+                    function aplicarEstado(btnId, urlPdf, fechaVencimiento, nombreDocumento) {
                         const btn = document.getElementById(btnId);
                         
                         if(urlPdf) {
@@ -350,17 +494,21 @@
                                 const hoy = new Date(); 
                                 const fechaVen = new Date(fechaVencimiento + "T23:59:59"); 
                                 
+                                const diferenciaTiempo = fechaVen - hoy;
+                                const diasRestantes = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+                                
                                 const spanEstado = document.createElement('span');
-                                spanEstado.className = 'badge';
+                                spanEstado.className = 'badge'; // Solo el punto minimalista
 
-                                if (hoy > fechaVen) {
-                                    spanEstado.innerText = "VENCIDO";
-                                    spanEstado.classList.add('badge-vencido');
-                                    // La línea de abajo mantiene el borde rojo en caso de estar vencido (original de tu JS)
-                                    btn.style.border = "1px solid #dc2626"; 
+                                if (diasRestantes < 0) {
+                                    spanEstado.classList.add('badge-vencido'); // Punto Rojo
+                                    btn.style.border = "1px solid #EF4444"; 
+                                } else if (diasRestantes <= 15) {
+                                    spanEstado.classList.add('badge-alerta'); // Punto Amarillo
+                                    btn.style.border = "1px solid #F59E0B";
+                                    documentosPorVencer.push(`${nombreDocumento} (en ${diasRestantes} días)`);
                                 } else {
-                                    spanEstado.innerText = "VIGENTE";
-                                    spanEstado.classList.add('badge-vigente');
+                                    spanEstado.classList.add('badge-vigente'); // Punto Verde
                                 }
                                 
                                 btn.appendChild(spanEstado);
@@ -370,17 +518,50 @@
                         }
                     }
 
-                    aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision);
-                    aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap);
-                    aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso);
+                    // 1. Aplicamos los estados a los botones
+                    aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision, "Revisión Técnica");
+                    aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap, "SOAP");
+                    aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso, "Permiso");
+                    
+                    // 2. Quitamos el cargador principal
+                    quitarCargador();
+
+                    // 3. Si hay alertas, disparamos el Popup Flotante
+                    if (documentosPorVencer.length > 0) {
+                        const popup = document.getElementById('popup-vencimiento');
+                        const caja = document.getElementById('popup-caja');
+                        const mensaje = document.getElementById('popup-mensaje');
+                        
+                        // 🧠 Lógica inteligente para singular o plural
+                        if (documentosPorVencer.length === 1) {
+                            mensaje.innerText = "Tu " + documentosPorVencer[0] + " vencerá pronto. Recuerda renovarlo para evitar multas.";
+                        } else {
+                            mensaje.innerText = "Tu " + documentosPorVencer.join(" y tu ") + " vencerán pronto. Recuerda renovarlos para evitar multas.";
+                        }
+
+                        // Mostramos el popup con un suave efecto de entrada
+                        popup.style.display = 'flex';
+                        setTimeout(() => {
+                            popup.style.opacity = '1';
+                            caja.style.transform = 'scale(1)';
+                        }, 50);
+                    }
                 }
             } else {
                 mostrarPantallaError("🔒 Acceso Denegado", "Esta tarjeta no contiene una firma digital válida en nuestros registros.");
             }
         })
         .catch(error => {
+            // 4. Si falla por cualquier motivo, limpiamos el reloj primero
+            clearTimeout(timeoutId);
             console.error("Error:", error);
-            mostrarPantallaError("⚠️ Error de Conexión", "No pudimos conectar con el servidor seguro de Nexuz.");
+            
+            // 5. Diferenciamos si fue por falta de internet/timeout o un error del servidor
+            if (error.name === 'AbortError' || !navigator.onLine) {
+                mostrarPantallaError("⚠️ Error de Conexión", "La señal de internet es muy débil o estás desconectado. Por favor reintenta.");
+            } else {
+                mostrarPantallaError("⚠️ Error de Servidor", "No pudimos conectar con el servidor seguro de Nexuz.");
+            }
         });
     } else {
         mostrarPantallaError("❌ Acceso Inválido", "No se detectó ninguna credencial digital. Escanea una tarjeta válida.");
@@ -388,6 +569,7 @@
 
     // Función que limpia la pantalla y muestra el escudo de seguridad con diseño Premium
     function mostrarPantallaError(titulo, mensaje) {
+        quitarCargador();
         // Detectamos si el mensaje es de Error/Denegado o de Pendiente para cambiar los colores
         const esError = titulo.toLowerCase().includes("denegado") || titulo.toLowerCase().includes("error") || titulo.toLowerCase().includes("inválido");
         

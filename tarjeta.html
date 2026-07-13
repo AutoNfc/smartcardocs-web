@@ -2,248 +2,313 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartCarDocs Chile - Documentos Digitales</title>
+    <!-- Bloqueo de zoom para una experiencia nativa de app -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Nexuz Chile - Documentos Digitales</title>
+    <!-- Le dice al navegador que pinte la barra de estado de este color -->
+    <meta name="theme-color" content="#11222F">
+    <!-- Optimizaciones para iPhone -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <meta name="robots" content="noindex, nofollow">
+
+    <meta property="og:title" content="Nexuz Chile - Credencial Activa">
+    <meta property="og:description" content="Acceso seguro a los documentos digitales de este vehículo.">
+    <meta property="og:image" content="https://i.ibb.co/jvPt0sTd/Logo-Nexuz.png">
+    <meta property="og:type" content="website">
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="img/logo.svg">
+    
+    <!-- FUENTES: Inter, Teko, Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@600&family=Teko:wght@300&display=swap" rel="stylesheet">
+    
     <style>
+        /* RESET & BASE */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: '-apple-system', BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: #0b0f19;
-            color: #ffffff;
+            background-color: #fafafa;
+            /* Fuerza a no tener scroll y ocupar el tamaño de la pantalla del teléfono */
+            min-height: 100dvh;
+            overflow-x: hidden; 
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* =========================================
+           CABECERA (FONDO CURVO Y LOGO)
+           ========================================= */
+        .header-curve {
+            background-color: #11222F;
+            width: 100%;
+            height: 25vh;
+            /* Crea la curvatura inferior */
+            border-bottom-left-radius: 50% 60%;
+            border-bottom-right-radius: 50% 60%;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            margin-bottom: 2vh;
+            flex-shrink: 0;
+            padding-top: env(safe-area-inset-top); 
+    height: calc(25vh + env(safe-area-inset-top));
         }
 
+        .header-curve img {
+            height: 45%; /* Ajusta el tamaño del logo superior aquí */
+            max-width: 80%;
+            margin-top: 25px;
+        }
+
+        /* CONTENEDOR PRINCIPAL */
         .container {
             width: 100%;
             max-width: 400px;
-            text-align: center;
-            background: #111827;
-            padding: 30px 20px;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            border: 1px solid #1f2937;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 25px;
+            flex-grow: 1;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(45deg, #3b82f6, #60a5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
-        }
-
-        .subtitle {
-            font-size: 12px;
-            color: #9ca3af;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
-        }
-
+        /* NOMBRE DE USUARIO */
         .welcome {
-            font-size: 16px;
-            color: #e5e7eb;
-            margin-bottom: 15px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #00B4D8;
+            font-size: 1.3rem;
+            margin-top: 2vh;
+            margin-bottom: 3vh;
+            text-align: center;
         }
 
-        /* ==========================================================
-           NUEVO ESTILO PATENTE CHILENA CON CONTROLES DE POSICIÓN
-           ========================================================== */
-       .patente-box {
-            /* 👇 ESTAS 4 LÍNEAS AGREGAN TU IMAGEN */
-            background-image: url('fondo-patente.svg'); 
-            background-size: cover;
+        /* =========================================
+           ZONA PATENTE
+           ========================================= */
+        .patente-box {
+            background-image: url('img/tarjeta/fondo-patente.svg'); 
+            background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
-            
-            /* 👇 ESTO QUITA EL BORDE Y FONDO BLANCO ANTERIOR (ya que tu imagen los trae) */
-            background-color: transparent; 
-            border: none;
-            box-shadow: none;
-
-            color: #111827;
-            border-radius: 12px;
-            display: inline-block;
-            width: 290px;
-            height: 125px;
-            position: relative;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            box-sizing: border-box;
-            overflow: hidden;
+            width: 260px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 4vh;
+            flex-shrink: 0;
         }
 
-        /* 🎛️ CONTROL VERTICAL GENERAL: 
-           Modifica el 'margin-top' para subir o bajar todo el bloque de letras a la vez */
+        /* 🎛️ CONTROL VERTICAL: Sube o baja los textos respecto al fondo */
         .patente-wrapper-vertical {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            height: auto;
-            margin-top: 12px; /* <-- CAMBIA ESTO PARA CONTROLAR LA POSICIÓN VERTICAL GENERAl */
+            margin-top: -5px; /* <-- Modifica esto para subir (negativo) o bajar (positivo) */
         }
 
-        /* Base para los caracteres */
+        /* FUENTE PATENTE (Teko Light) */
         .par-letras, .par-numeros {
-            font-family: 'Arial Black', Gadget, sans-serif; /* Tipografía gruesa estilo placa */
-            font-size: 38px;
-            font-weight: 900;
-            line-height: 1;
-            display: inline-block;
-        }
-
-        /* 🎛️ CONTROLES HORIZONTALES POR SEPARADO (Márgenes por pares) */
-        
-        #par1 {
-            margin-right: 12px; /* <-- Separación horizontal del primer par de letras */
-            margin-left: 0px;
-        }
-
-        #par2 {
-            margin-right: 16px; /* Solución para el espacio del medio (el punto de la patente) */
-            margin-left: 0px;
-        }
-
-        #par3 {
-            margin-left: 0px;   /* <-- Ajuste fino para el par de números final */
-        }
-
-        /* Texto fijo de CHILE en la parte inferior */
-        .patente-pais {
-            font-family: 'Arial', sans-serif;
-            font-size: 11px;
-            font-weight: 800;
+            font-family: 'Teko', sans-serif;
+            font-weight: 300;
+            font-size: 75px;
             color: #111827;
-            letter-spacing: 5px;
-            position: absolute;
-            bottom: 8px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            text-transform: uppercase;
+            line-height: 1;
+            letter-spacing: 3px;
         }
 
+        /* 🎛️ CONTROLES HORIZONTALES: Ajusta la separación entre los pares */
+        #par1 {
+            margin-right: 20px; 
+            margin-left: 0px;
+        }
+        #par2 {
+            margin-right: 20px; 
+            margin-left: 0px;
+        }
+        #par3 {
+            margin-left: 10px;   
+        }
+
+        /* =========================================
+           BOTONES DE DOCUMENTOS
+           ========================================= */
         .buttons-container {
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 3.5vh;
+            margin-top: 1vh;
+            margin-bottom: 3vh;
         }
 
         .btn {
+            background-color: #11222F;
+            border-radius: 30px;
             display: flex;
             align-items: center;
-            justify-content: start;
-            padding: 18px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #ffffff;
+            padding: 20px 25px; 
             text-decoration: none;
-            border-radius: 16px;
-            transition: transform 0.2s, background-color 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            
+            /* 👇 Transición un poco más rápida para que no se sienta lenta */
+            transition: all 0.3s ease;
+            -webkit-transition: all 0.3s ease;
         }
 
+        /* 👇 Esta regla evita que se quede pegado en el teléfono. Solo funciona en PC con mouse */
+        @media (hover: hover) {
+            .btn:hover {
+                box-shadow: 0 0 15px rgba(17, 34, 47, 0.4); 
+                /* Se agranda solo un 2% en lugar de 10% (mucho más elegante) */
+                transform: scale(1.02); 
+            }
+        }
+
+        /* 👇 El efecto real al presionar con el dedo */
         .btn:active {
-            transform: scale(0.98);
+            /* Transición rapidísima al presionar */
+            transition: all 0.1s;
+            -webkit-transition: all 0.1s;
+            box-shadow: none;
+            /* Se encoge ligeramente hacia adentro */
+            transform: scale(0.97); 
+            /* Se oscurece un pelín para dar sensación de profundidad */
+            background-color: #0c1822; 
         }
 
+        /* Icono SVG a la izquierda */
         .btn-icon {
-            font-size: 22px;
+            width: 26px;
+            height: 26px;
             margin-right: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        /* Colores de los botones */
-        .btn-revision { background-color: #1e3a8a; }
-        .btn-revision:hover { background-color: #1d4ed8; }
-
-        .btn-soap { background-color: #7c2d12; }
-        .btn-soap:hover { background-color: #ea580c; }
-
-        .btn-permiso { background-color: #065f46; }
-        .btn-permiso:hover { background-color: #059669; }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 11px;
-            color: #4b5563;
+        /* Texto centrado a la izquierda */
+        .btn-text {
+            flex-grow: 1;
+            text-align: left;
         }
-        /* Estilos para las etiquetas de estado (Vigente / Vencido) */
+
+        /* =========================================
+           CIRCULOS DE ESTADO (VIGENTE / VENCIDO)
+           ========================================= */
         .badge {
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-left: auto; /* Esto empuja la etiqueta hacia la derecha del botón */
-            font-weight: 700;
-            letter-spacing: 1px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            font-size: 0; /* Esto oculta el texto que inyecta JS, dejando solo el círculo de color */
+            flex-shrink: 0;
+            margin-left: auto;
         }
 
         .badge-vigente {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: #34d399;
-            border: 1px solid #059669;
+            background-color: #10B981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
         }
 
         .badge-vencido {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: #f87171;
-            border: 1px solid #dc2626;
+            background-color: #EF4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        /* =========================================
+           FOOTER
+           ========================================= */
+        .footer {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 10px;
+            color: #4b5563;
+            text-align: center;
+            line-height: 1.5;
+            margin-top: auto;
+            margin-bottom: 3vh;
+            width: 100%;
+    padding: 0 15px;
+        }
+
+        /* Ajustes para pantallas muy estrechas (Galaxy Fold, iPhone SE, etc.) */
+        @media (max-width: 350px) {
+            .btn {
+                padding: 15px 15px; /* Reduce el grosor del botón */
+            }
+            .btn-text {
+                font-size: 0.80rem; /* Achica un poco la letra */
+                line-height: 1.2;   /* Evita que si hay 2 líneas se vea gigante */
+            }
+            .btn-icon {
+                margin-right: 10px; /* Acerca el ícono al texto */
+            }
+            .welcome {
+                font-size: 1.1rem; /* Achica un poco el nombre también */
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo">SmartCarDocs</div>
-        <div class="subtitle">Chile 🇨🇱</div>
-
-        <div class="welcome">Vehículo de: <strong id="client-name">Cargando...</strong></div>
-        
-        <!-- Nueva estructura con control de posición por bloques -->
-<div class="patente-box">
-    <div class="patente-wrapper-vertical" id="patente-posicion-vertical">
-        <span class="par-letras" id="par1">- -</span>
-        <span class="par-letras" id="par2">- -</span>
-        <span class="par-numeros" id="par3">- -</span>
+    <!-- FONDO CURVO SUPERIOR -->
+    <div class="header-curve">
+        <!-- Reemplaza con tu logo SVG -->
+        <img src="img/logo.svg" alt="Nexuz Logo">
     </div>
-    <div class="patente-pais">Chile</div>
-</div>
 
+    <div class="container">
+        
+        <!-- NOMBRE INTER BOLD -->
+        <div class="welcome" id="client-name">Cargando...</div>
+        
+        <!-- PATENTE TEKO LIGHT (Separada en 3 bloques) -->
+        <div class="patente-box">
+            <div class="patente-wrapper-vertical" id="patente-posicion-vertical">
+                <span class="par-letras" id="par1">- -</span>
+                <span class="par-letras" id="par2">- -</span>
+                <span class="par-numeros" id="par3">- -</span>
+            </div>
+        </div>
+
+        <!-- BOTONES POPPINS SEMI BOLD (Mismo orden que en tu imagen) -->
         <div class="buttons-container">
-            <a href="#" id="link-revision" class="btn btn-revision" target="_blank">
-                <span class="btn-icon">🚗</span> Revisión Técnica
+            <a href="#" id="link-permiso" class="btn" target="_blank">
+                <img src="img/tarjeta/Icono Permiso Circulacion.svg" class="btn-icon" alt="Permiso">
+                <span class="btn-text">Permiso de Circulación</span>
             </a>
-            <a href="#" id="link-soap" class="btn btn-soap" target="_blank">
-                <span class="btn-icon">🛡️</span> Seguro Obligatorio SOAP
+            
+            <a href="#" id="link-revision" class="btn" target="_blank">
+                <img src="img/tarjeta/Icono Revision.svg" class="btn-icon" alt="Revisión">
+                <span class="btn-text">Revisión Técnica</span>
             </a>
-            <a href="#" id="link-permiso" class="btn btn-permiso" target="_blank">
-                <span class="btn-icon">📜</span> Permiso de Circulación
+            
+            <a href="#" id="link-soap" class="btn" target="_blank">
+                <img src="img/tarjeta/Icono Soap.svg" class="btn-icon" alt="SOAP">
+                <span class="btn-text">Seguro Obligatorio (SOAP)</span>
             </a>
         </div>
 
+        <!-- FOOTER INTER REGULAR -->
         <div class="footer">
-            Documentación protegida bajo la Ley 19.799<br>SmartCarDocs Chile © 2026
+            Información protegida | Validez Ley N° 19.799<br>
+            MyNexuz.cl © 2026
         </div>
     </div>
 
    <script>
+    // ==========================================
+    // LOGICA SUPABASE INTACTA
+    // ==========================================
     const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
 
@@ -251,7 +316,6 @@
     const idUrl = urlParams.get('id');
 
     if (idUrl) {
-        // Buscamos por la columna de código aleatorio seguro
         fetch(`${SUPABASE_URL}/rest/v1/vehiculos?codigo_seguro=eq.${idUrl}`, {
             method: 'GET',
             headers: {
@@ -265,59 +329,47 @@
             if (data && data.length > 0) {
                 const vehiculo = data[0];
                 
-                // 🚫 EL ESCUDO DE SEGURIDAD: Validar si la cuenta está Pendiente o Activa
                 if (vehiculo.estado_cuenta === "P") {
                     mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${vehiculo.patente || ''} se registró con éxito, pero está en proceso de activación por el administrador.`);
                 } else {
-                    // 🟢 SI ESTÁ ACTIVO: Rellena los datos en tu diseño premium
                     document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
                     
-                    // 🔮 PROCESAMIENTO DINÁMICO DE PATENTE POR BLOQUES
-const patenteLimpia = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, ""); // Limpia puntos/guiones[cite: 1]
+                    const patenteLimpia = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, ""); 
 
-// Inyección directa asumiendo el estándar de 6 caracteres[cite: 1]
-document.getElementById('par1').innerText = patenteLimpia.substring(0, 2); // Primeros 2 caracteres[cite: 1]
-document.getElementById('par2').innerText = patenteLimpia.substring(2, 4); // Segundos 2 caracteres[cite: 1]
-document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); // Últimos 2 caracteres (Números)[cite: 1]
+                    document.getElementById('par1').innerText = patenteLimpia.substring(0, 2); 
+                    document.getElementById('par2').innerText = patenteLimpia.substring(2, 4); 
+                    document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); 
                     
-                    // Función interna para calcular si está vencido y poner el letrerito
                     function aplicarEstado(btnId, urlPdf, fechaVencimiento) {
                         const btn = document.getElementById(btnId);
                         
                         if(urlPdf) {
-                            btn.href = urlPdf; // Le ponemos el link al PDF
+                            btn.href = urlPdf; 
                             
-                            // Si existe una fecha de vencimiento en Supabase, la evaluamos
                             if(fechaVencimiento) {
-                                // Toma la fecha y hora exacta del celular en este mismo segundo
                                 const hoy = new Date(); 
-                                
-                                // 🛠️ EL TRUCO: Le sumamos "T23:59:59" para que venza en el último segundo de ese día
                                 const fechaVen = new Date(fechaVencimiento + "T23:59:59"); 
                                 
                                 const spanEstado = document.createElement('span');
                                 spanEstado.className = 'badge';
 
-                                // Comparamos las fechas en tiempo real
                                 if (hoy > fechaVen) {
                                     spanEstado.innerText = "VENCIDO";
                                     spanEstado.classList.add('badge-vencido');
-                                    btn.style.border = "1px solid #dc2626"; // Borde rojo de alerta
+                                    // La línea de abajo mantiene el borde rojo en caso de estar vencido (original de tu JS)
+                                    btn.style.border = "1px solid #dc2626"; 
                                 } else {
                                     spanEstado.innerText = "VIGENTE";
                                     spanEstado.classList.add('badge-vigente');
                                 }
                                 
-                                // Metemos la etiqueta adentro del botón
                                 btn.appendChild(spanEstado);
                             }
                         } else {
-                            // Si no hay PDF subido en Supabase, ocultamos el botón
                             btn.style.display = 'none'; 
                         }
                     }
 
-                    // Aplicamos la magia a los 3 botones con TUS nombres de columnas exactos
                     aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision);
                     aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap);
                     aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso);
@@ -328,21 +380,48 @@ document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); // Ú
         })
         .catch(error => {
             console.error("Error:", error);
-            mostrarPantallaError("⚠️ Error de Conexión", "No pudimos conectar con el servidor seguro de SmartCarDocs.");
+            mostrarPantallaError("⚠️ Error de Conexión", "No pudimos conectar con el servidor seguro de Nexuz.");
         });
     } else {
         mostrarPantallaError("❌ Acceso Inválido", "No se detectó ninguna credencial digital. Escanea una tarjeta válida.");
     }
 
-    // Función que limpia la pantalla y muestra el escudo de error Dark Mode si no está activo
+    // Función que limpia la pantalla y muestra el escudo de seguridad con diseño Premium
     function mostrarPantallaError(titulo, mensaje) {
+        // Detectamos si el mensaje es de Error/Denegado o de Pendiente para cambiar los colores
+        const esError = titulo.toLowerCase().includes("denegado") || titulo.toLowerCase().includes("error") || titulo.toLowerCase().includes("inválido");
+        
+        const colorTema = esError ? "#EF4444" : "#F59E0B"; // Rojo para error, Naranja para pendiente
+        const colorFondoIcono = esError ? "rgba(239, 68, 68, 0.15)" : "rgba(245, 158, 11, 0.15)";
+        
+        // Limpiamos los emojis del título porque ahora pondremos un ícono gigante arriba
+        const tituloLimpio = titulo.replace(/🔒|⏳|⚠️|❌/g, '').trim();
+        const icono = esError ? '🔒' : '⏳';
+
         document.body.innerHTML = `
-            <div style="background-color: #0b0b0c; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; font-family: sans-serif; box-sizing: border-box;">
-                <div style="background: linear-gradient(145deg, #141416, #1a1a1e); border: 1px solid #ff4a4a; border-radius: 20px; padding: 35px 25px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                    <h2 style="color: #ff4a4a; font-size: 22px; margin: 0 0 15px 0; font-weight: 600; letter-spacing: 0.5px;">${titulo}</h2>
-                    <p style="color: #8a8a93; font-size: 14px; line-height: 1.6; margin: 0 0 25px 0;">${mensaje}</p>
-                    <hr style="border: 0; border-top: 1px solid #2d2d34; margin: 20px 0;">
-                    <p style="color: #555; font-size: 11px; margin: 0; letter-spacing: 0.5px;">SMARTCARDOCS CHILE • SEGURIDAD</p>
+            <div style="background-color: #11222F; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; width: 100%;">
+                
+                <div style="background: #1a2c3a; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 40px 25px; text-align: center; max-width: 360px; width: 100%; box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px ${colorFondoIcono};">
+                    
+                    <div style="background-color: ${colorFondoIcono}; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 32px; border: 1px solid ${colorTema};">
+                        ${icono}
+                    </div>
+
+                    <h2 style="color: #ffffff; font-family: 'Poppins', sans-serif; font-size: 22px; margin: 0 0 12px 0; font-weight: 600;">
+                        ${tituloLimpio}
+                    </h2>
+                    
+                    <p style="color: #9ca3af; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0; font-weight: 400;">
+                        ${mensaje}
+                    </p>
+                    
+                    <a href="javascript:window.location.reload();" style="display: inline-block; background-color: ${colorTema}; color: #ffffff; text-decoration: none; padding: 14px 30px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; box-shadow: 0 4px 15px ${colorFondoIcono};" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">
+                        Actualizar Pantalla
+                    </a>
+                </div>
+
+                <div style="margin-top: 4vh; color: #6b7280; font-family: 'Inter', sans-serif; font-size: 11px; text-align: center; letter-spacing: 0.5px; line-height: 1.5;">
+                    MyNexuz.cl<br>Informacion Protegida
                 </div>
             </div>
         `;

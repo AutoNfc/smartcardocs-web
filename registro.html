@@ -3,155 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Activa tu SmartCarDocs — Registro</title>
+    <meta name="theme-color" content="#11222F">
+    <title>Nexuz | Activación de Tarjeta NFC</title>
+    
+    <link rel="icon" type="image/svg+xml" href="img/logo.svg">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --bg-void: #0a0a0b;
-            --bg-surface: #131316;
-            --border-subtle: rgba(255,255,255,0.08);
-            --text-primary: #f5f5f7;
-            --text-secondary: #a1a1aa;
-            --accent-red: #ff4a4a;
-            --font-display: 'Space Grotesk', sans-serif;
+        /* ================= TOKENS NEXUZ ================= */
+        :root{
+            --bg: #fafafa;
+            --bg-card: #ffffff;
+            --primary: #11222F;
+            --primary-line: rgba(17,34,47,0.10);
+            --primary-line-strong: rgba(17,34,47,0.20);
+            --accent: #00B4D8;
+            --accent-dim: rgba(0,180,216,0.12);
+            --accent-glow: rgba(0,180,216,0.38);
+            --ink: #11222F;
+            --ink-soft: #4b5b66;
             --font-body: 'Inter', sans-serif;
+            --font-display: 'Poppins', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
+            --radius-md: 20px;
         }
 
+        ::selection { background: var(--accent); color: #ffffff; }
+
         body {
-            background: var(--bg-void); color: var(--text-primary);
-            font-family: var(--font-body); margin: 0; padding: 20px;
-            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .panel-container {
+            background: var(--bg-card);
+            border: 1px solid var(--primary-line);
+            border-radius: var(--radius-md);
+            padding: 40px 24px; 
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 20px 40px -20px rgba(17,34,47,0.15);
+            position: relative;
+            overflow: hidden;
             box-sizing: border-box;
         }
 
-        .register-box {
-            width: 100%; max-width: 480px; background: var(--bg-surface);
-            border: 1px solid var(--border-subtle); border-radius: 24px; padding: 40px 30px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6); text-align: center;
+        .brand-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1px;
+            margin-bottom: 25px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 26px;
+            color: var(--primary);
         }
-
-        .brand {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            font-family: var(--font-display); font-weight: 700; font-size: 20px; margin-bottom: 25px;
+        .brand-header img {
+            height: 34px; width: auto;
+            filter: brightness(0) saturate(100%) invert(11%) sepia(18%) saturate(1989%) hue-rotate(168deg) brightness(96%) contrast(92%);
         }
-        .brand span { color: var(--accent-red); }
+        .brand-header span { font-size: 21px; margin-left: -14px; letter-spacing: -0.6px; margin-top: 8px; }
 
-        h2 { font-family: var(--font-display); font-size: 24px; margin-bottom: 8px; }
-        p.subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 30px; line-height: 1.5; }
+        h2 { font-family: var(--font-display); font-size: 22px; margin: 0 0 6px 0; color: var(--ink); font-weight: 600; text-align: center; }
+        .subtitle { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 30px; text-align: center; line-height: 1.5; }
 
         .section-divider {
-            border-top: 1px solid var(--border-subtle); margin: 25px 0; padding-top: 15px;
-            color: var(--accent-red); font-family: var(--font-display); font-size: 14px; font-weight: bold; letter-spacing: 0.5px; text-align: left;
+            border-top: 1px solid var(--primary-line);
+            margin: 30px 0 20px 0;
+            padding-top: 15px;
+            color: var(--accent);
+            font-family: var(--font-display);
+            font-size: 13.5px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .form-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+        label { display: block; font-size: 13px; font-weight: 600; color: var(--ink-soft); margin-bottom: 8px; }
+
+        input[type="text"], input[type="email"] {
+            width: 100%; padding: 14px 16px; background: #f8f9fa;
+            border: 1.5px solid #cbd5e1; border-radius: 12px;
+            color: var(--ink); font-family: var(--font-body); font-size: 15px;
+            box-sizing: border-box; transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="email"]:focus {
+            outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-dim); background: #ffffff;
+        }
+
+        .input-mono { font-family: var(--font-mono) !important; font-weight: 600; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* --- TICKET VERDE ANIMADO --- */
+        .input-wrapper { position: relative; width: 100%; }
         
-        input {
-            width: 100%; padding: 14px; background: #0c0c0e; border: 1px solid #2d2d35;
-            border-radius: 10px; color: var(--text-primary); font-size: 15px; box-sizing: border-box;
-            transition: border-color 0.2s;
+        .check-icon {
+            position: absolute; right: 16px; top: 50%; transform: translateY(-50%) scale(0);
+            width: 20px; height: 20px; stroke: #10B981; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+            opacity: 0; transition: all 0.4s cubic-bezier(.16,.84,.44,1); pointer-events: none;
         }
-        input:focus { border-color: var(--accent-red); outline: none; }
-        input[type="file"] { background: #161618; border: 1px dashed #3a3a44; color: var(--text-secondary); cursor: pointer; }
-
-        .input-mono { font-family: var(--font-mono); font-weight: 700; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-
-        .btn-submit {
-            width: 100%; background: var(--accent-red); color: #fff; border: none; padding: 16px; border-radius: 100px;
-            font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px;
-            box-shadow: 0 8px 24px rgba(255, 74, 74, 0.2); transition: all 0.2s ease;
+        
+        /* Cuando el input es válido y el usuario ya escribió algo, aparece el ticket */
+        .input-wrapper input:valid:not(:placeholder-shown) + .check-icon {
+            opacity: 1; transform: translateY(-50%) scale(1);
         }
-        .btn-submit:hover { background: #e03e3e; transform: translateY(-1px); }
+        /* Da un poco de espacio a la derecha para que el texto no choque con el ticket */
+        .input-wrapper input:valid:not(:placeholder-shown) {
+            padding-right: 45px;
+        }
 
-        footer { text-align: center; margin-top: 30px; font-size: 12px; color: #44444a; font-weight: bold; }
+        /* Cajas de Subida de Archivos */
+        .upload-zone {
+            position: relative; width: 100%; height: 90px;
+            background: #f8f9fa; border: 2px dashed #cbd5e1; border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease; box-sizing: border-box; margin-bottom: 12px;
+        }
+        .upload-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+        .upload-zone input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; z-index: 10; }
+        .upload-content { display: flex; flex-direction: column; align-items: center; pointer-events: none; padding: 0 16px; text-align: center; max-width: 100%; box-sizing: border-box; }
+        .upload-content svg { width: 26px; height: 26px; stroke: var(--accent); margin-bottom: 6px; }
+        .upload-content span { font-size: 13px; color: var(--ink-soft); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+        .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; cursor: pointer; }
+        input[type="date"] {
+            width: 100%; max-width: 100%; padding: 14px 16px; background: #f8f9fa;
+            border: 1.5px solid #cbd5e1; border-radius: 12px; color: var(--ink);
+            font-family: var(--font-body); font-size: 15px; box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; cursor: pointer;
+            -webkit-appearance: none; appearance: none;
+        }
+        input[type="date"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-dim); background: #ffffff; }
+
+        button.btn-submit {
+            width: 100%; 
+            max-width: 260px; /* <-- Esto lo hace más angosto */
+            display: block; 
+            margin: 28px auto 0; /* <-- Esto lo centra perfectamente */
+            background-color: var(--accent); 
+            color: #ffffff; 
+            border: none; 
+            padding: 14px; /* <-- Menos alto, idéntico al panel */
+            border-radius: 24px;
+            font-size: 15px; 
+            font-family: var(--font-display); 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: transform 0.3s cubic-bezier(.16,.84,.44,1), box-shadow 0.3s ease;
+            box-shadow: 0 8px 24px -8px var(--accent-glow);
+        }
+        button.btn-submit:hover { transform: scale(1.02); box-shadow: 0 12px 30px -8px var(--accent-glow); }
+        button.btn-submit:active { transform: scale(0.97); background: #0098b8; }
+        button.btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .footer { 
+            font-family: var(--font-body); font-weight: 400; font-size: 10px;
+            color: #4b5563; text-align: center; line-height: 1.5;
+            margin-top: 25px; width: 100%;
+        }
+
+        /* Notificaciones Tipo Toast */
+        #custom-toast {
+            position: fixed; top: 24px; right: 24px; transform: translateY(-20px);
+            background: var(--primary); color: #fff; padding: 14px 24px; border-radius: 12px;
+            font-family: var(--font-body); font-size: 14.5px; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(17,34,47,0.18); z-index: 10000;
+            display: flex; align-items: center; gap: 12px; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.16,.84,.44,1);
+            max-width: calc(100vw - 48px);
+        }
+        #custom-toast.show { opacity: 1; transform: translateY(0); }
+        #custom-toast.success { background: #10B981; } 
+        #custom-toast.error { background: #EF4444; }
+        #custom-toast svg { width: 18px; height: 18px; stroke: #fff; flex-shrink: 0; fill: none; }
+
+        @media (max-width: 550px) {
+            #custom-toast { right: 12px; left: 12px; top: 12px; transform: translateY(-10px); max-width: none; border-radius: 10px; }
+            #custom-toast.show { transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="register-box">
-        <div class="brand">SmartCar<span>Docs</span></div>
+    <div id="custom-toast" role="status" aria-live="polite">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="toast-icon"></svg>
+        <span id="toast-message">Cargando...</span>
+    </div>
+
+    <div class="panel-container">
+        <div class="brand-header">
+            <img src="img/logo.svg" alt="Logo Nexuz" onerror="this.style.display='none';">
+            <span>exuz</span>
+        </div>
         
         <div id="bloque-entrada" style="display: block;">
-            <h2>Activa tu Dispositivo</h2>
-            <p class="subtitle">Ingresa la patente de tu auto y tu código de activación de 8 dígitos para iniciar.</p>
+            <h2>Registro de Cliente</h2>
+            <p class="subtitle">Ingresa la patente de tu vehículo y el código de seguridad que te enviamos por WhatsApp tras tu compra.</p>
             
             <div class="form-group">
                 <label for="input-patente">Patente del Vehículo</label>
-                <input type="text" id="input-patente" class="input-mono" placeholder="AB1234 o BCCC11" maxlength="6" oninput="this.value=this.value.toUpperCase()">
+                <div class="input-wrapper">
+                    <input type="text" id="input-patente" class="input-mono" placeholder="EJ: AB1234 o BCCC11" maxlength="6" minlength="6" required oninput="this.value=this.value.toUpperCase()">
+                    <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="input-code">Código de Activación (8 dígitos)</label>
-                <input type="text" id="input-code" class="input-mono" placeholder="EJ: AF92D4A0" maxlength="8" oninput="this.value=this.value.toUpperCase()">
+                <label for="input-code">Código de Activación</label>
+                <div class="input-wrapper">
+                    <input type="text" id="input-code" class="input-mono" placeholder="EJ: AF92D4A0" maxlength="8" minlength="8" required oninput="this.value=this.value.toUpperCase()">
+                    <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
             </div>
 
             <button class="btn-submit" onclick="validarEntrada()">Validar Código</button>
         </div>
 
-        <div id="bloque-documentos" style="display: none;">
+        <div id="bloque-documentos" style="display: none; animation: fadeIn 0.4s ease forwards;">
             <h2>Completa tu Perfil</h2>
-            <p class="subtitle">Registra tus datos y sube los documentos para dejar tu SmartCarDocs al día.</p>
+            <p class="subtitle">Sube los documentos vigentes para dejar tu Tarjeta Nexuz activa y al día.</p>
             
             <form id="form-registro-final">
-                <div class="section-divider">1. DATOS DEL PROPIETARIO</div>
+                <div class="section-divider">1. Datos del Titular</div>
 
                 <div class="form-group">
                     <label for="input-nombre">Nombre Completo</label>
-                    <input type="text" id="input-nombre" placeholder="Ej: Juan Pérez Silva" required>
+                    <div class="input-wrapper">
+                        <input type="text" id="input-nombre" placeholder="Ej: Juan Pérez Silva" minlength="4" required>
+                        <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="input-email">Correo Electrónico</label>
-                    <input type="email" id="input-email" placeholder="juan.perez@email.com" required>
+                    <div class="input-wrapper">
+                        <input type="email" id="input-email" placeholder="ejemplo@correo.com" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(cl|com|net|org)" title="El correo debe terminar en un dominio válido (ej: .cl o .com)" required>
+                        <svg class="check-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
                 </div>
 
-                <div class="section-divider">2. SUBIR DOCUMENTOS (PDF)</div>
+                <div class="form-group">
+                    <label for="input-telefono">Teléfono / WhatsApp</label>
+                    <div class="input-wrapper" style="display: flex; align-items: center; background: #f8f9fa; border: 1.5px solid #cbd5e1; border-radius: 12px; padding-left: 16px; box-sizing: border-box;">
+                        <span style="font-size: 15px; font-weight: 600; color: var(--ink); margin-right: 6px; user-select: none; white-space: nowrap; flex-shrink: 0;">+56 9</span>
+                        
+                        <input type="text" id="input-telefono" placeholder="1234 5678" maxlength="8" minlength="8" pattern="[0-9]{8}" title="Ingresa solo los 8 dígitos numéricos de tu celular" required style="border: none; background: transparent; padding: 14px 16px 14px 0; width: 100%;" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <svg class="check-icon" viewBox="0 0 24 24" style="right: 16px;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                </div>
+
+                <div class="section-divider">2. Subir Documentos (PDF)</div>
 
                 <div class="form-group">
                     <label>Permiso de Circulación</label>
-                    <input type="file" id="file-permiso" accept="application/pdf" required>
-                    <label style="margin-top:8px; font-size:11px;">Fecha de Vencimiento</label>
-                    <input type="date" id="date-permiso" style="color:white;" required>
+                    <div class="upload-zone">
+                        <input type="file" id="file-permiso" accept="application/pdf" onchange="actualizarNombreArchivo(this)" required>
+                        <div class="upload-content">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Haz clic o toca para subir tu PDF</span>
+                        </div>
+                    </div>
+                    <label style="margin-top:10px;">Fecha de Vencimiento</label>
+                    <div class="date-input-wrapper" onclick="forzarClickCalendario(this)">
+                        <input type="date" id="date-permiso" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 25px;">
                     <label>SOAP</label>
-                    <input type="file" id="file-soap" accept="application/pdf" required>
-                    <label style="margin-top:8px; font-size:11px;">Fecha de Vencimiento</label>
-                    <input type="date" id="date-soap" style="color:white;" required>
+                    <div class="upload-zone">
+                        <input type="file" id="file-soap" accept="application/pdf" onchange="actualizarNombreArchivo(this)" required>
+                        <div class="upload-content">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Haz clic o toca para subir tu PDF</span>
+                        </div>
+                    </div>
+                    <label style="margin-top:10px;">Fecha de Vencimiento</label>
+                    <div class="date-input-wrapper" onclick="forzarClickCalendario(this)">
+                        <input type="date" id="date-soap" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-top: 25px;">
                     <label>Revisión Técnica</label>
-                    <input type="file" id="file-revision" accept="application/pdf" required>
-                    <label style="margin-top:8px; font-size:11px;">Fecha de Vencimiento</label>
-                    <input type="date" id="date-revision" style="color:white;" required>
+                    <div class="upload-zone">
+                        <input type="file" id="file-revision" accept="application/pdf" onchange="actualizarNombreArchivo(this)" required>
+                        <div class="upload-content">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Haz clic o toca para subir tu PDF</span>
+                        </div>
+                    </div>
+                    <label style="margin-top:10px;">Fecha de Vencimiento</label>
+                    <div class="date-input-wrapper" onclick="forzarClickCalendario(this)">
+                        <input type="date" id="date-revision" required>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-submit">Guardar y Activar Tarjeta</button>
             </form>
         </div>
 
-        <footer>SMARTCARDOCS CHILE • CONEXIÓN SEGURA</footer>
+        <p class="footer">
+            Información protegida | Validez Ley N° 19.799<br>
+            MyNexuz.cl © 2026
+        </p>
     </div>
+
+    <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 
     <script>
         const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
         let patenteGuardada = "";
         let codigoGuardado = "";
+
+        // Sistema de Notificaciones Toast
+        let toastTimeout;
+        function mostrarToast(mensaje, tipo = 'info', persistente = false) {
+            const toast = document.getElementById('custom-toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toast.className = ''; toast.classList.add(tipo);
+            toastMsg.innerText = mensaje;
+
+            if(tipo === 'success') {
+                toastIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+            } else if (tipo === 'error') {
+                toastIcon.innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
+            } else {
+                toastIcon.innerHTML = '<path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path>';
+            }
+
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            if (!persistente) { toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 4000); }
+        }
+
+        // Diseño para Subida de Archivos
+        function actualizarNombreArchivo(input) {
+            const textSpan = input.nextElementSibling.querySelector('span');
+            if (input.files && input.files.length > 0) {
+                if(input.files[0].size > MAX_FILE_SIZE) {
+                    mostrarToast("El archivo excede el límite de 5MB.", "error");
+                    input.value = ""; 
+                    textSpan.innerText = 'Haz clic o toca para subir tu PDF';
+                    textSpan.style.color = 'var(--ink-soft)';
+                    return;
+                }
+                textSpan.innerText = input.files[0].name;
+                textSpan.style.color = 'var(--primary)';
+                textSpan.style.fontWeight = '700';
+                mostrarToast("Archivo adjuntado correctamente", "success");
+            } else {
+                textSpan.innerText = 'Haz clic o toca para subir tu PDF';
+                textSpan.style.color = 'var(--ink-soft)';
+                textSpan.style.fontWeight = '500';
+            }
+        }
+
+        function forzarClickCalendario(wrapper) {
+            const inputDate = wrapper.querySelector('input[type="date"]');
+            if (inputDate && typeof inputDate.showPicker === 'function') inputDate.showPicker();
+        }
 
         // PASO 1: Validar Patente + Código en Supabase
         function validarEntrada() {
             const patente = document.getElementById('input-patente').value.trim().toUpperCase();
             const codigo = document.getElementById('input-code').value.trim().toUpperCase();
 
-            if(!patente || !codigo) { alert("⚠️ Por favor, completa la patente y el código."); return; }
+            if(!patente || !codigo) { 
+                mostrarToast("Por favor, completa la patente y el código.", "error"); 
+                return; 
+            }
 
             // Buscamos si el código de 8 dígitos es real y está libre
             fetch(`${SUPABASE_URL}/rest/v1/codigos_activacion?codigo=eq.${codigo}&usado=eq.false`, {
@@ -161,18 +401,17 @@
             .then(res => res.json())
             .then(data => {
                 if (data && data.length > 0) {
-                    // Guardamos las variables en memoria para que no tenga que reescribirlas
                     patenteGuardada = patente;
                     codigoGuardado = codigo;
 
-                    // Cambiamos de pantalla dinámicamente
                     document.getElementById('bloque-entrada').style.display = 'none';
                     document.getElementById('bloque-documentos').style.display = 'block';
+                    mostrarToast("Código validado correctamente", "success");
                 } else {
-                    alert("❌ Código inválido o ya fue utilizado en otro auto.");
+                    mostrarToast("Código inválido o ya utilizado.", "error");
                 }
             })
-            .catch(err => alert("⚠️ Error de conexión al verificar el código."));
+            .catch(err => mostrarToast("Error de conexión al verificar el código.", "error"));
         }
 
         // PASO 2: Envío final de los datos y documentos REAL a Make
@@ -180,13 +419,18 @@
             e.preventDefault();
 
             const btn = e.target.querySelector('.btn-submit');
-            btn.innerText = "Subiendo documentos... Espera por favor";
+            btn.innerText = "Activando tarjeta...";
             btn.disabled = true;
+            mostrarToast("Subiendo información de forma segura...", "info", true);
 
             // Preparamos el paquete con los archivos y textos
             const formData = new FormData();
             formData.append('nombre', document.getElementById('input-nombre').value.trim());
             formData.append('email', document.getElementById('input-email').value.trim());
+            // Capturamos los 8 números limpios escritos por el usuario
+            const numerosCelular = document.getElementById('input-telefono').value.trim();
+            // Le pegamos el +569 por delante de forma automática y limpia
+            formData.append('telefono', '+569' + numerosCelular);
             formData.append('patente', patenteGuardada);
             formData.append('codigo_activacion', codigoGuardado);
             
@@ -206,16 +450,16 @@
             })
             .then(res => {
                 if(res.ok) {
-                    alert("✨ ¡Felicidades! Tus datos y documentos han sido cargados con éxito.\n\nPronto nos comunicaremos contigo para coordinar la entrega de tu dispositivo físico SmartCarDocs.");
-                    window.location.href = "/"; // Lo regresa al home corporativo
+                    mostrarToast("✨ ¡Tarjeta activada con éxito!", "success", true);
+                    setTimeout(() => { window.location.href = "index.html"; }, 3500); 
                 } else {
-                    alert("❌ Hubo un problema al subir los archivos al servidor central.");
+                    mostrarToast("Hubo un problema al subir los archivos.", "error");
                     btn.innerText = "Guardar y Activar Tarjeta";
                     btn.disabled = false;
                 }
             })
             .catch(err => {
-                alert("⚠️ Error de red. Inténtalo nuevamente.");
+                mostrarToast("Error de red. Inténtalo nuevamente.", "error");
                 btn.innerText = "Guardar y Activar Tarjeta";
                 btn.disabled = false;
             });

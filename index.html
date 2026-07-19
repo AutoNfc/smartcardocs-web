@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexuz Chile — La Tarjeta NFC inteligente para los documentos de tu auto</title>
+<title>Nexuz Chile | Tarjeta NFC para los documentos de tu auto</title>
+<link rel="icon" type="image/svg+xml" href="img/logo.svg">
 <meta name="description" content="Lleva tu Permiso de Circulación, SOAP y Revisión Técnica en una sola Tarjeta. Válida bajo la Ley 19.799. Escanea con tu celular y muestra tus documentos al instante.">
 
 <meta property="og:title" content="Nexuz Chile">
@@ -44,14 +45,20 @@
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--font-body);
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
+  html {
+    scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: clip; /* CAMBIO CLAVE: clip en lugar de hidden */
+  }
+  
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    max-width: 100%;
+    overflow-x: clip; /* CAMBIO CLAVE: clip en lugar de hidden */
   }
   img{max-width:100%;display:block;}
   a{color:inherit;text-decoration:none;}
@@ -129,7 +136,7 @@
   }
   /* ================= HEADER MINIMALISTA ================= */
   header.site-header{
-    position:sticky;top:0;z-index:60;
+    position:sticky;top:0;z-index:100; /* CAMBIO CLAVE: Pasa de 60 a 100 */
     background:rgba(250,250,250,0.86);
     backdrop-filter:blur(14px) saturate(140%);
     border-bottom:1px solid var(--primary-line);
@@ -144,14 +151,47 @@
     align-items:center;
   }
   
-  .header-mobile-menu { display: none; } /* Oculta la hamburguesa en PC */
-  
-  .brand{
-    justify-self: start; /* Logo a la izquierda en PC */
-    display:flex;align-items:center;gap:10px;
-    font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--primary);letter-spacing:-0.01em;
+  /* Ocultar hamburguesa en PC con especificidad alta (cero important) */
+  @media (min-width: 821px) {
+    .header-inner .header-mobile-menu {
+      display: none;
+    }
   }
-  .brand img{height:30px;width:auto;}
+  
+  /* Juntar el logo (N) con el texto (exuz) */
+  .brand {
+    justify-self: start; /* Logo a la izquierda en PC */
+    display: flex;
+    align-items: center;
+    gap: 1px; /* Reducimos la separación base casi a cero */
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--primary);
+  }
+
+  .brand img {
+    height: 30px;
+    width: auto;
+  }
+
+  .brand span {
+    /* Achicamos la tipografía un poco */
+    font-size: 18px; 
+    
+    /* Empujamos el texto más hacia la izquierda para pegarlo bien al logo */
+    margin-left: -12px; 
+    
+    /* Juntamos un pelín las letras entre sí para que se vea más compacto */
+    letter-spacing: -0.6px; 
+    /* Agrega esta nueva línea para empujarlo hacia abajo */
+    margin-top: 8px;
+  }
+
+  /* Cambiar el color del logo al azul oscuro premium (#11222F) en el header */
+  .site-header .brand img {
+    filter: brightness(0) saturate(100%) invert(11%) sepia(18%) saturate(1989%) hue-rotate(168deg) brightness(96%) contrast(92%);
+  }
 
   .header-nav-desktop {
     justify-self: center; /* Enlaces al centro en PC */
@@ -182,76 +222,133 @@
   /* ====== AJUSTES PARA MÓVIL ====== */
   @media (max-width: 820px) {
     .header-inner {
-      /* Cambia la grilla a: Botón(Izq) - Logo(Centro) - Espacio(Der) */
-      grid-template-columns: 1fr auto 1fr;
+      display: grid;
+      /* Mantiene 3 columnas equilibradas */
+      grid-template-columns: 1fr auto 1fr; 
+      /* LA CLAVE: Obliga a que todo en la grilla se alinee perfectamente al centro horizontal */
+      align-items: center; 
     }
-    .header-nav-desktop { display: none; } /* Esconde los links */
-    .header-actions-desktop { display: none; } /* Esconde el botón Mi Panel */
-    
-    .header-mobile-menu {
-      display: flex; /* Muestra la hamburguesa */
-      justify-self: start;
-    }
+    .header-nav-desktop { display: none; } 
+    .header-actions-desktop { display: none; } 
     
     .brand {
-      justify-self: center; /* Centra el logo */
+      grid-column: 2; /* Logo exactamente en el centro */
+      justify-self: center; 
+    }
+
+    .header-mobile-menu {
+      grid-column: 3; /* Hamburguesa exactamente a la derecha */
+      justify-self: end; 
+      display: flex;
+      /* Alinea el botón interno por si acaso */
+      align-items: center; 
     }
   }
 
-  /* Estilos del botón de iconos (Hamburguesa) */
-  .icon-btn{
-    width:40px;height:40px;border-radius:50%;flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;
-    background:rgba(17,34,47,0.05);
-    border:1px solid var(--primary-line);
-    transition:background .25s ease, border-color .25s ease, transform .25s ease;
+  /* Estilos del botón de iconos (Hamburguesa Minimalista, sin círculo) */
+  .icon-btn {
+    width: 34px; height: 34px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; /* Quitamos el círculo oscuro */
+    border: none; /* Quitamos el borde */
+    padding: 0;
+    transition: transform .25s ease;
+    -webkit-tap-highlight-color: transparent; /* Evita que parpadee azul en Android */
   }
-  .icon-btn:hover{background:rgba(17,34,47,0.09);transform:translateY(-1px);}
-  .icon-btn:active{transform:scale(0.94);}
-  .icon-btn svg{width:18px;height:18px;stroke:var(--primary);}
+  .icon-btn:active { transform: scale(0.92); }
+  /* ================= ANIMACIÓN MENÚ HAMBURGUESA: COLLAPSE ================= */
+  .lineas-menu {
+    width: 18px;
+    height: 14px;
+    position: relative;
+  }
+  
+  .lineas-menu span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background-color: var(--primary);
+    border-radius: 2px;
+    left: 0;
+  }
+
+  /* ESTADO CERRADO */
+  .lineas-menu span:nth-child(1) {
+    top: 0;
+    transition: top 0.15s 0.15s ease, transform 0.15s ease;
+  }
+  .lineas-menu span:nth-child(2) {
+    top: 6px; 
+    transition: opacity 0s 0.15s ease;
+  }
+  .lineas-menu span:nth-child(3) {
+    bottom: 0;
+    transition: bottom 0.15s 0.15s ease, transform 0.15s ease;
+  }
+
+  /* ESTADO ABIERTO ("X") */
+  .menu-animado.is-active .lineas-menu span:nth-child(1) {
+    top: 6px;
+    transform: rotate(45deg);
+    transition: top 0.15s ease, transform 0.15s 0.15s ease;
+  }
+  .menu-animado.is-active .lineas-menu span:nth-child(2) {
+    opacity: 0;
+    transition: opacity 0s 0.15s ease; 
+  }
+  .menu-animado.is-active .lineas-menu span:nth-child(3) {
+    bottom: 6px;
+    transform: rotate(-45deg);
+    transition: bottom 0.15s ease, transform 0.15s 0.15s ease;
+  }
   /* ================= NAV LATERAL ================= */
-  .nav-overlay{
-    position:fixed;inset:0;background:rgba(6,12,17,0.55);
-    backdrop-filter:blur(2px);
-    opacity:0;pointer-events:none;transition:opacity .35s var(--ease);
-    z-index:70;
+  .nav-overlay {
+    position: fixed;
+    top: 59px; /* Nace justo debajo del header */
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 59px); /* Solo cubre del header hacia abajo */
+    background: rgba(6,12,17,0.55);
+    backdrop-filter: blur(2px);
+    opacity: 0; pointer-events: none; transition: opacity .35s var(--ease);
+    z-index: 80;
   }
-  .nav-overlay.active{opacity:1;pointer-events:auto;}
+  .nav-overlay.active { opacity: 1; pointer-events: auto; }
+  
   #menuLateral {
     position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
+    top: 59px; /* Nace exactamente debajo de la línea del header */
+    right: 0;
+    height: calc(100vh - 59px); /* Solo cubre del header hacia abajo */
     width: 320px;
     max-width: 84vw;
     background: var(--primary);
-    transform: translateX(-100%);
+    transform: translateX(100%);
     transition: transform .45s var(--ease);
-    z-index: 80;
+    z-index: 90;
     display: flex;
     flex-direction: column;
-    padding: 26px 26px 34px;
+    /* Reducimos el padding superior porque ya no choca con nada */
+    padding: 34px 26px; 
+    border-left: 1px solid rgba(255,255,255,0.05);
   }
-  #menuLateral.active{transform:translateX(0);}
-  .nav-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:38px;}
-  .nav-top .brand img{height:26px;filter:brightness(0) invert(1);}
-  .nav-top .brand-fallback{color:#fff;font-size:17px;}
-  .nav-top .brand-fallback span{color:var(--accent);}
-  .nav-close{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.08);}
-  .nav-close svg{width:16px;height:16px;stroke:var(--on-dark-soft);}
-  #menuLateral nav{display:flex;flex-direction:column;gap:3px;flex:1;}
-  #menuLateral nav a{
-    padding:13px 12px;border-radius:10px;
-    color:var(--on-dark-soft);font-weight:500;font-size:15.5px;font-family:var(--font-display);
-    transition:background .2s ease, color .2s ease, padding-left .2s ease;
+  #menuLateral.active { transform: translateX(0); }
+  
+  #menuLateral nav { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  #menuLateral nav a {
+    padding: 13px 12px; border-radius: 10px;
+    color: var(--on-dark-soft); font-weight: 500; font-size: 15.5px; font-family: var(--font-display);
+    transition: background .2s ease, color .2s ease, padding-left .2s ease;
   }
-  #menuLateral nav a:hover{background:rgba(255,255,255,0.06);color:#fff;padding-left:16px;}
-  .nav-cta{
-    margin-top:18px;padding:18px;border-radius:16px;
-    background:linear-gradient(160deg, rgba(0,180,216,0.16), rgba(0,180,216,0.03));
-    border:1px solid rgba(0,180,216,0.3);
+  #menuLateral nav a:hover { background: rgba(255,255,255,0.06); color: #fff; padding-left: 16px; }
+  
+  .nav-cta {
+    margin-top: 18px; padding: 18px; border-radius: 16px;
+    background: linear-gradient(160deg, rgba(0,180,216,0.16), rgba(0,180,216,0.03));
+    border: 1px solid rgba(0,180,216,0.3);
   }
-  .nav-cta p{font-size:13px;color:var(--on-dark-soft);margin-bottom:12px;line-height:1.45;}
+  .nav-cta p { font-size: 13px; color: var(--on-dark-soft); margin-bottom: 12px; line-height: 1.45; }
 
   /* ================= HERO (DISEÑO ORBITAL PREMIUM) ================= */
   .hero-section {
@@ -315,7 +412,7 @@
   
   /* 1. La cámara 3D se pone en el área visual (recupera la inclinación de la tarjeta) */
   .hero-visual-new {
-    perspective: 1200px; 
+    perspective: 800px; 
   }
 
   /* 2. Ajustamos la tarjeta para que no se vea gigante en el PC */
@@ -340,17 +437,28 @@
     transform: rotateY(180deg);
   }
 
-  /* 5. Caras de la tarjeta */
+  /* 5. Caras de la tarjeta y Sombra Permanente */
   .card-front, .card-back {
     width: 100%;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+    /* Evita parpadeos en celulares */
+    transform: translateZ(0); 
   }
+  
   .card-front img, .card-back img {
     width: 100%;
     height: auto;
     display: block;
-    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3)); 
+    /* EFECTO 3D ULTRA REALISTA: Doble sombra apilada */
+    /* 1ra sombra: Corta y oscura (da volumen al grosor del plástico) */
+    /* 2da sombra: Gigante y teñida de tu azul oscuro (da la altura de levitación) */
+    -webkit-filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4)) drop-shadow(0 35px 65px rgba(17,34,47,0.4));
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4)) drop-shadow(0 35px 65px rgba(17,34,47,0.4)); 
+    
+    /* Soporte GPU para que no se aplane en el celular */
+    transform: translateZ(1px);
+    will-change: filter, transform;
   }
   .card-back {
     position: absolute;
@@ -655,7 +763,7 @@
     .benefits-dots .dot.active { background: var(--accent); transform: scale(1.3); }
   }
 
-  /* ================= COMO FUNCIONA ================= */
+ /* ================= COMO FUNCIONA ================= */
   .steps{
     display:grid;grid-template-columns:repeat(3,1fr);gap:28px;
   }
@@ -674,7 +782,33 @@
   @media (min-width:821px){
     .step-card:not(:last-child){border-right:1px solid var(--primary-line);}
   }
+  
+  /* Efecto de aparición en cascada para los pasos (PC y Móvil) */
+  .steps .step-card:nth-child(2) { transition-delay: 0.2s; }
+  .steps .step-card:nth-child(3) { transition-delay: 0.4s; }
 
+  /* Animación Zig-Zag exclusiva para móviles (Más lenta y fluida) */
+  @media (max-width: 820px) {
+    /* Forzamos una transición más larga y relajada (1.2 segundos) */
+    .steps .step-card.reveal {
+      transition: opacity 1.2s var(--ease), transform 1.2s var(--ease);
+    }
+    
+    /* El paso 1 y 3 (impares) parten desde un poco más lejos a la izquierda */
+    .steps .step-card:nth-child(odd).reveal { 
+      transform: translateX(-80px); 
+    }
+    
+    /* El paso 2 (par) parte desde un poco más lejos a la derecha */
+    .steps .step-card:nth-child(even).reveal { 
+      transform: translateX(80px); 
+    }
+    
+    /* Cuando aparecen en pantalla, todos regresan a su posición central original */
+    .steps .step-card.reveal.in { 
+      transform: translateX(0); 
+    }
+  }
   /* ================= PLANES ================= */
   /* 1. ESTRUCTURA (Mismo tamaño) */
   .plans-wrap {
@@ -867,7 +1001,7 @@
 
   /* Estilos para el botón de Instagram */
   .ig-link { 
-    display: inline-flex !important; 
+    display: inline-flex;
     margin-top: 0; /* Quitamos la separación extra */
     transition: transform .2s ease;
   }
@@ -1002,20 +1136,11 @@
 <header class="site-header">
   <div class="header-inner">
     
-    <!-- Lado Izquierdo: Botón Hamburguesa (Solo se verá en Móvil) -->
-    <div class="header-mobile-menu">
-      <button class="icon-btn" aria-label="Abrir menú" onclick="toggleMenu(true)">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-    </div>
-
-    <!-- Logo: A la izquierda en PC, al centro en Móvil -->
     <a href="#" class="brand" aria-label="Nexuz Chile">
       <img src="img/logo.svg" alt="Logo Nexuz" onerror="this.style.display='none';">
-      <span>Nexuz</span>
+      <span>exuz</span>
     </a>
 
-    <!-- Centro: Enlaces de navegación (Solo se verán en PC) -->
     <nav class="header-nav-desktop">
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#beneficios">Beneficios</a>
@@ -1023,25 +1148,23 @@
       <a href="#faq">FAQ</a>
     </nav>
 
-    <!-- Lado Derecho: Botón de Mi Panel (Solo se verá en PC) -->
     <div class="header-actions-desktop">
       <button class="btn btn-soft btn-panel" onclick="abrirModal()">Mi panel</button>
     </div>
+
+    <button class="icon-btn header-mobile-menu menu-animado" aria-label="Menu" id="btnMenuToggle" onclick="toggleMenu()">
+      <div class="lineas-menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </button>
 
   </div>
 </header>
 
 <div class="nav-overlay" id="navOverlay" onclick="toggleMenu(false)"></div>
 <aside id="menuLateral" aria-label="Menú principal">
-  <div class="nav-top">
-    <a href="#" class="brand" aria-label="Nexuz Chile">
-      <img src="img/logo.svg" alt="Nexuz" style="height:26px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-      <span class="brand-fallback" style="display:none; color: #ffffff;">Nexuz<span>.</span></span>
-    </a>
-    <button class="nav-close" aria-label="Cerrar menú" onclick="toggleMenu(false)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
   <nav>
     <a href="#como-funciona" onclick="toggleMenu(false)">Cómo funciona</a>
     <a href="#beneficios" onclick="toggleMenu(false)">Beneficios</a>
@@ -1436,11 +1559,23 @@
         _menuObserver.observe(document.getElementById('menuLateral'), { attributes:true, attributeFilter:['class'] });
     }
 
-    // Funciones del menú lateral
+    // Funciones del menú lateral (Ahora actúa como interruptor inteligente)
     function toggleMenu(abrir) {
         const menu = document.getElementById('menuLateral');
-        if(abrir) menu.classList.add('active');
-        else menu.classList.remove('active');
+        const btnMenuToggle = document.getElementById('btnMenuToggle'); 
+        
+        // Si el botón no da una orden estricta, averiguamos el estado actual
+        if (typeof abrir !== 'boolean') {
+            abrir = !menu.classList.contains('active');
+        }
+        
+        if(abrir) {
+            menu.classList.add('active');
+            if(btnMenuToggle) btnMenuToggle.classList.add('is-active'); // Transforma en X
+        } else {
+            menu.classList.remove('active');
+            if(btnMenuToggle) btnMenuToggle.classList.remove('is-active'); // Vuelve a 3 rayas
+        }
     }
     
     // Abrir y cerrar portal de clientes
@@ -1676,7 +1811,31 @@
             }
         });
     }
+    // ==========================================
+    // SINCRONIZADOR DE PUNTOS PARA LOS PLANES
+    // ==========================================
+    const planesCarousel = document.getElementById('planes-carousel');
+    const puntosPlanes = document.querySelectorAll('#carousel-dots .dot');
 
+    if (planesCarousel && puntosPlanes.length > 0) {
+        planesCarousel.addEventListener('scroll', () => {
+            // Calcula cuánto espacio hay para deslizar
+            const maxScroll = planesCarousel.scrollWidth - planesCarousel.clientWidth;
+            if (maxScroll <= 0) return; 
+            
+            // Calcula en qué porcentaje del recorrido vamos
+            const porcentaje = planesCarousel.scrollLeft / maxScroll;
+            
+            // Convierte ese porcentaje en el índice del punto correspondiente (0 o 1)
+            const indiceActual = Math.round(porcentaje * (puntosPlanes.length - 1));
+
+            // Apaga todos los puntos y enciende solo el correcto
+            puntosPlanes.forEach(punto => punto.classList.remove('active'));
+            if (puntosPlanes[indiceActual]) {
+                puntosPlanes[indiceActual].classList.add('active');
+            }
+        });
+    }
 </script>
 
 </body>

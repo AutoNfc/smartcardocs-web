@@ -1066,6 +1066,94 @@
   .modal-box .btn{width:100%;margin-top:18px;}
   .modal-foot{margin-top:18px;text-align:center;font-size:12.5px;color:var(--ink-faint);}
   .modal-foot button{color:var(--accent);font-weight:600;}
+
+  /* ================= CAJITAS OTP Y ANIMACIONES ================= */
+  .otp-box {
+    width: 45px;
+    height: 55px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--ink-soft); /* Color más suave */
+    background-color: var(--bg);
+    border: 1.5px solid var(--primary-line-strong);
+    border-radius: 12px;
+    outline: none;
+    font-family: var(--font-numeric);
+    transition: all 0.2s ease;
+  }
+  .otp-box:focus {
+    background-color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+  }
+  .otp-box:disabled {
+    background-color: rgba(17,34,47,0.03);
+    border-color: var(--primary-line);
+    cursor: not-allowed;
+  }
+  
+  /* Cuando están cargando, se ponen aún más claros y transparentes */
+  .otp-box.loading {
+    color: var(--ink-faint);
+    background-color: transparent;
+    opacity: 0.6;
+  }
+
+  /* Estilo del botón cuando faltan números */
+  #btn-verificar-otp:disabled {
+    background-color: rgba(17,34,47,0.06);
+    color: var(--ink-faint);
+    pointer-events: none;
+    box-shadow: none;
+    transform: none;
+  }
+
+  /* Animación de la rueda de carga (Spinner) */
+  .spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s ease-in-out infinite;
+    margin: 0 auto;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Animación de Éxito (El check verde con altura fija) */
+  .success-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 310px; /* Esto evita que la tarjeta se encoja */
+    animation: modalIn 0.4s var(--ease);
+  }
+  .success-icon {
+    width: 70px;
+    height: 70px;
+    background: rgba(34, 197, 94, 0.12); /* Verde claro transparente */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .success-icon svg {
+    width: 35px;
+    height: 35px;
+    stroke: #22c55e; /* Verde brillante */
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    /* Dibuja el ticket de izquierda a derecha */
+    animation: drawCheck 0.6s ease forwards 0.2s; 
+  }
+  @keyframes drawCheck {
+    to { stroke-dashoffset: 0; }
+  }
   
 
   /* ================= REVEAL ON SCROLL ================= */
@@ -1211,11 +1299,10 @@
       <img src="img/index/Front.webp" alt="Tarjeta Frontal Nexuz">
     </div>
     
-    <!-- CARA TRASERA -->
-    <div class="card-back">
-      <!-- Asegúrate de subir tu imagen trasera y cambiar 'Back.png' por el nombre real de tu archivo -->
-      <img src="img/index/Back.webp" alt="Tarjeta Trasera Nexuz">
-    </div>
+   <!-- CARA TRASERA -->
+      <div class="card-back">
+        <img src="img/index/Back.webp" alt="Tarjeta Trasera Nexuz" loading="lazy">
+      </div>
     
   </div>
 </div>
@@ -1450,7 +1537,7 @@
     <div class="footer-grid">
       <div>
         <a href="#" class="brand" aria-label="Nexuz Chile">
-          <img src="img/logo.svg" alt="Nexuz" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <img src="img/logo.svg" alt="Nexuz" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
           <span class="brand-fallback" style="display:none; color: #ffffff;">Nexuz<span>.</span></span>
         </a>
         <p class="desc">La tarjeta automotriz inteligente. Tus documentos digitalizados y siempre vigentes. Ley 19.799.</p>
@@ -1493,6 +1580,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
 
+    <!-- PASO 1: PATENTE -->
     <div id="paso-patente" style="display:block;">
       <div class="modal-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1509,6 +1597,7 @@
       <div class="modal-foot">¿No tienes tu Tarjeta aún? <button onclick="cerrarModal(); window.location.href='#precios';">Ver planes</button></div>
     </div>
 
+    <!-- PASO 2: CÓDIGO OTP (CAJITAS) -->
     <div id="paso-otp" style="display:none;">
       <div class="modal-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1518,10 +1607,32 @@
       </div>
       <h3>Revisa tu correo</h3>
       <p class="hint">Enviamos un código temporal de 6 dígitos al correo registrado para tu vehículo. Ingrésalo para entrar a tu panel.</p>
-      <label class="field-label" for="input-otp">Código de 6 dígitos</label>
-      <input id="input-otp" type="text" maxlength="6" placeholder="······" autocomplete="off" inputmode="numeric">
-      <button class="btn btn-primary" onclick="verificarOtpYEntrar()">Ingresar</button>
+      <label class="field-label" style="text-align: center; margin-bottom: 12px;">Código de 6 dígitos</label>
+      
+      <!-- Contenedor de las 6 cajas con Accesibilidad -->
+      <div id="otp-boxes-container" style="display: flex; gap: 8px; justify-content: center; margin-bottom: 24px;">
+        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" aria-label="Dígito 1">
+        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" disabled aria-label="Dígito 2">
+        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" disabled aria-label="Dígito 3">
+        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" disabled aria-label="Dígito 4">
+        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" disabled aria-label="Dígito 5">
+        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" disabled aria-label="Dígito 6">
+      </div>
+
+      <!-- Botón dinámico que empezará desactivado -->
+      <button id="btn-verificar-otp" class="btn btn-primary" onclick="verificarOtpYEntrar()" disabled>Ingresar</button>
       <div class="modal-foot">¿No llegó el código? <button onclick="solicitarClaveConPatente()">Reenviar</button></div>
+    </div>
+
+    <!-- PASO 3: ÉXITO (TICKET VERDE) -->
+    <div id="paso-exito" style="display:none;" class="success-screen">
+      <div class="success-icon">
+        <!-- SVG del ticket (Check) animado -->
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3 style="color: #22c55e; font-size: 24px; margin: 0; font-family: var(--font-display);">Aprobado</h3>
     </div>
 
   </div>
@@ -1586,7 +1697,7 @@
         document.getElementById('paso-otp').style.display = 'none';
     }
 
-    // Motor de Notificaciones Premium
+    // Motor de Notificaciones Premium (Mejorado)
     function mostrarNotificacion(mensaje, esExito = false) {
         let toastAnterior = document.getElementById("toast-smartcardocs");
         if (toastAnterior) toastAnterior.remove();
@@ -1600,30 +1711,41 @@
         toast.style.transform = "translateX(-50%)";
         toast.style.backgroundColor = esExito ? "#00B4D8" : "#11222F"; 
         toast.style.color = "#FFFFFF";
-        toast.style.padding = "12px 24px";
+        toast.style.padding = "14px 24px";
         toast.style.borderRadius = "8px";
         toast.style.fontFamily = "'Inter', sans-serif";
-        toast.style.fontSize = "14px";
+        toast.style.fontSize = "15px";
         toast.style.fontWeight = "500";
         toast.style.zIndex = "10000";
         toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
         toast.style.transition = "opacity 0.3s ease";
+        
+        // LA MAGIA PARA QUE NO SE AMONTONE:
+        toast.style.width = "max-content"; // Toma el largo exacto del texto
+        toast.style.maxWidth = "90%"; // Si la pantalla es chica, no se sale de los bordes
+        toast.style.textAlign = "center";
+        toast.style.lineHeight = "1.4";
 
         document.body.appendChild(toast);
 
         setTimeout(() => {
             toast.style.opacity = "0";
             setTimeout(() => toast.remove(), 300);
-        }, 3000);
+        }, 4000); // Subimos a 4 segundos para que se alcance a leer bien
     }
 
-    // PASO 1: SOLICITAR CÓDIGO (USANDO RPC SEGURO)
+    // PASO 1: SOLICITAR CÓDIGO (CON ANIMACIÓN DE CARGA)
     function solicitarClaveConPatente() {
         const patente = document.getElementById('input-patente').value.trim().toUpperCase();
         if(!patente) { mostrarNotificacion("Por favor, ingresa tu patente."); return; }
         
-        const btnPedir = document.querySelector('button[onclick="solicitarClaveConPatente()"]') || document.activeElement;
-        if(btnPedir) btnPedir.disabled = true;
+        const btnPedir = document.querySelector('button[onclick="solicitarClaveConPatente()"]');
+        
+        // INICIO DE ANIMACIÓN DE CARGA
+        if(btnPedir) {
+            btnPedir.disabled = true;
+            btnPedir.innerHTML = '<div class="spinner"></div>';
+        }
         
         fetch(`${SUPABASE_URL}/rest/v1/rpc/verificar_patente`, {
             method: 'POST',
@@ -1652,34 +1774,50 @@
                     } else {
                         mostrarNotificacion("Hubo un problema al generar el código.");
                     }
-                    if(btnPedir) setTimeout(() => { btnPedir.disabled = false; }, 10000);
+                    // RESTAURA EL BOTÓN
+                    if(btnPedir) {
+                        btnPedir.disabled = false;
+                        btnPedir.innerHTML = 'Enviar clave al correo';
+                    }
                 })
                 .catch(err => {
                     mostrarNotificacion("Error al conectar con el servidor de correos.");
-                    if(btnPedir) btnPedir.disabled = false;
+                    if(btnPedir) { btnPedir.disabled = false; btnPedir.innerHTML = 'Enviar clave al correo'; }
                 });
 
             } else { 
                 mostrarNotificacion("La patente ingresada no está registrada."); 
-                if(btnPedir) btnPedir.disabled = false; 
+                if(btnPedir) { btnPedir.disabled = false; btnPedir.innerHTML = 'Enviar clave al correo'; } 
             }
         })
         .catch(err => {
             mostrarNotificacion("Error de conexión al verificar el vehículo.");
-            if(btnPedir) btnPedir.disabled = false; 
+            if(btnPedir) { btnPedir.disabled = false; btnPedir.innerHTML = 'Enviar clave al correo'; } 
         });
     }
 
-    // PASO 2: VERIFICAR CÓDIGO EN MAKE Y ENTRAR (USANDO RPC SEGURO)
+    // PASO 2: VERIFICAR CÓDIGO EN MAKE Y ENTRAR (CON ANIMACIONES)
     function verificarOtpYEntrar() {
-        const otpInput = document.getElementById('input-otp').value.trim();
-        if(!otpInput) { mostrarNotificacion("Por favor, ingresa el código temporal."); return; }
+        let otpInput = "";
+        const otpBoxes = document.querySelectorAll('.otp-box');
+        otpBoxes.forEach(box => { otpInput += box.value; });
+
+        if(otpInput.length < 6) return; // Si no hay 6, no hace nada
 
         const patente = document.getElementById('input-patente').value.trim().toUpperCase();
+        const btnVerificar = document.getElementById('btn-verificar-otp');
         
-        const btnVerificar = document.querySelector('button[onclick="verificarOtpYEntrar()"]') || document.activeElement;
-        if(btnVerificar) btnVerificar.disabled = true;
+        // --- 1. ESTADO DE CARGA ---
+        btnVerificar.disabled = true;
+        btnVerificar.innerHTML = '<div class="spinner"></div>'; // Reemplaza texto por la rueda
+        
+        // Bloquea y aclara los números mientras carga
+        otpBoxes.forEach(box => {
+            box.setAttribute('disabled', 'true');
+            box.classList.add('loading');
+        });
 
+        // Llamada a Make
         fetch('https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -1690,6 +1828,7 @@
         })
         .then(res => {
             if (res.ok) {
+                // Llamada a Supabase
                 fetch(`${SUPABASE_URL}/rest/v1/rpc/verificar_otp`, {
                     method: 'POST',
                     headers: { 
@@ -1702,26 +1841,53 @@
                 .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data) && data.length > 0) {
+                        // --- 2. ESTADO DE ÉXITO (Animación de Aprobado) ---
                         idSeguroVehiculo = data[0].codigo_seguro;
-                        mostrarNotificacion("Código verificado con éxito.", true);
                         
+                        // Oculta el encabezado y las cajitas
+                        document.querySelector('#paso-otp h3').style.display = 'none';
+                        document.querySelector('#paso-otp .hint').style.display = 'none';
+                        document.getElementById('paso-otp').style.display = 'none';
+                        
+                        // Muestra el Ticket Verde animado
+                        document.getElementById('paso-exito').style.display = 'flex';
+                        
+                        // Espera 1.2 segundos para que se disfrute la animación y luego redirige
                         setTimeout(() => {
                             window.location.href = `./panel.html?id=${idSeguroVehiculo}`;
-                        }, 1000);
+                        }, 1200);
+
                     } else {
-                        mostrarNotificacion("El código ingresado es incorrecto o expiró.");
-                        if(btnVerificar) btnVerificar.disabled = false;
+                        // Error de Base de Datos
+                        mostrarError("El código ingresado es incorrecto o expiró.");
                     }
                 });
             } else {
-                mostrarNotificacion("Código incorrecto según el sistema.");
-                if(btnVerificar) btnVerificar.disabled = false;
+                // Error de Make
+                mostrarError("Código incorrecto según el sistema.");
             }
         })
         .catch(err => {
-            mostrarNotificacion("Hubo un problema al validar con el servidor.");
-            if(btnVerificar) btnVerificar.disabled = false;
+            mostrarError("Hubo un problema al validar con el servidor.");
         });
+
+        // --- 3. ESTADO DE ERROR (Restaura todo a la normalidad) ---
+        function mostrarError(mensaje) {
+            mostrarNotificacion(mensaje); // El toast de arriba
+            btnVerificar.innerHTML = 'Ingresar'; // Vuelve el texto
+            
+            // Si quieres que el código erróneo se borre automáticamente para volver a intentar, deja esto:
+            otpBoxes.forEach(box => {
+                box.value = '';
+                box.removeAttribute('disabled');
+                box.classList.remove('loading');
+            });
+            
+            // Regresa el cursor a la primera caja y apaga el botón
+            otpBoxes[0].focus();
+            btnVerificar.classList.remove('active-btn');
+            btnVerificar.setAttribute('disabled', 'true');
+        }
     }
     // ==========================================
     // MOTOR CARRUSEL DE BENEFICIOS (Puntitos móviles)
@@ -1836,6 +2002,49 @@
             }
         });
     }
+    // ==========================================
+    // MOTOR OTP INTERACTIVO (6 CAJAS)
+    // ==========================================
+    const otpBoxes = document.querySelectorAll('.otp-box');
+    const btnVerificarOtp = document.getElementById('btn-verificar-otp');
+
+    otpBoxes.forEach((box, index) => {
+        box.addEventListener('input', (e) => {
+            // Permitir solo números
+            box.value = box.value.replace(/[^0-9]/g, '');
+            
+            if (box.value !== "") {
+                // Si escribe, pasa a la siguiente caja automáticamente
+                if (index < otpBoxes.length - 1) {
+                    otpBoxes[index + 1].removeAttribute('disabled');
+                    otpBoxes[index + 1].focus();
+                }
+            }
+            
+            // Revisar si las 6 cajas están llenas para encender el botón
+            const todosLlenos = Array.from(otpBoxes).every(b => b.value.length === 1);
+            if (todosLlenos) {
+                btnVerificarOtp.classList.add('active-btn');
+                btnVerificarOtp.removeAttribute('disabled');
+            } else {
+                btnVerificarOtp.classList.remove('active-btn');
+                btnVerificarOtp.setAttribute('disabled', 'true');
+            }
+        });
+
+        box.addEventListener('keydown', (e) => {
+            // Si aprieta "Borrar" (Backspace) y la caja está vacía, vuelve a la anterior
+            if (e.key === "Backspace" && box.value === "" && index > 0) {
+                otpBoxes[index].setAttribute('disabled', 'true');
+                otpBoxes[index - 1].focus();
+                otpBoxes[index - 1].value = "";
+                
+                // Apaga el botón de inmediato
+                btnVerificarOtp.classList.remove('active-btn');
+                btnVerificarOtp.setAttribute('disabled', 'true');
+            }
+        });
+    });
 </script>
 
 </body>

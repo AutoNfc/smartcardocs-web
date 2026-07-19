@@ -1,14 +1,38 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-CL">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Control - SmartCarDocs</title>
+    <meta name="theme-color" content="#11222F"> <title>Nexuz | Mi Panel de Vehículo</title>
+    <link rel="icon" type="image/svg+xml" href="img/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* ================= TOKENS NEXUZ ================= */
+        :root{
+            --bg: #fafafa;
+            --bg-card: #ffffff;
+            --primary: #11222F;
+            --primary-line: rgba(17,34,47,0.10);
+            --primary-line-strong: rgba(17,34,47,0.20);
+            --accent: #00B4D8;
+            --accent-dim: rgba(0,180,216,0.12);
+            --accent-glow: rgba(0,180,216,0.38);
+            --ink: #11222F;
+            --ink-soft: #4b5b66;
+            --font-body: 'Inter', sans-serif;
+            --font-display: 'Poppins', sans-serif;
+            --radius-md: 20px;
+        }
+
+        ::selection { background: var(--accent); color: #ffffff; }
+
         body {
-            background-color: #0b0b0c;
-            color: #ffffff;
-            font-family: sans-serif;
+            background-color: var(--bg);
+            color: var(--ink);
+            font-family: var(--font-body);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -16,104 +40,190 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
+
         .panel-container {
-            background: linear-gradient(145deg, #141416, #1a1a1e);
-            border: 1px solid #2d2d34;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
+            background: var(--bg-card);
+            border: 1px solid var(--primary-line);
+            border-radius: var(--radius-md);
+            padding: 40px 24px; 
+            max-width: 520px;
             width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 20px 40px -20px rgba(17,34,47,0.15);
+            position: relative;
+            overflow: hidden;
+            box-sizing: border-box;
         }
-        h1 { font-size: 24px; margin-bottom: 5px; color: #ffffff; font-weight: 600; }
-        .subtitle { color: #8a8a93; font-size: 14px; margin-bottom: 25px; }
-        .info-box {
-            background-color: #111112;
-            border: 1px solid #232329;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 25px;
-        }
-        .info-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
-        .info-row:last-child { margin-bottom: 0; }
-        .label { color: #666670; }
-        .value { font-weight: bold; color: #ffffff; }
-        
-        /* Estilos para las secciones de documentos independientes */
-        .doc-section {
-            background: #111112;
-            border: 1px solid #232329;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .doc-header {
+
+        .brand-header {
             display: flex;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 12px;
-            cursor: pointer;
+            gap: 1px;
+            margin-bottom: 30px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 26px;
+            color: var(--primary);
         }
-        .doc-header input[type="checkbox"] {
-            margin-right: 12px;
-            width: 18px;
-            height: 18px;
-            accent-color: #ff4a4a;
+        .brand-header img {
+            height: 34px; width: auto;
+            filter: brightness(0) saturate(100%) invert(11%) sepia(18%) saturate(1989%) hue-rotate(168deg) brightness(96%) contrast(92%);
         }
-        .doc-title { font-size: 14px; font-weight: bold; color: #e4e4e7; }
-        
-        .doc-body { display: none; margin-top: 10px; }
-        
-        label { display: block; font-size: 12px; color: #8a8a93; margin-bottom: 5px; margin-top: 10px; }
-        input[type="file"] {
-            width: 100%;
-            padding: 10px;
-            background: #161618;
-            border: 1px dashed #3a3a44;
-            border-radius: 8px;
-            color: #8a8a93;
+        .brand-header span { font-size: 21px; margin-left: -14px; letter-spacing: -0.6px; margin-top: 8px; }
+
+        h1 { font-family: var(--font-display); font-size: 24px; margin: 0 0 6px 0; color: var(--ink); font-weight: 600; text-align: center; }
+        .subtitle { color: var(--ink-soft); font-size: 15px; margin-bottom: 30px; text-align: center; line-height: 1.5; }
+
+        .info-box {
+            background-color: #f2f4f6;
+            border: 1px solid var(--primary-line);
+            border-radius: 14px;
+            padding: 18px 20px;
+            margin-bottom: 30px;
+        }
+        .info-box .info-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14.5px; gap: 12px; }
+        .info-box .info-row:last-child { margin-bottom: 0; }
+        .label { color: var(--ink-soft); font-weight: 500; white-space: nowrap; }
+        .value { font-weight: 700; color: var(--ink); font-family: var(--font-display); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .doc-section {
+            background: var(--bg-card);
+            border: 1.5px solid var(--primary-line);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
             box-sizing: border-box;
         }
+        .doc-section.active { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0,180,216,0.1); }
+        
+        .doc-header { display: flex; align-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .circle-checkbox { position: relative; display: inline-block; width: 22px; height: 22px; margin-right: 14px; flex-shrink: 0; }
+        .circle-checkbox input { opacity: 0; width: 0; height: 0; }
+        .circle-design {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: transparent; border: 2px solid #cbd5e1;
+            transition: all .25s ease; border-radius: 50%;
+        }
+        .circle-design:after {
+            content: ""; position: absolute; display: none;
+            top: 5px; left: 5px; width: 8px; height: 8px;
+            border-radius: 50%; background: white;
+        }
+        input:checked + .circle-design { background-color: var(--accent); border-color: var(--accent); }
+        input:checked + .circle-design:after { display: block; }
+        
+        /* Accesibilidad: Foco visible en checkboxes */
+        .circle-checkbox input:focus-visible + .circle-design { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+        .doc-title { font-family: var(--font-display); font-size: 15.5px; font-weight: 600; color: var(--ink); user-select: none; }
+        
+        .doc-body { 
+            display: none; margin-top: 18px; padding-top: 18px;
+            border-top: 1px dashed var(--primary-line-strong);
+            animation: fadeIn 0.4s var(--ease) forwards;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        label { display: block; font-size: 13px; font-weight: 600; color: var(--ink-soft); margin-bottom: 10px; margin-top: 16px; }
+        label:first-child { margin-top: 0; }
+
+        .upload-zone {
+            position: relative; width: 100%; height: 90px;
+            background: #f8f9fa; border: 2px dashed #cbd5e1; border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease; box-sizing: border-box;
+        }
+        .upload-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+        .upload-zone:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; } /* Accesibilidad de foco */
+        .upload-zone input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; z-index: 10; }
+        .upload-content { display: flex; flex-direction: column; align-items: center; pointer-events: none; padding: 0 16px; text-align: center; max-width: 100%; box-sizing: border-box; }
+        .upload-content svg { width: 26px; height: 26px; stroke: var(--accent); margin-bottom: 6px; }
+        .upload-content span { font-size: 13px; color: var(--ink-soft); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+        .date-input-wrapper { position: relative; width: 100%; box-sizing: border-box; cursor: pointer; }
         input[type="date"] {
-            width: 100%;
-            padding: 10px;
-            background: #161618;
-            border: 1px solid #3a3a44;
-            border-radius: 8px;
-            color: #ffffff;
-            box-sizing: border-box;
+            width: 100%; max-width: 100%; padding: 14px 16px; background: #f8f9fa;
+            border: 1.5px solid #cbd5e1; border-radius: 12px; color: var(--ink);
+            font-family: var(--font-body); font-size: 15px; box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease; cursor: pointer;
+            -webkit-appearance: none; appearance: none;
         }
+        input[type="date"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-dim); background: #ffffff; }
         
-        button {
-            width: 100%;
-            background-color: #ffffff;
-            color: #000000;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 15px;
+        button[type="submit"] {
+            width: 100%; max-width: 260px; display: block; margin: 28px auto 0;
+            background-color: var(--accent); color: #ffffff; border: none; padding: 14px; border-radius: 24px;
+            font-size: 15px; font-family: var(--font-display); font-weight: 600;
+            cursor: pointer; transition: transform 0.3s cubic-bezier(.16,.84,.44,1), box-shadow 0.3s ease;
+            box-shadow: 0 8px 24px -8px var(--accent-glow);
         }
-        button:hover { background-color: #e4e4e7; }
-        .footer { text-align: center; color: #44444a; font-size: 11px; margin-top: 25px; letter-spacing: 0.5px; }
+        button[type="submit"]:hover { transform: scale(1.02); box-shadow: 0 12px 30px -8px var(--accent-glow); }
+        button[type="submit"]:active { transform: scale(0.97); background: #0098b8; }
+        button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .footer { 
+            font-family: var(--font-body); /* Ya es 'Inter' */
+            font-weight: 400;
+            font-size: 10px;
+            color: #4b5563;
+            text-align: center;
+            line-height: 1.5;
+            margin-top: 15px; 
+            width: 100%;
+        }
+
+        #pantalla-carga p { color: var(--ink); font-size: 16px; font-weight: 500; }
+        .error-card { background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 20px; padding: 40px 30px; text-align: center; max-width: 440px; width: 100%; box-shadow: 0 20px 40px -20px rgba(17,34,47,0.15); }
+        .error-card h2 { color: var(--accent); font-family: var(--font-display); font-size: 22px; margin: 0 0 15px 0; font-weight: 600; }
+        .error-card p { color: var(--ink-soft); font-size: 15px; line-height: 1.6; margin: 0; }
+
+        #custom-toast {
+            position: fixed; top: 24px; right: 24px; transform: translateY(-20px);
+            background: var(--primary); color: #fff; padding: 14px 24px; border-radius: 12px;
+            font-family: var(--font-body); font-size: 14.5px; font-weight: 500;
+            box-shadow: 0 10px 30px rgba(17,34,47,0.18); z-index: 10000;
+            display: flex; align-items: center; gap: 12px; opacity: 0; pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(.16,.84,.44,1);
+            max-width: calc(100vw - 48px);
+        }
+        #custom-toast.show { opacity: 1; transform: translateY(0); }
+        #custom-toast.success { background: #10B981; } 
+        #custom-toast.error { background: #EF4444; }
+        #custom-toast svg { width: 18px; height: 18px; stroke: #fff; flex-shrink: 0; fill: none; }
+
+        @media (max-width: 550px) {
+            #custom-toast { right: 12px; left: 12px; top: 12px; transform: translateY(-10px); max-width: none; border-radius: 10px; }
+            #custom-toast.show { transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
+    <div id="custom-toast" role="status" aria-live="polite">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" id="toast-icon"></svg>
+        <span id="toast-message">Cargando...</span>
+    </div>
+
     <div id="pantalla-carga">
-        <p style="color: #8a8a93; font-size: 15px;">Validando credenciales seguras...</p>
+        <p>Validando credenciales seguras...</p>
     </div>
 
     <div id="contenedor-panel" class="panel-container" style="display: none;">
-        <h1>Mi SmartCarDocs</h1>
-        <p class="subtitle">Selecciona los documentos vencidos que deseas actualizar.</p>
+        
+        <div class="brand-header">
+            <img src="img/logo.svg" alt="Logo Nexuz" onerror="this.style.display='none';">
+            <span>exuz</span>
+        </div>
+
+        <h1>Panel de Actualización</h1>
+        <p class="subtitle">Selecciona los documentos vencidos que deseas renovar en tu tarjeta.</p>
 
         <div class="info-box">
             <div class="info-row">
-                <span class="label">Propietario:</span>
+                <span class="label">Titular:</span>
                 <span id="txt-cliente" class="value">-</span>
             </div>
             <div class="info-row">
@@ -124,88 +234,182 @@
 
         <form id="form-actualizar">
             
-            <div class="doc-section">
-                <div class="doc-header" onclick="toggleDocumento('rev')">
-                    <input type="checkbox" id="chk-rev" onchange="actualizarEstadoDoc('rev')">
+            <div class="doc-section" id="section-rev">
+                <label class="doc-header">
+                    <div class="circle-checkbox">
+                        <input type="checkbox" id="chk-rev" onchange="actualizarEstadoDoc('rev')">
+                        <span class="circle-design"></span>
+                    </div>
                     <span class="doc-title">Actualizar Revisión Técnica</span>
-                </div>
+                </label>
                 <div id="body-rev" class="doc-body">
                     <label>Nuevo archivo PDF</label>
-                    <input type="file" id="file-revision" accept="application/pdf">
+                    <div class="upload-zone">
+                        <input type="file" id="file-revision" accept="application/pdf" onchange="actualizarNombreArchivo(this)">
+                        <div class="upload-content">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Haz clic o toca para subir tu PDF</span>
+                        </div>
+                    </div>
+                    
                     <label>Nueva Fecha de Vencimiento</label>
-                    <input type="date" id="date-revision">
+                    <div class="date-input-wrapper" onclick="forzarClickCalendario(this)">
+                        <input type="date" id="date-revision">
+                    </div>
                 </div>
             </div>
 
-            <div class="doc-section">
-                <div class="doc-header" onclick="toggleDocumento('soap')">
-                    <input type="checkbox" id="chk-soap" onchange="actualizarEstadoDoc('soap')">
+            <div class="doc-section" id="section-soap">
+                <label class="doc-header">
+                    <div class="circle-checkbox">
+                        <input type="checkbox" id="chk-soap" onchange="actualizarEstadoDoc('soap')">
+                        <span class="circle-design"></span>
+                    </div>
                     <span class="doc-title">Actualizar SOAP</span>
-                </div>
+                </label>
                 <div id="body-soap" class="doc-body">
                     <label>Nuevo archivo PDF</label>
-                    <input type="file" id="file-soap" accept="application/pdf">
+                    <div class="upload-zone">
+                        <input type="file" id="file-soap" accept="application/pdf" onchange="actualizarNombreArchivo(this)">
+                        <div class="upload-content">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Haz clic o toca para subir tu PDF</span>
+                        </div>
+                    </div>
+                    
                     <label>Nueva Fecha de Vencimiento</label>
-                    <input type="date" id="date-soap">
+                    <div class="date-input-wrapper" onclick="forzarClickCalendario(this)">
+                        <input type="date" id="date-soap">
+                    </div>
                 </div>
             </div>
 
-            <div class="doc-section">
-                <div class="doc-header" onclick="toggleDocumento('permiso')">
-                    <input type="checkbox" id="chk-permiso" onchange="actualizarEstadoDoc('permiso')">
+            <div class="doc-section" id="section-permiso">
+                <label class="doc-header">
+                    <div class="circle-checkbox">
+                        <input type="checkbox" id="chk-permiso" onchange="actualizarEstadoDoc('permiso')">
+                        <span class="circle-design"></span>
+                    </div>
                     <span class="doc-title">Actualizar Permiso de Circulación</span>
-                </div>
+                </label>
                 <div id="body-permiso" class="doc-body">
                     <label>Nuevo archivo PDF</label>
-                    <input type="file" id="file-permiso" accept="application/pdf">
+                    <div class="upload-zone">
+                        <input type="file" id="file-permiso" accept="application/pdf" onchange="actualizarNombreArchivo(this)">
+                        <div class="upload-content">
+                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            <span>Haz clic o toca para subir tu PDF</span>
+                        </div>
+                    </div>
+                    
                     <label>Nueva Fecha de Vencimiento</label>
-                    <input type="date" id="date-permiso">
+                    <div class="date-input-wrapper" onclick="forzarClickCalendario(this)">
+                        <input type="date" id="date-permiso">
+                    </div>
                 </div>
             </div>
 
-            <button type="submit">Guardar Cambios Seleccionados</button>
+            <button type="submit" id="btn-guardar">Guardar Cambios</button>
         </form>
 
-        <p class="footer">SMARTCARDOCS CHILE • PANEL PRIVADO</p>
+        <div style="text-align: center; margin-top: 25px;">
+            <a href="index.html" style="color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px; display: inline-block;">Cerrar sesión y volver al inicio</a>
+            <p class="footer" style="margin-top: 20px;">
+    Información protegida | Validez Ley N° 19.799<br>
+    MyNexuz.cl © 2026
+</p>
+        </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+        const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1";
 
         const urlParams = new URLSearchParams(window.location.search);
         const idUrl = urlParams.get('id');
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; 
 
-        // Funciones visuales para abrir y cerrar secciones dinámicamente
-        function toggleDocumento(tipo) {
-            // Previene que se dispare doble si hacen clic directo en el cuadradito checkbox
-            if (event.target.type === 'checkbox') return;
-            const checkbox = document.getElementById(`chk-${tipo}`);
-            checkbox.checked = !checkbox.checked;
-            actualizarEstadoDoc(tipo);
+        let toastTimeout;
+        function mostrarToast(mensaje, tipo = 'info', persistente = false) {
+            const toast = document.getElementById('custom-toast');
+            const toastMsg = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toast.className = ''; 
+            toast.classList.add(tipo);
+            toastMsg.innerText = mensaje;
+
+            if(tipo === 'success') {
+                toastIcon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+            } else if (tipo === 'error') {
+                toastIcon.innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
+            } else {
+                toastIcon.innerHTML = '<path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"></path>';
+            }
+
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            if (!persistente) {
+                toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 4000);
+            }
+        }
+
+        function forzarClickCalendario(wrapper) {
+            const inputDate = wrapper.querySelector('input[type="date"]');
+            if (inputDate && typeof inputDate.showPicker === 'function') inputDate.showPicker();
+        }
+
+        function actualizarNombreArchivo(input) {
+            const textSpan = input.nextElementSibling.querySelector('span');
+            if (input.files && input.files.length > 0) {
+                if(input.files[0].size > MAX_FILE_SIZE) {
+                    mostrarToast("El archivo excede el límite de 5MB.", "error");
+                    input.value = ""; 
+                    textSpan.innerText = 'Haz clic o toca para subir tu PDF';
+                    textSpan.style.color = 'var(--ink-soft)';
+                    return;
+                }
+                textSpan.innerText = input.files[0].name;
+                textSpan.style.color = 'var(--primary)';
+                textSpan.style.fontWeight = '700';
+                mostrarToast("Archivo adjuntado correctamente", "success");
+            } else {
+                textSpan.innerText = 'Haz clic o toca para subir tu PDF';
+                textSpan.style.color = 'var(--ink-soft)';
+                textSpan.style.fontWeight = '500';
+            }
         }
 
         function actualizarEstadoDoc(tipo) {
             const checkbox = document.getElementById(`chk-${tipo}`);
+            const section = document.getElementById(`section-${tipo}`);
             const body = document.getElementById(`body-${tipo}`);
             const inputFile = document.getElementById(`file-${tipo === 'rev' ? 'revision' : tipo}`);
             const inputDate = document.getElementById(`date-${tipo === 'rev' ? 'revision' : tipo}`);
             
             if (checkbox.checked) {
+                section.classList.add('active');
                 body.style.display = 'block';
-                inputFile.required = true;
-                inputDate.required = true;
+                inputFile.required = true; inputDate.required = true;
             } else {
+                section.classList.remove('active');
                 body.style.display = 'none';
-                inputFile.required = false;
-                inputFile.value = '';
-                inputDate.required = false;
-                inputDate.value = '';
+                inputFile.required = false; inputFile.value = '';
+                actualizarNombreArchivo(inputFile); 
+                inputDate.required = false; inputDate.value = '';
             }
         }
 
+        function mostrarError(titulo, mensaje) {
+            document.body.innerHTML = `<div class="error-card"><h2>${titulo}</h2><p>${mensaje}</p></div>`;
+        }
+
+        // CARGA INICIAL CON ABORT CONTROLLER PARA PREVENIR CUELGUES
         if (idUrl) {
-            // AHORA USAMOS LA FUNCIÓN SEGURA (RPC) PARA LEER EL VEHÍCULO SALTANDO EL RLS
+            const controllerSupa = new AbortController();
+            const timeoutSupa = setTimeout(() => controllerSupa.abort(), 15000);
+
             fetch(`${SUPABASE_URL}/rest/v1/rpc/obtener_vehiculo`, {
                 method: 'POST',
                 headers: {
@@ -213,99 +417,106 @@
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                 },
-                body: JSON.stringify({ p_codigo: idUrl })
+                body: JSON.stringify({ p_codigo: idUrl }),
+                signal: controllerSupa.signal
             })
             .then(res => res.json())
             .then(data => {
-                // Verificamos de forma segura si la respuesta trajo la fila del vehículo
                 if (Array.isArray(data) && data.length > 0) {
                     const vehiculo = data[0];
-
                     if (vehiculo.estado_cuenta !== "A") {
-                        mostrarError("Acceso Denegado", "Tu cuenta debe estar Activa para gestionar documentos.");
+                        mostrarError("Acceso Denegado", "Tu cuenta debe estar Activa para gestionar documentos. Contáctate con el equipo Nexuz.");
                     } else {
                         document.getElementById('pantalla-carga').style.display = 'none';
                         document.getElementById('contenedor-panel').style.display = 'block';
-                        
                         document.getElementById('txt-cliente').innerText = vehiculo.nombre_cliente || "Propietario";
                         document.getElementById('txt-patente').innerText = vehiculo.patente || "- - - -";
                     }
                 } else {
-                    mostrarError("Firma Inválida", "Las credenciales no existen en nuestros registros.");
+                    mostrarError("Firma Inválida", "Las credenciales de acceso no existen en nuestros registros o han expirado.");
                 }
             })
             .catch(err => {
-                console.error(err);
-                mostrarError("Error de Conexión", "No pudimos conectar con la base de datos.");
-            });
+                if(err.name === 'AbortError') mostrarError("Tiempo agotado", "La conexión es muy lenta. Por favor, recarga la página.");
+                else mostrarError("Error de Conexión", "No pudimos conectar con la base de datos de Nexuz.");
+            })
+            .finally(() => clearTimeout(timeoutSupa));
         } else {
-            mostrarError("Enlace Incompleto", "Para entrar al panel necesitas usar el link privado enviado a tu correo.");
+            mostrarError("Acceso Restringido", "No se detectaron credenciales seguras. Por favor, ingresa desde tu panel principal en Nexuz Chile.");
         }
 
-        function mostrarError(titulo, mensaje) {
-            document.body.innerHTML = `
-                <div style="background: linear-gradient(145deg, #141416, #1a1a1e); border: 1px solid #ff4a4a; border-radius: 20px; padding: 35px 25px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: sans-serif;">
-                    <h2 style="color: #ff4a4a; font-size: 22px; margin: 0 0 15px 0;">${titulo}</h2>
-                    <p style="color: #8a8a93; font-size: 14px; line-height: 1.6; margin: 0;">${mensaje}</p>
-                </div>
-            `;
-        }
-
+        // ENVÍO DE DATOS
         document.getElementById('form-actualizar').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Validar que al menos haya seleccionado uno
             const chkRev = document.getElementById('chk-rev').checked;
             const chkSoap = document.getElementById('chk-soap').checked;
             const chkPermiso = document.getElementById('chk-permiso').checked;
+            const btnGuardar = document.getElementById('btn-guardar');
             
             if(!chkRev && !chkSoap && !chkPermiso) {
-                alert("⚠️ Por favor, selecciona al menos un documento para actualizar.");
+                mostrarToast("Selecciona al menos un documento para actualizar.", "error");
                 return;
             }
 
-            // 1. Agarramos el texto de la patente que Supabase ya cargó en tu pantalla
+            // VALIDACIÓN ESTRICTA POR JAVASCRIPT (Previene fallos en iOS)
+            if (chkRev && (!document.getElementById('file-revision').files.length || !document.getElementById('date-revision').value)) {
+                mostrarToast("Falta el PDF o la fecha de Revisión Técnica.", "error"); return;
+            }
+            if (chkSoap && (!document.getElementById('file-soap').files.length || !document.getElementById('date-soap').value)) {
+                mostrarToast("Falta el PDF o la fecha del SOAP.", "error"); return;
+            }
+            if (chkPermiso && (!document.getElementById('file-permiso').files.length || !document.getElementById('date-permiso').value)) {
+                mostrarToast("Falta el PDF o la fecha del Permiso de Circulación.", "error"); return;
+            }
+
             const patenteVehiculo = document.getElementById('txt-patente').innerText;
-
-            // 2. Creamos la caja FormData para meter los archivos reales
             const formData = new FormData();
+            
             formData.append('patente', patenteVehiculo);
+            // CRÍTICO: Envío del ID real a Make.com para validar identidad y secreto antispam
+            formData.append('codigo_acceso', idUrl); 
+            formData.append('secret', 'NexuzUpload2026'); 
 
-            // Si marcó Revisión Técnica, adjuntamos el archivo y su fecha
             if (chkRev) {
                 formData.append('revision_tecnica', document.getElementById('file-revision').files[0]);
                 formData.append('fecha_revision', document.getElementById('date-revision').value);
             }
-            // Si marcó SOAP, adjuntamos el archivo y su fecha
             if (chkSoap) {
                 formData.append('soap', document.getElementById('file-soap').files[0]);
                 formData.append('fecha_soap', document.getElementById('date-soap').value);
             }
-            // Si marcó Permiso, adjuntamos el archivo y su fecha
             if (chkPermiso) {
                 formData.append('permiso_circulacion', document.getElementById('file-permiso').files[0]);
                 formData.append('fecha_permiso', document.getElementById('date-permiso').value);
             }
 
-            alert("⏳ Subiendo documentos y guardando cambios, por favor espere...");
+            mostrarToast("Subiendo documentos de forma segura...", "info", true);
+            btnGuardar.disabled = true;
 
-            // 3. Disparamos directo a tu Webhook Real de Make
-            fetch('https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1', {
+            const controllerMake = new AbortController();
+            const timeoutMake = setTimeout(() => controllerMake.abort(), 25000); // 25s de límite de espera
+
+            fetch(MAKE_WEBHOOK_URL, {
                 method: 'POST',
-                body: formData
+                body: formData,
+                signal: controllerMake.signal
             })
             .then(res => {
                 if(res.ok) {
-                    alert("✅ ¡Éxito! Tus documentos se han actualizado correctamente.");
-                    location.reload(); // Recarga la pantalla para mostrar los cambios
+                    mostrarToast("¡Tus documentos se actualizaron con éxito!", "success");
+                    setTimeout(() => { window.location.href = 'index.html'; }, 3000);
                 } else {
-                    alert("❌ Error en el servidor al intentar subir los archivos.");
+                    mostrarToast("Error en el servidor al subir los archivos.", "error");
+                    btnGuardar.disabled = false;
                 }
             })
             .catch(err => {
-                console.error(err);
-                alert("⚠️ Hubo un problema de conexión al enviar los datos.");
-            });
+                if(err.name === 'AbortError') mostrarToast("La conexión es muy lenta. Intenta nuevamente.", "error");
+                else mostrarToast("Hubo un problema de conexión al enviar los datos.", "error");
+                btnGuardar.disabled = false;
+            })
+            .finally(() => clearTimeout(timeoutMake));
         });
     </script>
 </body>

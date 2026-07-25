@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#11222F">
+    <meta name="robots" content="noindex, nofollow"> <!-- NUEVO: Bloquea a Google -->
     <title>Nexuz | Activación de Tarjeta NFC</title>
     
     <link rel="icon" type="image/svg+xml" href="img/logo.svg">
@@ -310,7 +311,13 @@
                         <input type="date" id="date-revision" required>
                     </div>
                 </div>
-
+<!-- Inicio Casilla de Términos -->
+                <div class="form-group" style="margin-top: 30px; display: flex; align-items: flex-start; gap: 12px; background: var(--accent-dim); padding: 16px; border-radius: 12px; border: 1px dashed var(--accent-glow);">
+                    <input type="checkbox" id="acepto_tyc" required style="margin-top: 2px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent);">
+                    <label for="acepto_tyc" style="margin-bottom: 0; font-size: 13px; line-height: 1.5; color: var(--ink);">
+                        He leído y acepto los <a href="terminos.html" target="_blank" style="color: var(--accent); font-weight: 700; text-decoration: none;">Términos y Condiciones</a> y la <a href="privacidad.html" target="_blank" style="color: var(--accent); font-weight: 700; text-decoration: none;">Política de Privacidad</a>.
+                    </label>
+                </div>
                 <button type="submit" class="btn-submit">Guardar y Activar Tarjeta</button>
             </form>
         </div>
@@ -356,18 +363,45 @@
             if (!persistente) { toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 4000); }
         }
 
-        // Diseño para Subida de Archivos
-        function actualizarNombreArchivo(input) {
+        // NUEVO: Función para detectar el ADN del archivo
+        function validarPDFReal(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const bytes = new Uint8Array(reader.result).subarray(0, 4);
+                    const header = String.fromCharCode(...bytes);
+                    resolve(header === '%PDF'); // La firma real e infalsificable de un PDF
+                };
+                reader.readAsArrayBuffer(file.slice(0, 4));
+            });
+        }
+
+        // MODIFICADO: Diseño para Subida de Archivos (Ahora es "async")
+        async function actualizarNombreArchivo(input) {
             const textSpan = input.nextElementSibling.querySelector('span');
             if (input.files && input.files.length > 0) {
-                if(input.files[0].size > MAX_FILE_SIZE) {
+                const file = input.files[0];
+
+                // 1. Validar tamaño
+                if(file.size > MAX_FILE_SIZE) {
                     mostrarToast("El archivo excede el límite de 5MB.", "error");
                     input.value = ""; 
                     textSpan.innerText = 'Haz clic o toca para subir tu PDF';
                     textSpan.style.color = 'var(--ink-soft)';
                     return;
                 }
-                textSpan.innerText = input.files[0].name;
+
+                // 2. NUEVO: Validar Magic Bytes (PDF Real)
+                const esPdfReal = await validarPDFReal(file);
+                if (!esPdfReal) {
+                    mostrarToast("Alerta: El archivo no es un PDF válido o está dañado.", "error");
+                    input.value = ""; 
+                    textSpan.innerText = 'Haz clic o toca para subir tu PDF';
+                    textSpan.style.color = 'var(--ink-soft)';
+                    return;
+                }
+
+                textSpan.innerText = file.name;
                 textSpan.style.color = 'var(--primary)';
                 textSpan.style.fontWeight = '700';
                 mostrarToast("Archivo adjuntado correctamente", "success");
@@ -385,13 +419,19 @@
 
         // PASO 1: Validar Patente + Código en Supabase
         function validarEntrada() {
-            const patente = document.getElementById('input-patente').value.trim().toUpperCase();
-            const codigo = document.getElementById('input-code').value.trim().toUpperCase();
+            // Capturamos los elementos completos del HTML, no solo su valor
+            const patenteInput = document.getElementById('input-patente');
+            const codigoInput = document.getElementById('input-code');
 
-            if(!patente || !codigo) { 
-                mostrarToast("Por favor, completa la patente y el código.", "error"); 
-                return; 
+            // Forzamos al navegador a revisar si cumplen el required y el minlength
+            if (!patenteInput.checkValidity() || !codigoInput.checkValidity()) {
+                mostrarToast("Revisa el formato. La patente debe tener 6 caracteres y el código 8.", "error");
+                return; // Abortamos la consulta a la base de datos
             }
+
+            // Si pasó la prueba, ahora sí tomamos los valores limpios
+            const patente = patenteInput.value.trim().toUpperCase();
+            const codigo = codigoInput.value.trim().toUpperCase();
 
             // Buscamos si el código de 8 dígitos es real y está libre
             fetch(`${SUPABASE_URL}/rest/v1/codigos_activacion?codigo=eq.${codigo}&usado=eq.false`, {
@@ -417,6 +457,12 @@
         // PASO 2: Envío final de los datos y documentos REAL a Make
         document.getElementById('form-registro-final').addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Si la casilla no está marcada, detenemos todo el proceso y mostramos error
+            if (!document.getElementById('acepto_tyc').checked) {
+                mostrarToast("Debes aceptar los Términos y Condiciones para continuar.", "error");
+                return; // Este return aborta el envío a Make
+            }
 
             const btn = e.target.querySelector('.btn-submit');
             btn.innerText = "Activando tarjeta...";
@@ -425,6 +471,13 @@
 
             // Preparamos el paquete con los archivos y textos
             const formData = new FormData();
+
+            // --- NUEVO: Agregamos la versión de los T&C ---
+            const versionTyC = "v1.0"; 
+            formData.append('terms_accepted', document.getElementById('acepto_tyc').checked);
+            formData.append('terms_version', versionTyC);
+            // ----------------------------------------------
+
             formData.append('nombre', document.getElementById('input-nombre').value.trim());
             formData.append('email', document.getElementById('input-email').value.trim());
             // Capturamos los 8 números limpios escritos por el usuario
@@ -443,14 +496,15 @@
             formData.append('file_revision', document.getElementById('file-revision').files[0]);
             formData.append('date_revision', document.getElementById('date-revision').value);
 
-            // Mandamos el paquete directo a la antena de Make
-            fetch("https://hook.us2.make.com/1ma4iv64oiwh4cswac0ionnhgg09irnv", {
-                method: 'POST',
-                body: formData
+            // Mandamos el paquete a Make CON PROGRESO EN VIVO
+            subirConProgreso("https://hook.us2.make.com/1ma4iv64oiwh4cswac0ionnhgg09irnv", formData, (progreso) => {
+                // Actualiza el texto del botón en tiempo real
+                btn.innerText = `Subiendo archivos... ${progreso}%`;
             })
             .then(res => {
                 if(res.ok) {
-                    mostrarToast("✨ ¡Tarjeta activada con éxito!", "success", true);
+                    mostrarToast("¡Tarjeta activada con éxito!", "success", true);
+                    btn.innerText = "¡Listo!"; // Cierre visual exitoso
                     setTimeout(() => { window.location.href = "index.html"; }, 3500); 
                 } else {
                     mostrarToast("Hubo un problema al subir los archivos.", "error");
@@ -463,7 +517,34 @@
                 btn.innerText = "Guardar y Activar Tarjeta";
                 btn.disabled = false;
             });
+        }); // <--- ESTE ES EL CIERRE QUE FALTABA
+
+        // NUEVO: Seguro contra cierre accidental de pestaña
+        window.addEventListener('beforeunload', function (e) {
+            const btnFinal = document.querySelector('.btn-submit');
+            // Si el botón está desactivado, es porque los archivos se están subiendo
+            if (btnFinal && btnFinal.disabled) {
+                e.preventDefault();
+                e.returnValue = ''; // Muestra la alerta nativa del navegador
+            }
         });
+
+        // NUEVO: Motor de subida con seguimiento de progreso
+        function subirConProgreso(url, formData, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', url);
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const porcentaje = Math.round((e.loaded / e.total) * 100);
+                        onProgress(porcentaje);
+                    }
+                };
+                xhr.onload = () => resolve({ ok: xhr.status >= 200 && xhr.status < 300 });
+                xhr.onerror = () => reject(new Error('Error de red'));
+                xhr.send(formData);
+            });
+        }
     </script>
 </body>
 </html>

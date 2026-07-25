@@ -313,7 +313,7 @@
         </form>
 
         <div style="text-align: center; margin-top: 25px;">
-            <a href="index.html" style="color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px; display: inline-block;">Cerrar sesión y volver al inicio</a>
+            <a href="#" onclick="cerrarSesionSegura(event)" style="color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px; display: inline-block;">Cerrar sesión y volver al inicio</a>
             <p class="footer" style="margin-top: 20px;">
     Información protegida | Validez Ley N° 19.799<br>
     MyNexuz.cl © 2026
@@ -326,8 +326,15 @@
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
         const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/xp5i9yj5mzb5ydsfrx71n57hoes178j1";
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const idUrl = urlParams.get('id');
+        // NUEVO: Leemos la llave desde la caja fuerte invisible del navegador
+        const idUrl = sessionStorage.getItem('nx_session');
+
+        // NUEVO: Función real para destruir la llave de seguridad al salir
+        function cerrarSesionSegura(e) {
+            e.preventDefault();
+            sessionStorage.removeItem('nx_session'); // Destruye la sesión
+            window.location.href = 'index.html';
+        }
         const MAX_FILE_SIZE = 5 * 1024 * 1024; 
 
         let toastTimeout;
@@ -360,17 +367,45 @@
             if (inputDate && typeof inputDate.showPicker === 'function') inputDate.showPicker();
         }
 
-        function actualizarNombreArchivo(input) {
+        // NUEVO: Función para detectar el ADN del archivo
+        function validarPDFReal(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const bytes = new Uint8Array(reader.result).subarray(0, 4);
+                    const header = String.fromCharCode(...bytes);
+                    resolve(header === '%PDF'); // La firma real e infalsificable de un PDF
+                };
+                reader.readAsArrayBuffer(file.slice(0, 4));
+            });
+        }
+
+        // MODIFICADO: Diseño para Subida de Archivos (Ahora es "async")
+        async function actualizarNombreArchivo(input) {
             const textSpan = input.nextElementSibling.querySelector('span');
             if (input.files && input.files.length > 0) {
-                if(input.files[0].size > MAX_FILE_SIZE) {
+                const file = input.files[0];
+
+                // 1. Validar tamaño
+                if(file.size > MAX_FILE_SIZE) {
                     mostrarToast("El archivo excede el límite de 5MB.", "error");
                     input.value = ""; 
                     textSpan.innerText = 'Haz clic o toca para subir tu PDF';
                     textSpan.style.color = 'var(--ink-soft)';
                     return;
                 }
-                textSpan.innerText = input.files[0].name;
+
+                // 2. NUEVO: Validar Magic Bytes (PDF Real)
+                const esPdfReal = await validarPDFReal(file);
+                if (!esPdfReal) {
+                    mostrarToast("Alerta: El archivo no es un PDF válido o está dañado.", "error");
+                    input.value = ""; 
+                    textSpan.innerText = 'Haz clic o toca para subir tu PDF';
+                    textSpan.style.color = 'var(--ink-soft)';
+                    return;
+                }
+
+                textSpan.innerText = file.name;
                 textSpan.style.color = 'var(--primary)';
                 textSpan.style.fontWeight = '700';
                 mostrarToast("Archivo adjuntado correctamente", "success");
@@ -380,7 +415,7 @@
                 textSpan.style.fontWeight = '500';
             }
         }
-
+        
         function actualizarEstadoDoc(tipo) {
             const checkbox = document.getElementById(`chk-${tipo}`);
             const section = document.getElementById(`section-${tipo}`);
@@ -476,7 +511,6 @@
             formData.append('patente', patenteVehiculo);
             // CRÍTICO: Envío del ID real a Make.com para validar identidad y secreto antispam
             formData.append('codigo_acceso', idUrl); 
-            formData.append('secret', 'NexuzUpload2026'); 
 
             if (chkRev) {
                 formData.append('revision_tecnica', document.getElementById('file-revision').files[0]);
@@ -491,33 +525,64 @@
                 formData.append('fecha_permiso', document.getElementById('date-permiso').value);
             }
 
-            mostrarToast("Subiendo documentos de forma segura...", "info", true);
+            // Cambiamos el texto del botón y lo desactivamos
+            btnGuardar.innerText = "Preparando archivos...";
             btnGuardar.disabled = true;
+            mostrarToast("Subiendo información de forma segura...", "info", true);
 
-            const controllerMake = new AbortController();
-            const timeoutMake = setTimeout(() => controllerMake.abort(), 25000); // 25s de límite de espera
-
-            fetch(MAKE_WEBHOOK_URL, {
-                method: 'POST',
-                body: formData,
-                signal: controllerMake.signal
+            // Mandamos el paquete a Make CON PROGRESO EN VIVO
+            subirConProgreso(MAKE_WEBHOOK_URL, formData, (progreso) => {
+                // Actualiza el texto del botón en tiempo real
+                btnGuardar.innerText = `Subiendo archivos... ${progreso}%`;
             })
             .then(res => {
                 if(res.ok) {
-                    mostrarToast("¡Tus documentos se actualizaron con éxito!", "success");
+                    mostrarToast("¡Tus documentos se actualizaron con éxito!", "success", true);
+                    btnGuardar.innerText = "¡Listo!";
                     setTimeout(() => { window.location.href = 'index.html'; }, 3000);
                 } else {
                     mostrarToast("Error en el servidor al subir los archivos.", "error");
+                    btnGuardar.innerText = "Guardar Cambios";
                     btnGuardar.disabled = false;
                 }
             })
             .catch(err => {
-                if(err.name === 'AbortError') mostrarToast("La conexión es muy lenta. Intenta nuevamente.", "error");
-                else mostrarToast("Hubo un problema de conexión al enviar los datos.", "error");
+                if(err.message === 'Error de red') {
+                    mostrarToast("La conexión es muy lenta o se cortó. Intenta nuevamente.", "error");
+                } else {
+                    mostrarToast("Hubo un problema de conexión al enviar los datos.", "error");
+                }
+                btnGuardar.innerText = "Guardar Cambios";
                 btnGuardar.disabled = false;
-            })
-            .finally(() => clearTimeout(timeoutMake));
+            });
         });
+
+        // NUEVO: Seguro contra cierre accidental de pestaña
+        window.addEventListener('beforeunload', function (e) {
+            const btnFinal = document.getElementById('btn-guardar');
+            // Si el botón está desactivado, es porque los archivos se están subiendo
+            if (btnFinal && btnFinal.disabled) {
+                e.preventDefault();
+                e.returnValue = ''; // Muestra la alerta nativa del navegador
+            }
+        });
+
+        // NUEVO: Motor de subida con seguimiento de progreso
+        function subirConProgreso(url, formData, onProgress) {
+            return new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', url);
+                xhr.upload.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const porcentaje = Math.round((e.loaded / e.total) * 100);
+                        onProgress(porcentaje);
+                    }
+                };
+                xhr.onload = () => resolve({ ok: xhr.status >= 200 && xhr.status < 300 });
+                xhr.onerror = () => reject(new Error('Error de red'));
+                xhr.send(formData);
+            });
+        }
     </script>
 </body>
 </html>

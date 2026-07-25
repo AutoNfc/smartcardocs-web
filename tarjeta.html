@@ -20,7 +20,8 @@
     <!-- FAVICON -->
     <link rel="icon" type="image/svg+xml" href="img/logo.svg">
     
-    <!-- FUENTES: Inter, Teko, Poppins -->
+    <!-- FUENTES Y CONEXIÓN ANTICIPADA A BASE DE DATOS -->
+    <link rel="preconnect" href="https://ofeqicztagixejyqvuof.supabase.co" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@600&family=Teko:wght@300&display=swap" rel="stylesheet">
@@ -372,7 +373,7 @@
     <div class="container">
         
         <!-- NOMBRE INTER BOLD -->
-        <div class="welcome" id="client-name">Cargando...</div>
+        <h1 class="welcome" id="client-name">Cargando...</h1>
         
         <!-- PATENTE TEKO LIGHT (Separada en 3 bloques) -->
         <div class="patente-box">
@@ -418,49 +419,118 @@
         setTimeout(() => { popup.style.display = 'none'; }, 300);
     }
 
-    // Función para ocultar el cargador y revelar la app con suavidad
     function quitarCargador() {
         const loader = document.getElementById('loading-screen');
         const container = document.querySelector('.container');
-        
         if (loader) {
             loader.style.opacity = '0';
             loader.style.visibility = 'hidden';
         }
-        if (container) {
-            container.style.opacity = '1';
-        }
+        if (container) { container.style.opacity = '1'; }
     }
-    // ==========================================
-    // LOGICA SUPABASE INTACTA
-    // ==========================================
+
     const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
 
     const urlParams = new URLSearchParams(window.location.search);
     const idUrl = urlParams.get('id');
 
+    // 1. FUNCIÓN REUTILIZABLE: Dibuja la tarjeta en pantalla (Sirve para Online y Offline)
+    function renderizarVehiculo(vehiculo) {
+        if (vehiculo.estado_cuenta === "P") {
+            const patenteSegura = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, "");
+            mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${patenteSegura} se registró con éxito, pero está en proceso de activación.`);
+            return;
+        }
+
+        document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
+        const patenteLimpia = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, ""); 
+        document.getElementById('par1').innerText = patenteLimpia.substring(0, 2); 
+        document.getElementById('par2').innerText = patenteLimpia.substring(2, 4); 
+        document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); 
+
+        let documentosPorVencer = [];
+
+        function aplicarEstado(btnId, urlPdf, fechaVencimiento, nombreDocumento) {
+            const btn = document.getElementById(btnId);
+            if(urlPdf) {
+                btn.href = urlPdf; 
+                if(fechaVencimiento) {
+                    const hoy = new Date(); 
+                    const fechaVen = new Date(fechaVencimiento + "T23:59:59"); 
+                    const diferenciaTiempo = fechaVen - hoy;
+                    const diasRestantes = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
+                    
+                    const spanEstado = document.createElement('span');
+                    spanEstado.className = 'badge'; 
+
+                    if (diasRestantes < 0) {
+                        spanEstado.classList.add('badge-vencido'); 
+                        btn.style.border = "1px solid #EF4444"; 
+                    } else if (diasRestantes <= 15) {
+                        spanEstado.classList.add('badge-alerta'); 
+                        btn.style.border = "1px solid #F59E0B";
+                        documentosPorVencer.push(`${nombreDocumento} (en ${diasRestantes} días)`);
+                    } else {
+                        spanEstado.classList.add('badge-vigente'); 
+                    }
+                    btn.appendChild(spanEstado);
+                }
+            } else {
+                btn.style.display = 'none'; 
+            }
+        }
+
+        aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision, "Revisión Técnica");
+        aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap, "SOAP");
+        aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso, "Permiso");
+        
+        quitarCargador();
+
+        if (documentosPorVencer.length > 0) {
+            const popup = document.getElementById('popup-vencimiento');
+            const caja = document.getElementById('popup-caja');
+            const mensaje = document.getElementById('popup-mensaje');
+            
+            if (documentosPorVencer.length === 1) {
+                mensaje.innerText = "Tu " + documentosPorVencer[0] + " vencerá pronto. Recuerda renovarlo.";
+            } else {
+                mensaje.innerText = "Tu " + documentosPorVencer.join(" y tu ") + " vencerán pronto. Recuerda renovarlos.";
+            }
+
+            popup.style.display = 'flex';
+            setTimeout(() => { popup.style.opacity = '1'; caja.style.transform = 'scale(1)'; }, 50);
+        }
+    }
+
+    // 2. FUNCIÓN: Aviso de lectura Offline
+    function mostrarAvisoOffline(texto) {
+        const aviso = document.createElement('div');
+        aviso.style.position = 'fixed'; aviso.style.bottom = '0'; aviso.style.left = '0';
+        aviso.style.width = '100%'; aviso.style.backgroundColor = '#D97706';
+        aviso.style.color = '#fff'; aviso.style.textAlign = 'center';
+        aviso.style.padding = '10px'; aviso.style.fontFamily = 'Inter, sans-serif';
+        aviso.style.fontSize = '12px'; aviso.style.fontWeight = '600'; aviso.style.zIndex = '99999';
+        aviso.innerText = texto;
+        document.body.appendChild(aviso);
+    }
+
+    // 3. LÓGICA PRINCIPAL: Intentar conectar, si falla, buscar en Caché
     if (idUrl) {
-        // 1. Iniciamos un "reloj de arena" de 9 segundos
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 9000);
 
-        const idSanitizado = encodeURIComponent(idUrl);
-
-        // Llamamos a la función RPC segura de Supabase pasando el UUID como parámetro limpio
         fetch(`${SUPABASE_URL}/rest/v1/rpc/obtener_vehiculo_publico`, {
-            method: 'POST', // Las funciones RPC de Supabase se llaman siempre con POST
+            method: 'POST',
             headers: {
                 'apikey': SUPABASE_ANON_KEY,
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id_tarjeta: idUrl }), // Enviamos el UUID de forma directa y estructurada
+            body: JSON.stringify({ id_tarjeta: idUrl }),
             signal: controller.signal
         })
         .then(response => {
-            // 3. Si el servidor responde a tiempo, cancelamos la cuenta regresiva
             clearTimeout(timeoutId);
             return response.json();
         })
@@ -468,97 +538,35 @@
             if (data && data.length > 0) {
                 const vehiculo = data[0];
                 
-                if (vehiculo.estado_cuenta === "P") {
-                    // Limpiamos la patente de símbolos extraños por seguridad antes de imprimirla en el error
-                    const patenteSegura = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, "");
-                    mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${patenteSegura} se registró con éxito, pero está en proceso de activación por el administrador.`);
-                } else {
-                    document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
-                    
-                    const patenteLimpia = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, ""); 
-
-                    document.getElementById('par1').innerText = patenteLimpia.substring(0, 2); 
-                    document.getElementById('par2').innerText = patenteLimpia.substring(2, 4); 
-                    document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); 
-                    
-                    // Lista silenciosa para el popup
-                    let documentosPorVencer = [];
-
-                    function aplicarEstado(btnId, urlPdf, fechaVencimiento, nombreDocumento) {
-                        const btn = document.getElementById(btnId);
-                        
-                        if(urlPdf) {
-                            btn.href = urlPdf; 
-                            
-                            if(fechaVencimiento) {
-                                const hoy = new Date(); 
-                                const fechaVen = new Date(fechaVencimiento + "T23:59:59"); 
-                                
-                                const diferenciaTiempo = fechaVen - hoy;
-                                const diasRestantes = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
-                                
-                                const spanEstado = document.createElement('span');
-                                spanEstado.className = 'badge'; // Solo el punto minimalista
-
-                                if (diasRestantes < 0) {
-                                    spanEstado.classList.add('badge-vencido'); // Punto Rojo
-                                    btn.style.border = "1px solid #EF4444"; 
-                                } else if (diasRestantes <= 15) {
-                                    spanEstado.classList.add('badge-alerta'); // Punto Amarillo
-                                    btn.style.border = "1px solid #F59E0B";
-                                    documentosPorVencer.push(`${nombreDocumento} (en ${diasRestantes} días)`);
-                                } else {
-                                    spanEstado.classList.add('badge-vigente'); // Punto Verde
-                                }
-                                
-                                btn.appendChild(spanEstado);
-                            }
-                        } else {
-                            btn.style.display = 'none'; 
-                        }
-                    }
-
-                    // 1. Aplicamos los estados a los botones
-                    aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision, "Revisión Técnica");
-                    aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap, "SOAP");
-                    aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso, "Permiso");
-                    
-                    // 2. Quitamos el cargador principal
-                    quitarCargador();
-
-                    // 3. Si hay alertas, disparamos el Popup Flotante
-                    if (documentosPorVencer.length > 0) {
-                        const popup = document.getElementById('popup-vencimiento');
-                        const caja = document.getElementById('popup-caja');
-                        const mensaje = document.getElementById('popup-mensaje');
-                        
-                        // 🧠 Lógica inteligente para singular o plural
-                        if (documentosPorVencer.length === 1) {
-                            mensaje.innerText = "Tu " + documentosPorVencer[0] + " vencerá pronto. Recuerda renovarlo para evitar multas.";
-                        } else {
-                            mensaje.innerText = "Tu " + documentosPorVencer.join(" y tu ") + " vencerán pronto. Recuerda renovarlos para evitar multas.";
-                        }
-
-                        // Mostramos el popup con un suave efecto de entrada
-                        popup.style.display = 'flex';
-                        setTimeout(() => {
-                            popup.style.opacity = '1';
-                            caja.style.transform = 'scale(1)';
-                        }, 50);
-                    }
-                }
+                // NUEVO: Guardar una copia de seguridad en el celular
+                try {
+                    localStorage.setItem(`nx_cache_${idUrl}`, JSON.stringify({ data: vehiculo, fecha: Date.now() }));
+                } catch(e) {}
+                
+                renderizarVehiculo(vehiculo);
             } else {
                 mostrarPantallaError("🔒 Acceso Denegado", "Esta tarjeta no contiene una firma digital válida en nuestros registros.");
             }
         })
         .catch(error => {
-            // 4. Si falla por cualquier motivo, limpiamos el reloj primero
             clearTimeout(timeoutId);
-            console.error("Error:", error);
             
-            // 5. Diferenciamos si fue por falta de internet/timeout o un error del servidor
+            // NUEVO: Si la red falla, buscar la copia de seguridad
+            const cache = localStorage.getItem(`nx_cache_${idUrl}`);
+            if (cache) {
+                const { data, fecha } = JSON.parse(cache);
+                const horasDesdeCache = Math.round((Date.now() - fecha) / 3600000);
+                
+                renderizarVehiculo(data); // Dibuja la tarjeta con datos viejos
+                setTimeout(() => {
+                    mostrarAvisoOffline(`Sin internet. Mostrando respaldo de hace ${horasDesdeCache}h.`);
+                }, 800);
+                return; // Corta la ejecución para que no muestre el error genérico
+            }
+
+            // Si no hay caché y no hay internet, muestra el error de siempre
             if (error.name === 'AbortError' || !navigator.onLine) {
-                mostrarPantallaError("⚠️ Error de Conexión", "La señal de internet es muy débil o estás desconectado. Por favor reintenta.");
+                mostrarPantallaError("⚠️ Error de Conexión", "La señal de internet es débil y no hay respaldos guardados. Por favor reintenta.");
             } else {
                 mostrarPantallaError("⚠️ Error de Servidor", "No pudimos conectar con el servidor seguro de Nexuz.");
             }
@@ -567,44 +575,24 @@
         mostrarPantallaError("❌ Acceso Inválido", "No se detectó ninguna credencial digital. Escanea una tarjeta válida.");
     }
 
-    // Función que limpia la pantalla y muestra el escudo de seguridad con diseño Premium
+    // 4. PANTALLA DE ERROR ORIGINAL (Intacta)
     function mostrarPantallaError(titulo, mensaje) {
         quitarCargador();
-        // Detectamos si el mensaje es de Error/Denegado o de Pendiente para cambiar los colores
         const esError = titulo.toLowerCase().includes("denegado") || titulo.toLowerCase().includes("error") || titulo.toLowerCase().includes("inválido");
-        
-        const colorTema = esError ? "#EF4444" : "#F59E0B"; // Rojo para error, Naranja para pendiente
+        const colorTema = esError ? "#EF4444" : "#F59E0B"; 
         const colorFondoIcono = esError ? "rgba(239, 68, 68, 0.15)" : "rgba(245, 158, 11, 0.15)";
-        
-        // Limpiamos los emojis del título porque ahora pondremos un ícono gigante arriba
         const tituloLimpio = titulo.replace(/🔒|⏳|⚠️|❌/g, '').trim();
         const icono = esError ? '🔒' : '⏳';
 
         document.body.innerHTML = `
             <div style="background-color: #11222F; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; width: 100%;">
-                
                 <div style="background: #1a2c3a; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 40px 25px; text-align: center; max-width: 360px; width: 100%; box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px ${colorFondoIcono};">
-                    
-                    <div style="background-color: ${colorFondoIcono}; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 32px; border: 1px solid ${colorTema};">
-                        ${icono}
-                    </div>
-
-                    <h2 style="color: #ffffff; font-family: 'Poppins', sans-serif; font-size: 22px; margin: 0 0 12px 0; font-weight: 600;">
-                        ${tituloLimpio}
-                    </h2>
-                    
-                    <p style="color: #9ca3af; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0; font-weight: 400;">
-                        ${mensaje}
-                    </p>
-                    
-                    <a href="javascript:window.location.reload();" style="display: inline-block; background-color: ${colorTema}; color: #ffffff; text-decoration: none; padding: 14px 30px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; box-shadow: 0 4px 15px ${colorFondoIcono};" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">
-                        Actualizar Pantalla
-                    </a>
+                    <div style="background-color: ${colorFondoIcono}; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 32px; border: 1px solid ${colorTema};">${icono}</div>
+                    <h2 style="color: #ffffff; font-family: 'Poppins', sans-serif; font-size: 22px; margin: 0 0 12px 0; font-weight: 600;">${tituloLimpio}</h2>
+                    <p style="color: #9ca3af; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0; font-weight: 400;">${mensaje}</p>
+                    <a href="javascript:window.location.reload();" style="display: inline-block; background-color: ${colorTema}; color: #ffffff; text-decoration: none; padding: 14px 30px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; box-shadow: 0 4px 15px ${colorFondoIcono};" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">Actualizar Pantalla</a>
                 </div>
-
-                <div style="margin-top: 4vh; color: #6b7280; font-family: 'Inter', sans-serif; font-size: 11px; text-align: center; letter-spacing: 0.5px; line-height: 1.5;">
-                    MyNexuz.cl<br>Informacion Protegida
-                </div>
+                <div style="margin-top: 4vh; color: #6b7280; font-family: 'Inter', sans-serif; font-size: 11px; text-align: center; letter-spacing: 0.5px; line-height: 1.5;">MyNexuz.cl<br>Informacion Protegida</div>
             </div>
         `;
     }

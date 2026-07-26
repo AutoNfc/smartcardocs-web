@@ -435,7 +435,7 @@
 
             try {
                 // Llamada segura a la función RPC de Supabase
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/verificar_codigo_activacion`, {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/codigos_activacion`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

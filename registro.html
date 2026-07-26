@@ -417,8 +417,8 @@
             if (inputDate && typeof inputDate.showPicker === 'function') inputDate.showPicker();
         }
 
-        // PASO 1: Validar Patente + Código en Supabase
-        function validarEntrada() {
+        // PASO 1: Validar Patente + Código en Supabase de forma segura (RPC)
+        async function validarEntrada() {
             // Capturamos los elementos completos del HTML, no solo su valor
             const patenteInput = document.getElementById('input-patente');
             const codigoInput = document.getElementById('input-code');
@@ -426,21 +426,28 @@
             // Forzamos al navegador a revisar si cumplen el required y el minlength
             if (!patenteInput.checkValidity() || !codigoInput.checkValidity()) {
                 mostrarToast("Revisa el formato. La patente debe tener 6 caracteres y el código 8.", "error");
-                return; // Abortamos la consulta a la base de datos
+                return; // Abortamos
             }
 
-            // Si pasó la prueba, ahora sí tomamos los valores limpios
+            // Si pasó la prueba, tomamos los valores limpios
             const patente = patenteInput.value.trim().toUpperCase();
             const codigo = codigoInput.value.trim().toUpperCase();
 
-            // Buscamos si el código de 8 dígitos es real y está libre
-            fetch(`${SUPABASE_URL}/rest/v1/codigos_activacion?codigo=eq.${codigo}&usado=eq.false`, {
-                method: 'GET',
-                headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data && data.length > 0) {
+            try {
+                // Llamada segura a la función RPC de Supabase
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/verificar_codigo_activacion`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    },
+                    body: JSON.stringify({ p_codigo: codigo })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data && data.length > 0) {
                     patenteGuardada = patente;
                     codigoGuardado = codigo;
 
@@ -450,8 +457,9 @@
                 } else {
                     mostrarToast("Código inválido o ya utilizado.", "error");
                 }
-            })
-            .catch(err => mostrarToast("Error de conexión al verificar el código.", "error"));
+            } catch (err) {
+                mostrarToast("Error de conexión al verificar el código.", "error");
+            }
         }
 
         // PASO 2: Envío final de los datos y documentos REAL a Make

@@ -347,6 +347,59 @@
             opacity: 0;
             transition: opacity 0.5s ease;
         }
+        
+        /* =========================================
+           CHECKBOX ESTILO CÍRCULO PREMIUM
+           ========================================= */
+        .terminos-container {
+            display: flex;
+            align-items: center;
+            text-align: left;
+            cursor: pointer;
+            margin-bottom: 25px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .circle-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+        .circle-checkbox input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .circle-design {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: transparent; border: 2px solid #cbd5e1;
+            transition: all .25s ease; border-radius: 50%;
+        }
+        .circle-design:after {
+            content: ""; position: absolute; display: none;
+            top: 5px; left: 5px; width: 8px; height: 8px;
+            border-radius: 50%; background: white;
+        }
+        .circle-checkbox input:checked + .circle-design {
+            background-color: #00B4D8;
+            border-color: #00B4D8;
+        }
+        .circle-checkbox input:checked + .circle-design:after {
+            display: block;
+        }
+        .terminos-text {
+            font-size: 13px;
+            color: #4b5b66;
+            line-height: 1.4;
+            font-family: 'Inter', sans-serif;
+        }
+        .terminos-text a {
+            color: #00B4D8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .terminos-text a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
@@ -363,6 +416,33 @@
         </div>
     </div>
 
+    <!-- POPUP DE TÉRMINOS Y CONDICIONES (DISEÑO MODAL INDEX) -->
+    <div id="popup-terminos" style="display: none; position: fixed; inset: 0; background: rgba(9,17,23,0.6); backdrop-filter: blur(6px); align-items: center; justify-content: center; z-index: 10001; padding: 20px;">
+        <div style="background-color: #ffffff; border: 1px solid rgba(17,34,47,0.10); border-radius: 24px; padding: 34px 28px 28px; width: 100%; max-width: 400px; text-align: left; box-shadow: 0 40px 80px -20px rgba(17,34,47,0.35);">
+            
+            <!-- Icono cuadrado redondeado tipo App -->
+            <div style="width: 50px; height: 50px; border-radius: 16px; background-color: rgba(0, 180, 216, 0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00B4D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 23px; height: 23px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            
+            <h3 style="font-family: 'Poppins', sans-serif; color: #11222F; font-size: 21px; margin-bottom: 8px;">Bienvenido a Nexuz</h3>
+            <p style="font-family: 'Inter', sans-serif; color: #4b5b66; font-size: 13.5px; line-height: 1.5; margin-bottom: 22px;">Antes de mostrar tu Permiso, SOAP y Revisión Técnica, necesitamos que aceptes nuestras políticas de privacidad y uso.</p>
+            
+            <!-- CHECKBOX CIRCULAR PREMIUM -->
+            <label class="terminos-container">
+                <div class="circle-checkbox">
+                    <input type="checkbox" id="chk-terminos">
+                    <span class="circle-design"></span>
+                </div>
+                <span class="terminos-text">
+                    Acepto los <a href="terminos.html" target="_blank">Términos y Condiciones</a> y la <a href="privacidad.html" target="_blank">Política de Privacidad</a>.
+                </span>
+            </label>
+
+            <!-- Botón apagado por defecto -->
+            <button id="btn-aceptar-terminos" style="background-color: #11222F; color: #ffffff; border: none; padding: 15px 0; width: 100%; border-radius: 30px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; cursor: not-allowed; opacity: 0.5; transition: all 0.3s ease;" disabled>Aceptar y continuar</button>
+        </div>
+    </div>
 
     <!-- FONDO CURVO SUPERIOR -->
     <div class="header-curve">
@@ -435,12 +515,53 @@
     const urlParams = new URLSearchParams(window.location.search);
     const idUrl = urlParams.get('id');
 
+    const VERSION_TERMINOS = "v1.0";
+    let escaneoYaRegistrado = false;
+
     // 1. FUNCIÓN REUTILIZABLE: Dibuja la tarjeta en pantalla (Sirve para Online y Offline)
     function renderizarVehiculo(vehiculo) {
         if (vehiculo.estado_cuenta === "P") {
             const patenteSegura = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, "");
-            mostrarPantallaError("⏳ Tarjeta en Proceso", `El vehículo con patente ${patenteSegura} se registró con éxito, pero está en proceso de activación.`);
+            mostrarPantallaError("⏳ Tarjeta en Proceso", `Los documentos de este vehículo (${patenteSegura}) fueron recibidos y están en revisión. Tu credencial se activará en cuanto el equipo confirme la operación.`);
             return;
+        }
+
+        // 1. PRIMERO: Sumamos +1 al contador solo UNA vez por visita
+        if (escaneoYaRegistrado === false) {
+            registrarEscaneo(vehiculo.patente);
+            escaneoYaRegistrado = true; // Cerramos el candado para que no vuelva a sumar si recarga
+        }
+
+        // BLOQUEO: Si no ha aceptado o tiene una versión vieja de los términos
+        if (!vehiculo.terms_accepted || vehiculo.terms_version !== VERSION_TERMINOS) {
+            quitarCargador();
+            document.getElementById('popup-terminos').style.display = 'flex';
+            
+            const chkTerminos = document.getElementById('chk-terminos');
+            const btnAceptar = document.getElementById('btn-aceptar-terminos');
+            
+            // Lógica: Si marca el círculo, el botón cobra vida
+            chkTerminos.addEventListener('change', function() {
+                if(this.checked) {
+                    btnAceptar.disabled = false;
+                    btnAceptar.style.opacity = '1';
+                    btnAceptar.style.cursor = 'pointer';
+                    btnAceptar.style.backgroundColor = '#00B4D8'; // Se ilumina de celeste Nexuz
+                } else {
+                    btnAceptar.disabled = true;
+                    btnAceptar.style.opacity = '0.5';
+                    btnAceptar.style.cursor = 'not-allowed';
+                    btnAceptar.style.backgroundColor = '#11222F'; // Se vuelve a apagar
+                }
+            });
+
+            // Cuando el botón ya está encendido y lo presionan
+            btnAceptar.onclick = function() {
+                this.innerHTML = "Guardando...";
+                this.disabled = true;
+                aceptarTerminos(vehiculo); 
+            };
+            return; 
         }
 
         document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
@@ -545,7 +666,7 @@
                 
                 renderizarVehiculo(vehiculo);
             } else {
-                mostrarPantallaError("🔒 Acceso Denegado", "Esta tarjeta no contiene una firma digital válida en nuestros registros.");
+                mostrarPantallaError("🔒 Tarjeta Inactiva", "Esta tarjeta aún no tiene documentos vinculados. Si la acabas de adquirir, espera a que nuestro equipo cargue tu información, o regístrate en el enlace que te enviamos.");
             }
         })
         .catch(error => {
@@ -575,26 +696,78 @@
         mostrarPantallaError("❌ Acceso Inválido", "No se detectó ninguna credencial digital. Escanea una tarjeta válida.");
     }
 
-    // 4. PANTALLA DE ERROR ORIGINAL (Intacta)
+    // 4. PANTALLA DE ERROR / PROCESO (Diseño Nexuz con íconos SVG)
     function mostrarPantallaError(titulo, mensaje) {
         quitarCargador();
-        const esError = titulo.toLowerCase().includes("denegado") || titulo.toLowerCase().includes("error") || titulo.toLowerCase().includes("inválido");
-        const colorTema = esError ? "#EF4444" : "#F59E0B"; 
-        const colorFondoIcono = esError ? "rgba(239, 68, 68, 0.15)" : "rgba(245, 158, 11, 0.15)";
+        
+        // Detecta si es un error crítico o un estado "En Proceso"
+        const esError = titulo.toLowerCase().includes("denegado") || titulo.toLowerCase().includes("error") || titulo.toLowerCase().includes("inválido") || titulo.toLowerCase().includes("inactiva");
+        
+        // Colores Nexuz: Rojo para errores, Celeste para "En Proceso"
+        const colorTema = esError ? "#EF4444" : "#00B4D8"; 
+        const colorFondoIcono = esError ? "rgba(239, 68, 68, 0.15)" : "rgba(0, 180, 216, 0.15)";
+        
+        // Limpiamos los emojis viejos del texto por si quedaron en tu código
         const tituloLimpio = titulo.replace(/🔒|⏳|⚠️|❌/g, '').trim();
-        const icono = esError ? '🔒' : '⏳';
+        
+        // ÍCONOS SVG PREMIUM (Reemplazan a los emojis)
+        // Si es error muestra un candado, si es proceso muestra un reloj.
+        const iconoSVG = esError 
+            ? `<svg viewBox="0 0 24 24" fill="none" stroke="${colorTema}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`
+           : `<svg viewBox="0 0 24 24" fill="none" stroke="${colorTema}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 34px; height: 34px;"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>`;
 
         document.body.innerHTML = `
             <div style="background-color: #11222F; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; width: 100%;">
-                <div style="background: #1a2c3a; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 24px; padding: 40px 25px; text-align: center; max-width: 360px; width: 100%; box-shadow: 0 15px 35px rgba(0,0,0,0.4), 0 0 20px ${colorFondoIcono};">
-                    <div style="background-color: ${colorFondoIcono}; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; font-size: 32px; border: 1px solid ${colorTema};">${icono}</div>
-                    <h2 style="color: #ffffff; font-family: 'Poppins', sans-serif; font-size: 22px; margin: 0 0 12px 0; font-weight: 600;">${tituloLimpio}</h2>
-                    <p style="color: #9ca3af; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0; font-weight: 400;">${mensaje}</p>
-                    <a href="javascript:window.location.reload();" style="display: inline-block; background-color: ${colorTema}; color: #ffffff; text-decoration: none; padding: 14px 30px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: transform 0.2s, opacity 0.2s; box-shadow: 0 4px 15px ${colorFondoIcono};" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">Actualizar Pantalla</a>
+                
+                <div style="background: #ffffff; border: 1px solid rgba(17,34,47,0.10); border-radius: 24px; padding: 40px 25px; text-align: center; max-width: 360px; width: 100%; box-shadow: 0 40px 80px -20px rgba(17,34,47,0.35);">
+                    
+                    <!-- Círculo de color dinámico con el ícono SVG -->
+                    <div style="background-color: ${colorFondoIcono}; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                        ${iconoSVG}
+                    </div>
+                    
+                    <h2 style="color: #11222F; font-family: 'Poppins', sans-serif; font-size: 22px; margin: 0 0 12px 0; font-weight: 600;">${tituloLimpio}</h2>
+                    
+                    <!-- Aquí se imprime el texto que ya contiene la patente -->
+                    <p style="color: #4b5b66; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0; font-weight: 400;">${mensaje}</p>
+                    
+                    <a href="javascript:window.location.reload();" style="display: inline-block; background-color: #11222F; color: #ffffff; text-decoration: none; padding: 14px 30px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: transform 0.2s; box-shadow: 0 10px 25px -5px rgba(17,34,47,0.2);" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">Actualizar</a>
                 </div>
-                <div style="margin-top: 4vh; color: #6b7280; font-family: 'Inter', sans-serif; font-size: 11px; text-align: center; letter-spacing: 0.5px; line-height: 1.5;">MyNexuz.cl<br>Informacion Protegida</div>
+
+                <div style="margin-top: 4vh; color: #8996a0; font-family: 'Inter', sans-serif; font-size: 11px; text-align: center; letter-spacing: 0.5px; line-height: 1.5;">Nexuz Chile<br>Información Protegida</div>
             </div>
         `;
+    }
+    function aceptarTerminos(vehiculo) {
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/aceptar_terminos_vehiculo`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            // Enviamos la patente y la versión actual
+            body: JSON.stringify({ p_patente: vehiculo.patente, p_version: VERSION_TERMINOS })
+        })
+        .then(() => {
+            document.getElementById('popup-terminos').style.display = 'none';
+            vehiculo.terms_accepted = true;
+            vehiculo.terms_version = VERSION_TERMINOS;
+            renderizarVehiculo(vehiculo); 
+        })
+        .catch(err => console.error("Error al guardar términos", err));
+    }
+    // FUNCIÓN SEGURA PARA EL CONTADOR DE ESCANEOS (Vía RPC)
+    function registrarEscaneo(patente) {
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/sumar_escaneo_vehiculo`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ p_patente: patente })
+        }).catch(e => console.log("Contador offline"));
     }
 </script>
     

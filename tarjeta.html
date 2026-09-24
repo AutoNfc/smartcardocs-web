@@ -315,11 +315,8 @@
            ========================================= */
         #loading-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100dvh;
-            background-color: #fafafa; /* Mismo fondo de la app */
+            top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: #fafafa;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -328,18 +325,34 @@
             transition: opacity 0.4s ease, visibility 0.4s;
         }
 
-        .spinner {
-            width: 45px;
-            height: 45px;
-            border: 4px solid rgba(17, 34, 47, 0.1);
-            border-top: 4px solid #11222F; /* Tu azul oscuro */
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        /* El contenedor hace el latido suave */
+        .animacion-latido {
+            animation: pulseSuave 2s ease-in-out infinite;
+            /* Aceleración gráfica para que el contenedor no se desarme */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            will-change: transform;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* La imagen mantiene el filtro de color pegado permanentemente */
+        .logo-cargando {
+            width: 80px; 
+            height: auto;
+            /* Filtro Azul #11222F */
+            filter: brightness(0) saturate(100%) invert(11%) sepia(18%) saturate(1989%) hue-rotate(168deg) brightness(96%) contrast(92%);
+            -webkit-filter: brightness(0) saturate(100%) invert(11%) sepia(18%) saturate(1989%) hue-rotate(168deg) brightness(96%) contrast(92%);
+            
+            /* TRUCO ANTI-GLITCH: Fija el filtro en la memoria de la pantalla */
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        @keyframes pulseSuave {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.85; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         /* Ocultamos el contenedor principal por defecto para que no parpadee */
@@ -405,7 +418,9 @@
 <body>
 
     <div id="loading-screen">
-        <div class="spinner"></div>
+        <div class="animacion-latido">
+            <img src="img/logo.svg" alt="Cargando Nexuz" class="logo-cargando">
+        </div>
     </div>
 
     <div id="popup-vencimiento">
@@ -480,6 +495,11 @@
                 <img src="img/tarjeta/Icono Soap.svg" class="btn-icon" alt="SOAP">
                 <span class="btn-text">Seguro Obligatorio (SOAP)</span>
             </a>
+
+            <a href="#" id="link-padron" class="btn" target="_blank" rel="noopener noreferrer">
+                <img src="img/tarjeta/Icono Padron.svg" class="btn-icon" alt="Padrón">
+                <span class="btn-text">Cert. Inscripción (Padrón)</span>
+            </a>
         </div>
 
         <!-- FOOTER INTER REGULAR -->
@@ -500,13 +520,22 @@
     }
 
     function quitarCargador() {
-        const loader = document.getElementById('loading-screen');
-        const container = document.querySelector('.container');
-        if (loader) {
-            loader.style.opacity = '0';
-            loader.style.visibility = 'hidden';
-        }
-        if (container) { container.style.opacity = '1'; }
+        const tiempoTranscurrido = Date.now() - inicioCarga;
+        const tiempoRestante = Math.max(0, TIEMPO_MINIMO_CARGA - tiempoTranscurrido);
+
+        // Espera el tiempo restante para cumplir siempre los 3 segundos exactos
+        setTimeout(() => {
+            const loader = document.getElementById('loading-screen');
+            const container = document.querySelector('.container');
+            const header = document.querySelector('.header-curve');
+
+            if (loader) {
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+            }
+            if (header) { header.style.opacity = '1'; }
+            if (container) { container.style.opacity = '1'; }
+        }, tiempoRestante);
     }
 
     const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
@@ -514,6 +543,9 @@
 
     const urlParams = new URLSearchParams(window.location.search);
     const idUrl = urlParams.get('id');
+
+    const TIEMPO_MINIMO_CARGA = 1500; // ⏱️ Puedes cambiar este valor (en milisegundos)
+    const inicioCarga = Date.now();
 
     const VERSION_TERMINOS = "v1.0";
     let escaneoYaRegistrado = false;
@@ -605,6 +637,7 @@
         aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision, "Revisión Técnica");
         aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap, "SOAP");
         aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso, "Permiso");
+        aplicarEstado('link-padron', vehiculo.url_padron, null, "Cert. Inscripción (Padrón)");
         
         quitarCargador();
 

@@ -1603,6 +1603,16 @@
         };
     })();
 
+    // Si entramos desde una notificación push con destino a avisos
+const paramTab = new URLSearchParams(window.location.search).get('tab');
+if (paramTab === 'avisos') {
+    // Si tienes una función para cambiar de vista (ej. cambiarVista o simular clic en la pestaña):
+    const tabAvisos = document.querySelector('[data-vista="avisos"]');
+    if (tabAvisos) {
+        tabAvisos.click();
+    }
+}
+
 
     </script>
 </body>

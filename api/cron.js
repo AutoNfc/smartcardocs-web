@@ -54,7 +54,7 @@ export default async function handler(req, res) {
         const notificacion = JSON.stringify({
             title: "Nexuz | Avisos Pendientes",
             body: `Buenos días ${nombre}. Tienes ${alertasPendientes} alertas de vencimiento para enviar hoy. ¡Que tengas un excelente día! ☀️🚗`,
-            url: "/nx-k892j-metrics.html?token=MI_TOKEN_ADMIN_NEXUZ_2026"
+            url: "/nx-k892j-metrics.html?token=MI_TOKEN_ADMIN_NEXUZ_2026&tab=avisos"
         });
 
         try {

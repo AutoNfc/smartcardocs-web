@@ -9,8 +9,9 @@
     <link rel="apple-touch-icon" href="img/icono-app.png">
     <!-- Nombre corto que aparecerá debajo del ícono en tu iPhone -->
     <meta name="apple-mobile-web-app-title" content="Admin Nexuz">
-    <meta name="theme-color" content="#11222F">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#11222F">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="icon" type="image/svg+xml" href="img/logo.svg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1419,6 +1420,12 @@
             const outputArray = new Uint8Array(rawData.length);
             for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
             return outputArray;
+        }
+
+        // Ocultar la campana automáticamente si este iPhone ya tiene permiso
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const btnNotis = $('btn-activar-notis');
+            if (btnNotis) btnNotis.style.display = 'none';
         }
 
         $('btn-activar-notis').addEventListener('click', async () => {

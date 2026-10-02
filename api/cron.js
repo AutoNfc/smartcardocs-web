@@ -1,7 +1,6 @@
 const { createClient } = require('@supabase/supabase-js');
 const webpush = require('web-push');
 
-// Conexión a tu Base de Datos
 const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -9,55 +8,43 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 export default async function handler(req, res) {
     webpush.setVapidDetails('mailto:admin@mynexuz.cl', process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
 
-    // 1. Traer vehículos (ahora incluimos el 'id' para poder cruzar los datos)
-    const { data: vehiculos } = await supabase.from('vehiculos').select('id, vencimiento_soap, vencimiento_revision, vencimiento_permiso');
-    
-    // 2. Traer los avisos de WhatsApp que ya enviaste en los últimos 45 días
-    const hace45Dias = new Date();
-    hace45Dias.setDate(hace45Dias.getDate() - 45);
-    const { data: avisos } = await supabase.from('avisos_enviados')
-        .select('id_vehiculo, documento')
-        .gte('enviado_en', hace45Dias.toISOString());
+    // Llamamos a la función segura sin exponer tablas ni requerir service_role
+    const { data, error } = await supabase.rpc('obtener_alertas_cron');
+    if (error || !data) return res.status(500).json({ error: error?.message });
+
+    const vehiculos = data.vehiculos || [];
+    const avisos = data.avisos || [];
 
     let alertasPendientes = 0;
-    
-    if (vehiculos) {
-        const hoy = new Date();
-        vehiculos.forEach(v => {
-            // Mapeamos los 3 documentos para revisarlos
-            const docs = [
-                { nombreCol: 'vencimiento_soap', tipo: 'soap' },
-                { nombreCol: 'vencimiento_revision', tipo: 'revision' },
-                { nombreCol: 'vencimiento_permiso', tipo: 'permiso' }
-            ];
+    const hoy = new Date();
 
-            docs.forEach(doc => {
-                const fechaGuardada = v[doc.nombreCol];
-                if (fechaGuardada) {
-                    const fechaVen = new Date(fechaGuardada + "T23:59:59");
-                    const diasRestantes = Math.ceil((fechaVen - hoy) / (1000 * 60 * 60 * 24));
-                    
-                    // Si el documento vence en 30 días o menos...
-                    if (diasRestantes <= 30 && diasRestantes >= 0) {
-                        // Verificamos si ya existe en la tabla de enviados para este auto y documento
-                        const yaAvisado = avisos?.some(a => a.id_vehiculo === v.id && a.documento === doc.tipo);
-                        
-                        // Solo sumamos la alerta si NO le has avisado todavía
-                        if (!yaAvisado) {
-                            alertasPendientes++;
-                        }
+    vehiculos.forEach(v => {
+        const docs = [
+            { nombreCol: 'vencimiento_soap', tipo: 'soap' },
+            { nombreCol: 'vencimiento_revision', tipo: 'revision' },
+            { nombreCol: 'vencimiento_permiso', tipo: 'permiso' }
+        ];
+
+        docs.forEach(doc => {
+            const fechaGuardada = v[doc.nombreCol];
+            if (fechaGuardada) {
+                const fechaVen = new Date(fechaGuardada + "T23:59:59");
+                const diasRestantes = Math.ceil((fechaVen - hoy) / (1000 * 60 * 60 * 24));
+                
+                if (diasRestantes <= 30 && diasRestantes >= 0) {
+                    const yaAvisado = avisos.some(a => a.id_vehiculo === v.id && a.documento === doc.tipo);
+                    if (!yaAvisado) {
+                        alertasPendientes++;
                     }
                 }
-            });
+            }
         });
-    }
+    });
 
-    // 3. Si el contador es cero, apagamos el motor sin molestar tu celular
     if (alertasPendientes === 0) {
         return res.status(200).json({ mensaje: "Todo al día. No hay alertas nuevas para enviar hoy." });
     }
 
-    // 4. Si hay alertas NUEVAS, disparamos a los teléfonos con sus nombres
     const { data: suscripciones } = await supabase.from('suscripciones_push').select('*');
     if (!suscripciones || suscripciones.length === 0) return res.status(200).json({ mensaje: "Sin dispositivos." });
 

@@ -519,9 +519,15 @@
 
         <!-- VISTA 4: AVISOS DE VENCIMIENTO -->
         <section class="vista" id="vista-avisos" hidden>
-            <h1 class="titulo-vista">Avisos</h1>
-            <!-- NUEVO BOTÓN DE NOTIFICACIONES -->
-            <button id="btn-activar-notis" class="btn-sec" style="margin-bottom: 12px; border: 2px dashed var(--accent);">🔔 Activar Notificaciones en este iPhone</button>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <h1 class="titulo-vista" style="margin: 0; text-align: left;">Avisos</h1>
+                <button id="btn-activar-notis" style="background: transparent; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--accent); transition: transform 0.2s, opacity 0.2s;" title="Activar notificaciones" aria-label="Activar notificaciones">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                </button>
+            </div>
             <div class="seg" id="seg-avisos">
                 <button class="on" data-av="lista">Por enviar</button>
                 <button data-av="cal">Calendario</button>
@@ -1416,34 +1422,34 @@
         }
 
         $('btn-activar-notis').addEventListener('click', async () => {
+            const nombreAdmin = prompt("¿Cuál es tu nombre? (Ej: Eliseo, Ana)");
+            if (!nombreAdmin) return; // Si cancela, no hacemos nada
+
             const btn = $('btn-activar-notis');
             btn.textContent = "Conectando...";
             btn.disabled = true;
 
             try {
-                // 1. Pedir permiso a Apple
                 const permiso = await Notification.requestPermission();
                 if (permiso !== 'granted') throw new Error("Permiso denegado por el usuario.");
 
-                // 2. Instalar el Vigilante (sw.js)
                 const registro = await navigator.serviceWorker.register('/sw.js');
-                
-                // 3. Suscribir el iPhone usando la Llave Pública
                 const suscripcion = await registro.pushManager.subscribe({
                     userVisibleOnly: true,
                     applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
                 });
 
-                // 4. Enviar las credenciales del iPhone a Supabase
                 const subData = suscripcion.toJSON();
+                // Ahora enviamos también el nombre a Supabase
                 await rpc('guardar_suscripcion_push', {
                     p_endpoint: subData.endpoint,
                     p_auth: subData.keys.auth,
-                    p_p256dh: subData.keys.p256dh
+                    p_p256dh: subData.keys.p256dh,
+                    p_nombre: nombreAdmin
                 });
 
-                toast('📱 ¡iPhone conectado con éxito!');
-                btn.style.display = 'none'; // Ocultamos el botón porque ya está listo
+                toast(`📱 ¡iPhone de ${nombreAdmin} conectado!`);
+                btn.style.display = 'none'; 
             } catch (err) {
                 toast('Error: ' + err.message, 'error');
                 btn.textContent = "🔔 Activar Notificaciones";

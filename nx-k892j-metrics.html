@@ -316,6 +316,7 @@
             /* Eliminamos el filter: drop-shadow de aquí porque rompe Safari */
             outline: none; /* Evita que salga un borde de selección en iOS */
             -webkit-transform-style: preserve-3d; /* Obliga a Safari a mantener las capas limpias */
+            transform-style: preserve-3d;
         }
         .folder:focus-visible { outline: none; border-radius: 12px; }
         .folder.open { transform: translateY(-8px); }
@@ -524,6 +525,9 @@
                 <button data-av="cal">Calendario</button>
                 <button data-av="env">Enviados</button>
             </div>
+            <h1 class="titulo-vista">Avisos</h1>
+            <!-- NUEVO BOTÓN DE NOTIFICACIONES -->
+            <button id="btn-activar-notis" class="btn-sec" style="margin-bottom: 12px; border: 2px dashed var(--accent);">🔔 Activar Notificaciones en este iPhone</button>
             <div id="av-contenido"></div>
         </section>
     </div>
@@ -1399,6 +1403,55 @@
         let calMes = new Date(hoy().getFullYear(), hoy().getMonth(), 1), calSel = null;
         const cont = () => $('av-contenido');
 
+        // ================= MOTOR PUSH NOTIFICATIONS =================
+        const VAPID_PUBLIC_KEY = "BMij_v4mVJ2OSRcf09oak8htFHb_cK-q6K70TREqA53Ojduvh9NVpFfw-Qj5ZrPnCs9g6M1h6M_gcWNHy5dmd_g"; // <--- Reemplaza esto con la llave que generaste en el Paso 1
+
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+            return outputArray;
+        }
+
+        $('btn-activar-notis').addEventListener('click', async () => {
+            const btn = $('btn-activar-notis');
+            btn.textContent = "Conectando...";
+            btn.disabled = true;
+
+            try {
+                // 1. Pedir permiso a Apple
+                const permiso = await Notification.requestPermission();
+                if (permiso !== 'granted') throw new Error("Permiso denegado por el usuario.");
+
+                // 2. Instalar el Vigilante (sw.js)
+                const registro = await navigator.serviceWorker.register('/sw.js');
+                
+                // 3. Suscribir el iPhone usando la Llave Pública
+                const suscripcion = await registro.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+                });
+
+                // 4. Enviar las credenciales del iPhone a Supabase
+                const subData = suscripcion.toJSON();
+                await rpc('guardar_suscripcion_push', {
+                    p_endpoint: subData.endpoint,
+                    p_auth: subData.keys.auth,
+                    p_p256dh: subData.keys.p256dh
+                });
+
+                toast('📱 ¡iPhone conectado con éxito!');
+                btn.style.display = 'none'; // Ocultamos el botón porque ya está listo
+            } catch (err) {
+                toast('Error: ' + err.message, 'error');
+                btn.textContent = "🔔 Activar Notificaciones";
+                btn.disabled = false;
+            }
+        });
+        // ============================================================
+
         async function cargarRegistro() {
             try { registro = (await rpc('listar_avisos_admin')) || []; registroOk = true; }
             catch (_) { registro = []; registroOk = false; }
@@ -1543,6 +1596,8 @@
             if (baseVehiculos !== ultimaBase) { ultimaBase = baseVehiculos; cargarRegistro().then(render); }
         };
     })();
+
+
     </script>
 </body>
 </html>

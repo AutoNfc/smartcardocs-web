@@ -2,1532 +2,1102 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <!-- Bloqueo de zoom para una experiencia nativa de app -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="robots" content="noindex, nofollow">
-    <title>Nexuz Chile | Radar Admin</title>
+    <title>Nexuz | Documentos Digitales</title>
+    <!-- Le dice al navegador que pinte la barra de estado de este color -->
     <meta name="theme-color" content="#11222F">
+    <!-- Optimizaciones para iPhone -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="icon" type="image/svg+xml" href="img/logo.svg">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <meta name="robots" content="noindex, nofollow">
 
+    <meta property="og:title" content="Nexuz Chile - Credencial Activa">
+    <meta property="og:description" content="Acceso seguro a los documentos digitales de este vehículo.">
+    <meta property="og:image" content="https://i.ibb.co/jvPt0sTd/Logo-Nexuz.png">
+    <meta property="og:type" content="website">
+    <!-- FAVICON -->
+    <link rel="icon" type="image/svg+xml" href="img/logo.svg">
+    
+    <!-- FUENTES Y CONEXIÓN ANTICIPADA A BASE DE DATOS -->
+    <link rel="preconnect" href="https://ofeqicztagixejyqvuof.supabase.co" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600&family=Teko:wght@300;500&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --bg: #fafafa;
-            --bg-card: #ffffff;
-            --primary: #11222F;
-            --primary-line: rgba(17,34,47,0.08);
-            --accent: #00B4D8;
-            --ink: #11222F;
-            --ink-soft: rgba(17,34,47,0.62);
-            --fill: rgba(17,34,47,0.05);
-            --danger: #E63946;
-            --font-body: 'Inter', sans-serif;
-            --font-display: 'Poppins', sans-serif;
-            --font-numeric: 'Teko', sans-serif;
-            --shadow: 0 1px 2px rgba(17,34,47,.04), 0 10px 28px rgba(17,34,47,.07);
-            --spring: cubic-bezier(.32,.72,0,1);
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        ::selection { background: var(--accent); color: var(--primary); }
-        html { -webkit-text-size-adjust: 100%; }
-        body {
-            background: var(--bg); color: var(--ink); font-family: var(--font-body);
-            min-height: 100dvh; display: flex; flex-direction: column; align-items: center;
-            -webkit-font-smoothing: antialiased; overscroll-behavior-y: none;
-            padding-bottom: calc(84px + env(safe-area-inset-bottom));
-        }
-        button { font-family: var(--font-body); -webkit-tap-highlight-color: transparent; color: inherit; }
-        button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-        svg.i { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
-        /* CABECERA */
-        .header-curve {
-            width: 100%; background: var(--primary);
-            padding: calc(env(safe-area-inset-top) + 14px) max(20px, calc((100% - 440px) / 2 + 20px)) 24px;
-            border-radius: 0 0 30px 30px;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .header-curve img { height: 28px; }
-        .badge-total {
-            background: rgba(0,180,216,.16); color: var(--accent); padding: 6px 12px 6px 10px;
-            border-radius: 99px; font: 600 12px var(--font-display); display: flex; align-items: center; gap: 7px;
-        }
-        .badge-total::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px rgba(0,180,216,.25); }
-
-        .container { width: 100%; max-width: 440px; padding: 18px 16px 0; flex-grow: 1; }
-        .vista { display: flex; flex-direction: column; gap: 14px; }
-        .vista[hidden] { display: none !important; }
-        .titulo-vista { font: 600 30px/1.1 var(--font-display); letter-spacing: -.02em; padding: 2px 4px 0; }
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Poppins:wght@600&family=Teko:wght@300&display=swap" rel="stylesheet">
     
-
-        /* BUSCADOR + FILTROS */
-        .buscador-input {
-            width: 100%; min-height: 48px; padding: 0 16px 0 44px; border-radius: 16px;
-            border: 1px solid var(--primary-line); outline: none; color: var(--ink);
-            font: 500 16px var(--font-body);
-            background: rgba(255,255,255,.88) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2311222F' stroke-opacity='.45' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 14px center / 20px;
-            -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
-            box-shadow: var(--shadow);
-            position: sticky; top: 10px; z-index: 30;
-        }
-        .buscador-input::placeholder { color: rgba(17,34,47,.4); }
-        .buscador-input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,180,216,.18), var(--shadow); }
-        .fila-filtros { display: flex; gap: 10px; align-items: center; }
-        .filtro-wrapper { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
-        .btn-circulo {
-            width: 100%; height: 100%; border-radius: 15px; background: var(--bg-card); border: 1px solid var(--primary-line);
-            color: var(--primary); display: grid; place-items: center; box-shadow: var(--shadow); cursor: pointer;
-        }
-        .btn-circulo svg { width: 20px; height: 20px; }
-        .select-oculto { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; font-size: 16px; cursor: pointer;}
-
-        /* SEGMENTED CONTROL (chips) */
-        .chips { display: flex; flex: 1; gap: 2px; padding: 3px; background: rgba(17,34,47,.06); border-radius: 15px; overflow-x: auto; scrollbar-width: none; }
-        .chips::-webkit-scrollbar { display: none; }
-        .chip {
-            flex: 1; min-height: 40px; padding: 0 12px; border: 0; border-radius: 12px; background: transparent;
-            color: var(--ink-soft); font: 600 14px var(--font-body); position: relative; white-space: nowrap;
-            transition: background .25s var(--spring), color .2s, box-shadow .25s; cursor: pointer;
-        }
-        .chip.activa { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(17,34,47,.14), 0 0 0 .5px rgba(17,34,47,.05); }
-        .badge-rojo {
-            position: absolute; top: 3px; right: 6px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 99px;
-            background: var(--danger); color: #fff; font: 600 10px var(--font-display);
-            display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
-        }
-        .badge-rojo[hidden] { display: none; }
-
-        /* TARJETAS DE CLIENTE v2: menos ruido, jerarquía clara */
-        .lista { display: flex; flex-direction: column; gap: 12px; padding-bottom: 96px; }
-        .card {
-            --dot: #9aa7b0;
-            position: relative; background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 24px;
-            padding: 18px; display: grid !important; grid-template-columns: minmax(0,1fr) auto; column-gap: 16px; align-items: center;
-            box-shadow: var(--shadow); transition: transform .2s var(--spring);
-        }
-        .card:has(.estado-a) { --dot: #22c55e; }
-        .card:has(.estado-p) { --dot: #EF4444; border-color: rgba(239,68,68,.35); }
-        .card:has(.btn-editar:active) { transform: scale(.985); }
-
-        /* Toda la tarjeta es el botón de editar (el JS escucha .btn-editar) */
-        .btn-editar {
-            position: absolute !important; inset: 0 !important; width: 100%; height: 100%; z-index: 1;
-            border: 0 !important; border-radius: 24px !important; background: transparent !important;
-            font-size: 0 !important; padding: 0; cursor: pointer;
+    <style>
+        /* RESET & BASE */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        /* .datos se disuelve: sus hijos se ordenan directo en la grilla de la tarjeta */
-        .datos { display: contents; }
-        .patente {
-            grid-column: 1; grid-row: 1; justify-self: start;
-            font-family: var(--font-numeric); font-size: 32px; line-height: 1;
-            letter-spacing: 2px; color: var(--ink); font-weight: 500;
-        }
-        .cliente {
-            grid-column: 1; grid-row: 2; min-width: 0; margin: 0;
-            font: 600 16px/1.3 var(--font-body); color: var(--ink); overflow-wrap: anywhere;
-        }
-        /* El estado pasa a ser un puntito + el botón Vincular (las pestañas ya separan Activos/Pendientes) */
-        .cliente::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--dot); margin-right: 9px; vertical-align: 1px; box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot) 22%, transparent); }
-        .cliente::after { content: ""; display: inline-block; width: 13px; height: 13px; margin-left: 8px; vertical-align: -1px; opacity: .3; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2311222F' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20h4L19 9l-4-4L4 16z'/%3E%3C/svg%3E") center / contain no-repeat; }
-        .estado-pill { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-
-        /* Lecturas: panel de métrica a la derecha */
-        .escaneos-col {
-            grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 0 0 0 16px !important; min-width: 78px; border-left: 1px solid var(--primary-line); text-align: center; z-index: 2;
-        }
-        .escaneos-num { font: 500 54px/.85 var(--font-numeric) !important; color: var(--accent); }
-        .escaneos-tag { font-size: 11px; font-weight: 500; color: var(--ink-soft); margin-top: 6px; }
-        .id-tag { 
-            display: block; /* Antes decía display: none; */
-            font-size: 11px; 
-            color: #cbd5e1; /* Gris claro sutil */
-            margin-top: 4px; 
-            font-family: var(--font-body);
-            font-weight: 500;
+        body {
+            background-color: #fafafa;
+            /* Fuerza a no tener scroll y ocupar el tamaño de la pantalla del teléfono */
+            min-height: 100dvh;
+            overflow-x: hidden; 
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Documentos faltantes: una línea tenue al pie, sin caja roja */
-        .datos > div {
-            grid-column: 1 / -1; grid-row: 3; display: block !important; margin: 14px 0 0 !important; padding: 12px 0 0 !important;
-            border-top: 1px solid var(--primary-line); border-radius: 0 !important; background: transparent !important;
-            color: #b91c1c !important; font: 500 12px/1.5 var(--font-body) !important; opacity: .9;
+        /* =========================================
+           CABECERA (FONDO CURVO Y LOGO)
+           ========================================= */
+        .header-curve {
+            background-color: #11222F;
+            width: 100%;
+            height: 25vh;
+            /* Crea la curvatura inferior */
+            border-bottom-left-radius: 50% 60%;
+            border-bottom-right-radius: 50% 60%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2vh;
+            flex-shrink: 0;
+            padding-top: env(safe-area-inset-top); 
+    height: calc(25vh + env(safe-area-inset-top));
         }
 
-        /* Acción principal solo en pendientes */
-        .card > div:not(.datos):not(.escaneos-col) { grid-column: 1 / -1; grid-row: 4; width: 100% !important; margin: 14px 0 0 !important; position: relative; z-index: 2; }
-        .btn-vincular {
-            width: 100%; min-height: 48px; border: 0; border-radius: 15px; background: var(--accent); color: #fff; /* Cambio a texto blanco para mejor legibilidad */
-            font: 600 15px var(--font-display); box-shadow: 0 6px 16px rgba(0,180,216,.3); transition: transform .15s; cursor: pointer;
+        .header-curve img {
+            height: 45%; /* Ajusta el tamaño del logo superior aquí */
+            max-width: 80%;
+            margin-top: 0px;
         }
-        .btn-vincular:active { transform: scale(.97); }
-        .estado-mensaje { text-align: center; color: var(--ink-soft); font-size: 14px; padding: 48px 16px; }
 
-        /* BÓVEDA */
-        .meta { font-size: 13px; color: var(--ink-soft); text-align: center; line-height: 1.45; }
-        .grid-codigos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .codigo {
-            min-height: 62px; padding: 8px; border-radius: 18px; border: 1px solid var(--primary-line); background: var(--bg-card);
-            font: 500 28px/1.1 var(--font-numeric); letter-spacing: 3px; color: var(--ink); box-shadow: var(--shadow);
-            transition: transform .15s var(--spring), border-color .2s, background .2s; cursor: pointer;
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 25px;
+            flex-grow: 1;
         }
-        .codigo:active { transform: scale(.96); border-color: var(--accent); background: rgba(0,180,216,.08); }
-        .codigo[disabled] { opacity: .6; }
-        .codigo.seleccionado { border-color: var(--danger); background: rgba(230,57,70,.08); color: var(--danger); }
-        .codigo.seleccionado::after {
-            content: "✓"; position: absolute; top: -7px; right: -7px; background: var(--danger); color: #fff;
-            font: 700 11px var(--font-body); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #fff;
-        }
-        .codigo { position: relative; }
-        .fila-acciones { gap: 10px; margin-top: 4px; display: flex; }
-        .f1 { flex: 1; } .f2 { flex: 2; }
 
-        /* BOTONES GLOBALES */
-        .btn-primario, .btn-sec { width: 100%; min-height: 52px; border-radius: 16px; font: 600 16px var(--font-display); transition: transform .15s, opacity .2s; cursor: pointer; }
-        .btn-primario { border: 0; background: var(--accent); color: #fff; box-shadow: 0 8px 20px rgba(0,180,216,.28); }
-        .btn-sec { border: 0; background: var(--fill); color: var(--primary); }
-        .btn-primario:active, .btn-sec:active { transform: scale(.97); }
-        .btn-primario[disabled], .btn-sec[disabled] { opacity: .5; }
-        .btn-primario.peligro { background: var(--danger); color: #fff; box-shadow: 0 8px 20px rgba(230,57,70,.25); }
-        .btn-primario.wa { background: #25D366; color: #fff; box-shadow: 0 8px 20px rgba(37,211,102,.28); }
-        .btn-sec.peligro { color: var(--danger); background: rgba(230,57,70,.08); }
+        /* NOMBRE DE USUARIO */
+        .welcome {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: #00B4D8;
+            font-size: 1.3rem;
+            margin-top: 2vh;
+            margin-bottom: 3vh;
+            text-align: center;
+        }
 
-        /* DOCUMENTOS: la patente gigante */
-        .campo {
-            width: 100%; min-height: 52px; background: var(--bg-card); border: 1px solid var(--primary-line);
-            border-radius: 14px; padding: 0 16px; font-family: var(--font-numeric); font-size: 30px;
-            letter-spacing: 3px; text-transform: uppercase; text-align: center; color: var(--ink); outline: none;
-            transition: border-color .2s, box-shadow .2s;
+        /* =========================================
+           ZONA PATENTE
+           ========================================= */
+        .patente-box {
+            background-image: url('img/tarjeta/fondo-patente.svg'); 
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 260px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 4vh;
+            flex-shrink: 0;
         }
-        .campo::placeholder { color: rgba(17,34,47,.4); }
-        .campo:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,180,216,.18); }
 
-        .info-pat { min-height: 20px; margin: -4px 0 2px; font-weight: 600; transition: .2s; }
-        
-        .progreso { width: 100%; height: 8px; background: rgba(17,34,47,.08); border-radius: 99px; overflow: hidden; }
-        #barra-progreso { height: 100%; background: var(--accent); border-radius: 99px; transition: width .2s ease; }
+        /* 🎛️ CONTROL VERTICAL: Sube o baja los textos respecto al fondo */
+        .patente-wrapper-vertical {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -5px; /* <-- Modifica esto para subir (negativo) o bajar (positivo) */
+        }
 
-        /* TAB BAR + FAB */
-        .tabbar {
-            position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; justify-content: center;
-            padding: 6px 12px calc(6px + env(safe-area-inset-bottom));
-            background: rgba(250,250,250,.82); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
-            border-top: 1px solid var(--primary-line);
+        /* FUENTE PATENTE (Teko Light) */
+        .par-letras, .par-numeros {
+            font-family: 'Teko', sans-serif;
+            font-weight: 300;
+            font-size: 75px;
+            color: #111827;
+            line-height: 1;
+            letter-spacing: 3px;
         }
-        .tab { flex: 1; max-width: 150px; min-height: 54px; border: 0; background: transparent; color: rgba(17,34,47,.42); font: 600 11px var(--font-body); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; transition: color .2s; cursor: pointer; }
-        .tab span { width: 28px; height: 28px; display: grid; place-items: center; transition: transform .3s var(--spring); }
-        .tab svg { width: 26px; height: 26px; }
-        .tab.activa { color: var(--primary); }
-        .tab.activa span { color: var(--accent); transform: translateY(-1px) scale(1.08); }
-        .tab.activa svg { stroke-width: 2.2; }
-        
-        #btn-flotante-cliente {
-            position: fixed; right: 18px; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 50; width: 58px; height: 58px; border-radius: 50%;
-            background: var(--accent); color: var(--primary); border: 0; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 24px rgba(0,180,216,.42); transition: transform .2s var(--spring); cursor: pointer;
-        }
-        #btn-flotante-cliente svg { width: 28px; height: 28px; stroke-width: 2.4; stroke: #fff;}
-        #btn-flotante-cliente:active { transform: scale(.9); }
 
-        /* BOTTOM SHEETS */
-        .sheet-fondo {
-            position: fixed; inset: 0; z-index: 60; background: rgba(17,34,47,.4);
-            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-            display: flex; align-items: flex-end; justify-content: center; touch-action: none; animation: fundido .25s ease-out;
+        /* 🎛️ CONTROLES HORIZONTALES: Ajusta la separación entre los pares */
+        #par1 {
+            margin-right: 20px; 
+            margin-left: 0px;
         }
-        .sheet-fondo[hidden] { display: none; }
-        .sheet {
-            width: 100%; max-width: 440px; background: var(--bg); border-radius: 28px 28px 0 0;
-            padding: 10px 20px calc(20px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 12px;
-            max-height: 90dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; touch-action: pan-y;
-            box-shadow: 0 -10px 40px rgba(17,34,47,.18); animation: sube .42s var(--spring);
-            /* Oculta la barra de scroll para quitar el lag visual */
-            scrollbar-width: none; 
+        #par2 {
+            margin-right: 20px; 
+            margin-left: 0px;
         }
-        .sheet::-webkit-scrollbar { display: none; }
-        .sheet::before { content: ""; width: 38px; height: 5px; border-radius: 99px; background: rgba(17,34,47,.18); margin: 0 auto 6px; flex-shrink: 0; }
-        @keyframes sube { from { transform: translateY(100%); } }
-        @keyframes fundido { from { opacity: 0; } }
-        
-        .sheet h3 { font: 600 21px/1.2 var(--font-display); letter-spacing: -.01em; color: var(--primary); }
-        .sheet h3.peligro { color: var(--danger); }
-        .sheet .meta { text-align: left; }
-        .sheet input {
-            display: block; width: 100%; max-width: 100%; min-height: 52px; padding: 0 16px; border-radius: 15px;
-            border: 1px solid var(--primary-line); background: #fff; color: var(--ink); font: 500 16px var(--font-body); outline: none;
-            -webkit-appearance: none; appearance: none; transition: border-color .2s, box-shadow .2s; box-sizing: border-box;
+        #par3 {
+            margin-left: 10px;   
         }
-        .sheet input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(0,180,216,.18); }
-        .sheet input:disabled { opacity: .6; -webkit-text-fill-color: var(--ink); }
-        .sheet .campo-pat { font: 500 28px var(--font-numeric); letter-spacing: 3px; text-transform: uppercase; }
-        
-        .grupo-fechas { background: #fff; border: 1px solid var(--primary-line); border-radius: 16px; padding: 2px 16px; }
-        .fecha { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .fecha + .fecha { border-top: 1px solid var(--primary-line); }
-        .fecha label { font: 600 14px var(--font-body); color: var(--ink); }
-        .sheet .fecha input { 
-            width: 130px; /* Forzamos un ancho fijo para que no se corte */
-            min-height: 48px; 
-            padding: 0 10px; 
-            border: 0; 
-            background: transparent; 
-            text-align: right; 
-            box-shadow: none; 
-            color: var(--accent); 
-            font-family: var(--font-body);
-            -webkit-appearance: none; /* Magia para apagar el diseño rebelde de Apple */
-            appearance: none;
+
+        /* =========================================
+           BOTONES DE DOCUMENTOS
+           ========================================= */
+        .buttons-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 3.5vh;
+            margin-top: 1vh;
+            margin-bottom: 3vh;
+        }
+
+        .btn {
+            background-color: #11222F;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            padding: 20px 20px; 
+            text-decoration: none;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            
+            /* 👇 Transición un poco más rápida para que no se sienta lenta */
+            transition: all 0.3s ease;
+            -webkit-transition: all 0.3s ease;
+        }
+
+
+        /* 👇 Esta regla evita que se quede pegado en el teléfono. Solo funciona en PC con mouse */
+        @media (hover: hover) {
+            .btn:hover {
+                box-shadow: 0 0 15px rgba(17, 34, 47, 0.4); 
+                /* Se agranda solo un 2% en lugar de 10% (mucho más elegante) */
+                transform: scale(1.02); 
+            }
+        }
+
+        /* 👇 El efecto real al presionar con el dedo */
+        .btn:active {
+            /* Transición rapidísima al presionar */
+            transition: all 0.1s;
+            -webkit-transition: all 0.1s;
+            box-shadow: none;
+            /* Se encoge ligeramente hacia adentro */
+            transform: scale(0.97); 
+            /* Se oscurece un pelín para dar sensación de profundidad */
+            background-color: #0c1822; 
+        }
+
+        /* Icono SVG a la izquierda */
+        .btn-icon {
+            width: 26px;
+            height: 26px;
+            margin-right: 15px;
+        }
+
+        /* =========================================
+           ANIMACIÓN "DESLIZAR" (estilo iPhone)
+           El vidrio (liquid glass) es un círculo aparte (::before) y el icono va encima,
+           sin recortes. Ambos se mueven juntos con la variable --tx.
+           ========================================= */
+        .btn {
+            position: relative;
+            /* 5px alrededor: la perilla (56px) queda concéntrica con las esquinas redondeadas */
+            padding: 5px 20px 5px 5px;
+            touch-action: pan-y;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* PERILLA DE VIDRIO */
+        .btn::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            z-index: 1;
+            pointer-events: none;
+            will-change: transform;
+            transform: translate3d(var(--tx, 0px), 0, 0);
+            background: rgba(255, 255, 255, 0.06);
+    -webkit-backdrop-filter: blur(19px);
+    backdrop-filter: blur(19px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5),
+        inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* ICONO: sin borde redondeado ni fondo, así no se recorta */
+        .btn .btn-icon {
+            width: 56px;
+            height: 56px;
+            padding: 15px;
+            margin-right: 6px;
+            flex-shrink: 0;
+            object-fit: contain;
+            position: relative;
+            z-index: 2;
+            pointer-events: none;
+            -webkit-user-drag: none;
+            will-change: transform;
+            transform: translate3d(var(--tx, 0px), 0, 0);
+        }
+
+        .btn .btn-text { will-change: opacity; }
+
+        /* El punto de estado siempre queda por encima de la perilla */
+        .btn .badge {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Transición de salida: el círculo crece y deja la pantalla Nexuz mientras carga el documento */
+        @keyframes nxLogo {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.06); opacity: 0.85; }
+        }
+
+        /* Texto centrado a la izquierda con ajuste universal */
+        .btn-text {
+            flex-grow: 1;
+            text-align: left;
+            
+            /* 👇 LA MAGIA UNIVERSAL: clamp(Mínimo, Ideal adaptativo, Máximo) */
+            font-size: clamp(0.75rem, 3.5vw, 0.95rem); 
+            
+            /* 👇 Prohíbe absolutamente que el texto salte a una segunda línea */
+            white-space: nowrap; 
+            overflow: hidden;
+            
+            /* Si la pantalla es extremadamente enana, pondrá "..." en vez de desarmar el botón */
+            text-overflow: ellipsis; 
+        }
+
+        /* =========================================
+           CIRCULOS DE ESTADO MINIMALISTAS
+           ========================================= */
+        .badge {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+        .badge-vigente {
+            background-color: #10B981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
+
+        .badge-alerta {
+            background-color: #F59E0B;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+        }
+
+        .badge-vencido {
+            background-color: #EF4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        /* =========================================
+           POPUP DE ALERTA FLOTANTE
+           ========================================= */
+        #popup-vencimiento {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: rgba(17, 34, 47, 0.85); /* Fondo oscuro semitransparente */
+            display: none; /* Oculto por defecto */
+            align-items: center; justify-content: center;
+            z-index: 10000; /* Por encima de toda la app */
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-box {
+            background-color: #ffffff;
+            border-radius: 24px;
+            padding: 35px 25px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .popup-box h3 {
+            font-family: 'Poppins', sans-serif;
+            color: #D97706;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .popup-box p {
+            font-family: 'Inter', sans-serif;
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .popup-btn {
+            background-color: #D97706;
+            color: #ffffff;
+            border: none;
+            padding: 14px 0;
+            width: 100%;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
         }
-        .subtitulo { font: 600 13px var(--font-body); color: var(--ink-soft); margin-top: 6px; }
 
-        /* TOAST */
-        .toast {
-            position: fixed; left: 50%; bottom: calc(150px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); z-index: 80; max-width: 90%;
-            padding: 13px 18px; border-radius: 18px; background: rgba(17,34,47,.94); color: #fff; font: 500 14px var(--font-body);
-            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 12px 30px rgba(17,34,47,.3);
-            opacity: 0; pointer-events: none; transition: opacity .25s, transform .35s var(--spring);
+        /* =========================================
+           FOOTER
+           ========================================= */
+        .footer {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 10px;
+            color: #4b5563;
+            text-align: center;
+            line-height: 1.5;
+            margin-top: auto;
+            margin-bottom: 3vh;
+            width: 100%;
+    padding: 0 15px;
         }
-        .toast.ver { opacity: 1; transform: translate(-50%, 0); }
-        .toast.error { background: rgba(185,28,28,.96); }
-        .toast.ok::before { content: "✓ "; color: var(--accent); font-weight: 700; }
 
-        @media (prefers-reduced-motion: reduce) { .sheet, .sheet-fondo { animation: none; } .toast, .tab span, .chip { transition: none; } }
+    /* =========================================
+           PANTALLA DE CARGA (ANTI-FLICKER)
+           ========================================= */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100dvh;
+            background-color: #fafafa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
 
-        /* ================= CARPETA INTERACTIVA (React Bits portada a vanilla) ================= */
-        #vista-docs { min-height: calc(100dvh - 206px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
-        .folder-wrapper-reactbits {
-            --u: 1.9px; /* tamaño de la carpeta: 100u de ancho */
-            --folder-color: var(--accent); --folder-back-color: #008ca8;
-            display: flex; flex-direction: column; align-items: center; margin-top: auto; padding-top: calc(72 * var(--u)); padding-bottom: 8px;
-        }
-        .folder {
-            position: relative; width: calc(100 * var(--u)); height: calc(80 * var(--u)); cursor: pointer; margin-top: 15px;
-            transition: transform .3s ease-in-out; -webkit-tap-highlight-color: transparent;
-            /* Eliminamos el filter: drop-shadow de aquí porque rompe Safari */
-            outline: none; /* Evita que salga un borde de selección en iOS */
-            -webkit-transform-style: preserve-3d; /* Obliga a Safari a mantener las capas limpias */
-        }
-        .folder:focus-visible { outline: none; border-radius: 12px; }
-        .folder.open { transform: translateY(-8px); }
-        
-        .folder__back { 
-            position: relative; width: 100%; height: 100%; background: var(--folder-back-color); border-radius: 0 calc(10*var(--u)) calc(10*var(--u)) calc(10*var(--u)); 
-            box-shadow: 0 14px 24px rgba(0,180,216,.25); /* Movemos la sombra aquí, es seguro para iOS */
-        }
-        .folder__back::after {
-            position: absolute; z-index: 0; bottom: 98%; left: 0; content: ''; width: calc(30*var(--u)); height: calc(10*var(--u));
-            background: var(--folder-back-color); border-radius: calc(5*var(--u)) calc(5*var(--u)) 0 0;
-        }
-        .folder__front {
-            position: absolute; z-index: 3; width: 100%; height: 100%; background: var(--folder-color);
-            border-radius: calc(5*var(--u)) calc(10*var(--u)) calc(10*var(--u)) calc(10*var(--u));
-            transform-origin: bottom; transition: transform .3s ease-in-out; box-shadow: inset 0 1.5px 0 rgba(255,255,255,.35);
-        }
-        .folder.open .folder__front { transform: skew(15deg) scaleY(0.6); }
-        .folder.open .right { transform: skew(-15deg) scaleY(0.6); }
-
-        /* Tu #grid-botones-carpeta se vuelve transparente: los botones quedan posicionados dentro de la carpeta */
-        .botones-carpeta { display: contents; }
-
-        /* Los 4 botones SON las hojas */
-        .paper {
-            --ox: -50%; --oy: 10%; --or: 0deg; --d: 0s; --paper: #fff;
-            position: absolute; z-index: 2; bottom: 10%; left: 50%; width: 44%; height: 76%; padding: calc(7*var(--u)) 2px 0;
-            border: 1px solid var(--primary-line); border-radius: calc(7*var(--u)); background: var(--paper); color: var(--primary);
-            font: 600 12px var(--font-display); display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer;
-            box-shadow: 0 6px 14px rgba(17,34,47,.12); -webkit-tap-highlight-color: transparent;
-            transform: translate(-50%, 10%); transition: transform .45s var(--spring) var(--d);
+        /* El contenedor hace el latido suave */
+        .animacion-latido {
+            animation: pulseSuave 2s ease-in-out infinite;
+            /* Aceleración gráfica para que el contenedor no se desarme */
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
             will-change: transform;
         }
-        .paper span { width: 38px; height: 38px; border-radius: 12px; background: rgba(0,180,216,.12); color: var(--accent); display: grid; place-items: center; }
-        .paper svg { width: 21px; height: 21px; }
-        .paper:nth-child(1) { --ox: -175%; --oy: -52%; --or: -15deg; --d: 0s;   --paper: #eef2f5; }
-        .paper:nth-child(2) { --ox: -92%;  --oy: -82%; --or: -5deg;  --d: .04s; --paper: #f4f7f9; }
-        .paper:nth-child(3) { --ox: -8%;   --oy: -82%; --or: 5deg;   --d: .08s; --paper: #fafcfd; }
-        .paper:nth-child(4) { --ox: 75%;   --oy: -52%; --or: 15deg;  --d: .12s; --paper: #ffffff; }
-        .folder.open .paper { transform: translate(var(--ox), var(--oy)) rotate(var(--or)); }
-        .folder.open .paper:active { transform: translate(var(--ox), var(--oy)) rotate(var(--or)) scale(1.07); }
-        .paper[disabled] { opacity: .55; cursor: not-allowed; }
-        @media (hover: hover) { .folder:not(.open):hover { transform: translateY(-6px); } .folder:not(.open):hover .paper { transform: translate(-50%, 0%); } }
 
-        .instruccion-carpeta { font-size: 13px; color: var(--ink-soft); font-weight: 500; margin-top: 20px; transition: opacity .2s; }
-        /* Si la patente es inválida (texto rojo de tu JS), la carpeta se apaga */
-        #vista-docs:has(#info-patente-doc:not(:empty)[style*="185, 28, 28"]) .folder-wrapper-reactbits { filter: saturate(.15); opacity: .65; }
+        /* La imagen mantiene el filtro de color pegado permanentemente */
+        .logo-cargando {
+            width: 80px; 
+            height: auto;
+            /* Filtro Azul #11222F */
+            filter: brightness(0) saturate(100%) invert(11%) sepia(18%) saturate(1989%) hue-rotate(168deg) brightness(96%) contrast(92%);
+            -webkit-filter: brightness(0) saturate(100%) invert(11%) sepia(18%) saturate(1989%) hue-rotate(168deg) brightness(96%) contrast(92%);
+            
+            /* TRUCO ANTI-GLITCH: Fija el filtro en la memoria de la pantalla */
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
 
-        /* ================= AVISOS (vencimientos) ================= */
-        .tab-badge { position: absolute; top: 4px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--danger); color: #fff; font: 600 10px/18px var(--font-display); text-align: center; border: 2px solid var(--bg); box-sizing: content-box; }
-        .tab-badge[hidden] { display: none; }
-        .tab { position: relative; }
-        .seg { display: flex; gap: 2px; padding: 3px; background: rgba(17,34,47,.06); border-radius: 15px; }
-        .seg button { flex: 1; min-height: 40px; border: 0; border-radius: 12px; background: transparent; color: var(--ink-soft); font: 600 13px var(--font-body); transition: background .25s var(--spring), box-shadow .25s; }
-        .seg button.on { background: #fff; color: var(--primary); box-shadow: 0 1px 3px rgba(17,34,47,.14), 0 0 0 .5px rgba(17,34,47,.05); }
-        #av-contenido { display: flex; flex-direction: column; gap: 12px; padding-bottom: 24px; }
-        .av-card { background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 22px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; }
-        .av-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
-        .av-pat { flex-shrink: 0; font: 500 24px/1 var(--font-numeric); letter-spacing: 2px; background: #fff; border: 2px solid var(--primary); border-top: 5px solid var(--accent); border-radius: 8px; padding: 2px 9px 0; }
-        .av-nom { font: 600 15px/1.3 var(--font-body); overflow-wrap: anywhere; }
-        .av-docs { list-style: none; display: flex; flex-direction: column; gap: 8px; }
-        .av-docs li { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 14px; }
-        .av-docs small { color: var(--ink-soft); font-size: 12px; display: block; }
-        .av-tag { flex-shrink: 0; font: 600 11px var(--font-body); padding: 4px 10px; border-radius: 99px; background: rgba(0,180,216,.14); color: #00778f; }
-        .av-tag.urg { background: rgba(230,57,70,.12); color: var(--danger); }
-        .av-banner { background: rgba(230,57,70,.08); color: #b91c1c; border-radius: 14px; padding: 12px 14px; font-size: 13px; line-height: 1.45; }
-        .av-vacio { text-align: center; color: var(--ink-soft); font-size: 14px; line-height: 1.5; padding: 40px 16px; }
-        .av-vacio b { display: block; color: var(--ink); font: 600 17px var(--font-display); margin-bottom: 6px; }
-        .cal { background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 22px; padding: 14px 10px 10px; box-shadow: var(--shadow); }
-        .cal-top { display: flex; align-items: center; justify-content: space-between; padding: 0 4px 10px; }
-        .cal-top b { font: 600 17px var(--font-display); }
-        .cal-top button { width: 40px; height: 40px; border: 0; border-radius: 12px; background: var(--fill); font-size: 20px; color: var(--primary); }
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-        .cal-sem { text-align: center; font: 600 11px var(--font-body); color: var(--ink-soft); padding-bottom: 4px; }
-        .cal-d { position: relative; min-height: 50px; border: 0; border-radius: 12px; background: transparent; color: var(--ink); font: 500 15px var(--font-body); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; padding-top: 6px; }
-        .cal-d.hoy i { background: var(--primary); color: #fff; }
-        .cal-d i { font-style: normal; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; }
-        .cal-d.sel { background: rgba(0,180,216,.14); }
-        .cal-pts { display: flex; align-items: center; gap: 3px; height: 10px; font: 700 10px/1 var(--font-body); color: var(--danger); }
-        .cal-pts s { text-decoration: none; width: 6px; height: 6px; border-radius: 50%; background: var(--danger); }
-        .cal-pts s.c { background: var(--accent); }
-        .cal-leyenda { display: flex; gap: 16px; justify-content: center; font-size: 12px; color: var(--ink-soft); padding: 10px 0 2px; }
-        .cal-leyenda s { display: inline-block; text-decoration: none; width: 8px; height: 8px; border-radius: 50%; background: var(--danger); margin-right: 6px; }
-        .cal-leyenda s.c { background: var(--accent); }
-        .av-dia { background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 18px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; font-size: 14px; }
-        .av-dia h4 { font: 600 14px var(--font-display); }
-        .av-dia p { line-height: 1.4; } .av-dia p span { color: var(--ink-soft); }
-        .av-env { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 16px; padding: 12px 14px; font-size: 13px; }
-        .av-env small { display: block; color: var(--ink-soft); margin-top: 2px; }
-        .av-env button { border: 0; background: var(--fill); border-radius: 10px; padding: 9px 12px; font: 600 12px var(--font-body); color: var(--primary); flex-shrink: 0; }
+        @keyframes pulseSuave {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.85; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
+        /* Ocultamos el contenedor principal por defecto para que no parpadee */
+        .container {
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        /* =========================================
+           CHECKBOX ESTILO CÍRCULO PREMIUM
+           ========================================= */
+        .terminos-container {
+            display: flex;
+            align-items: center;
+            text-align: left;
+            cursor: pointer;
+            margin-bottom: 25px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .circle-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+        .circle-checkbox input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .circle-design {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: transparent; border: 2px solid #cbd5e1;
+            transition: all .25s ease; border-radius: 50%;
+        }
+        .circle-design:after {
+            content: ""; position: absolute; display: none;
+            top: 5px; left: 5px; width: 8px; height: 8px;
+            border-radius: 50%; background: white;
+        }
+        .circle-checkbox input:checked + .circle-design {
+            background-color: #00B4D8;
+            border-color: #00B4D8;
+        }
+        .circle-checkbox input:checked + .circle-design:after {
+            display: block;
+        }
+        .terminos-text {
+            font-size: 13px;
+            color: #4b5b66;
+            line-height: 1.4;
+            font-family: 'Inter', sans-serif;
+        }
+        .terminos-text a {
+            color: #00B4D8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .terminos-text a:hover {
+            text-decoration: underline;
+        }
+
+
+        /* =========================================
+           TODO EN UNA PANTALLA (sin scroll) - REPARTO DEL ESPACIO
+           Los botones mantienen una separación fija y cómoda. El espacio que sobra
+           (por ejemplo con 3 botones en vez de 4) se reparte entre la cabecera
+           (que crece hasta su tamaño original) y el aire alrededor del grupo de botones.
+           ========================================= */
+        .header-curve {
+            flex: 1 1 auto;
+            height: calc(15dvh + env(safe-area-inset-top));
+            max-height: calc(min(25dvh, 185px) + env(safe-area-inset-top));
+            margin-bottom: 0.5dvh;
+        }
+        .welcome { margin-top: clamp(20px, 3.2dvh, 34px); margin-bottom: 1.6dvh; }
+        .patente-box { margin-bottom: 1dvh; }
+        .buttons-container {
+            flex: 1 1 auto;
+            justify-content: center;
+            gap: clamp(12px, 2.4dvh, 24px);
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+        .footer { margin-bottom: 1.2dvh; }
+
+        /* =========================================
+           ESCALA PARA PANTALLAS GRANDES (ej. iPhone Pro Max)
+           --k vale 1 en celulares normales (todo queda idéntico) y sube hasta 1.3
+           en pantallas más altas. Lo calcula un pequeño script al final del archivo.
+           ========================================= */
+        .header-curve img { height: 45%; max-height: 78px; }
+        .welcome { font-size: calc(1.3rem * var(--k, 1)); }
+        .patente-box { width: calc(260px * var(--k, 1)); height: calc(100px * var(--k, 1)); }
+        .patente-wrapper-vertical { margin-top: calc(-5px * var(--k, 1)); }
+        .par-letras, .par-numeros { font-size: calc(75px * var(--k, 1)); letter-spacing: calc(3px * var(--k, 1)); }
+        #par1 { margin-right: calc(20px * var(--k, 1)); }
+        #par2 { margin-right: calc(20px * var(--k, 1)); }
+        #par3 { margin-left: calc(10px * var(--k, 1)); }
     </style>
 </head>
 <body>
 
+    <div id="loading-screen">
+        <div class="animacion-latido">
+            <img src="img/logo.svg" alt="Cargando Nexuz" class="logo-cargando">
+        </div>
+    </div>
+
+    <div id="popup-vencimiento">
+        <div class="popup-box" id="popup-caja">
+            <h3>⚠️ Alerta de Ruta</h3>
+            <p id="popup-mensaje">Tienes documentos próximos a vencer.</p>
+            <button class="popup-btn" onclick="cerrarPopup()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- POPUP DE TÉRMINOS Y CONDICIONES (DISEÑO MODAL INDEX) -->
+    <div id="popup-terminos" style="display: none; position: fixed; inset: 0; background: rgba(9,17,23,0.6); backdrop-filter: blur(6px); align-items: center; justify-content: center; z-index: 10001; padding: 20px;">
+        <div style="background-color: #ffffff; border: 1px solid rgba(17,34,47,0.10); border-radius: 24px; padding: 34px 28px 28px; width: 100%; max-width: 400px; text-align: left; box-shadow: 0 40px 80px -20px rgba(17,34,47,0.35);">
+            
+            <!-- Icono cuadrado redondeado tipo App -->
+            <div style="width: 50px; height: 50px; border-radius: 16px; background-color: rgba(0, 180, 216, 0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#00B4D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 23px; height: 23px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            
+            <h3 style="font-family: 'Poppins', sans-serif; color: #11222F; font-size: 21px; margin-bottom: 8px;">Bienvenido a Nexuz</h3>
+            <p style="font-family: 'Inter', sans-serif; color: #4b5b66; font-size: 13.5px; line-height: 1.5; margin-bottom: 22px;">Antes de mostrar tu Permiso, SOAP y Revisión Técnica, necesitamos que aceptes nuestras políticas de privacidad y uso.</p>
+            
+            <!-- CHECKBOX CIRCULAR PREMIUM -->
+            <label class="terminos-container">
+                <div class="circle-checkbox">
+                    <input type="checkbox" id="chk-terminos">
+                    <span class="circle-design"></span>
+                </div>
+                <span class="terminos-text">
+                    Acepto los <a href="terminos.html" target="_blank">Términos y Condiciones</a> y la <a href="privacidad.html" target="_blank">Política de Privacidad</a>.
+                </span>
+            </label>
+
+            <!-- Botón apagado por defecto -->
+            <button id="btn-aceptar-terminos" style="background-color: #11222F; color: #ffffff; border: none; padding: 15px 0; width: 100%; border-radius: 30px; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; cursor: not-allowed; opacity: 0.5; transition: all 0.3s ease;" disabled>Aceptar y continuar</button>
+        </div>
+    </div>
+
+    <!-- FONDO CURVO SUPERIOR -->
     <div class="header-curve">
-        <img src="img/logo.svg" alt="Nexuz">
-        <span class="badge-total" id="badge-contador">Conectando...</span>
+        <!-- Reemplaza con tu logo SVG -->
+        <img src="img/logo.svg" alt="Nexuz Logo">
     </div>
 
     <div class="container">
-
-        <!-- VISTA 1: CLIENTES -->
-        <section class="vista" id="vista-clientes">
-            <h1 class="titulo-vista">Clientes</h1>
-            <input type="text" id="input-busqueda" class="buscador-input" placeholder="Buscar patente o cliente" oninput="aplicarFiltros()" autocomplete="off">
-
-            <div class="fila-filtros">
-                <div class="filtro-wrapper">
-                    <button class="btn-circulo" aria-label="Ordenar"><svg class="i" viewBox="0 0 24 24"><path d="M8 4v16M4 16l4 4 4-4M16 20V4M12 8l4-4 4 4"/></svg></button>
-                    <select id="select-orden" class="select-oculto" onchange="aplicarFiltros()">
-                        <option value="escaneos_desc">🔥 Lecturas: Mayor a Menor</option>
-                        <option value="escaneos_asc">🧊 Lecturas: Menor a Mayor</option>
-                        <option value="id_desc">🆕 Registro: Más recientes primero</option>
-                        <option value="id_asc">⏳ Registro: Más antiguos primero</option>
-                    </select>
-                </div>
-
-                <div class="chips">
-                    <button class="chip activa" id="tab-activos" onclick="cambiarVistaClientes('A')">Activos</button>
-                    <button class="chip" id="tab-pendientes" onclick="cambiarVistaClientes('P')">
-                        Pendientes
-                        <span class="badge-rojo" id="badge-pendientes" hidden>0</span>
-                    </button>
-                </div>
-            </div>
-
-            <div id="contenedor-lista" class="lista">
-                <p class="estado-mensaje">Sincronizando base de datos...</p>
-            </div>
-        </section>
-
-        <!-- VISTA 2: BÓVEDA DE CÓDIGOS -->
-        <section class="vista" id="vista-boveda" hidden>
-            <h1 class="titulo-vista">Códigos</h1>
-            <div class="chips" id="chips-codigos">
-                <button class="chip activa" data-estado="D">Disponibles</button>
-                <button class="chip" data-estado="A">Asignados</button>
-                <button class="chip" data-estado="U">Usados</button>
-            </div>
-            <p class="meta" id="meta-codigos"></p>
-            <div class="grid-codigos" id="grid-codigos"></div>
-            <button class="btn-primario" id="btn-generar">＋ Generar 20 códigos</button>
-
-            <!-- CONTROLES USADOS -->
-            <div class="fila-acciones" id="controles-usados" style="display: none;">
-                <button class="btn-sec f1" id="btn-modo-seleccionar">☑️ Seleccionar</button>
-                <button class="btn-sec peligro f1" id="btn-limpiar-usados">🗑️ Vaciar Todos</button>
-            </div>
-
-            <!-- MODO SELECCIÓN ACTIVO -->
-            <div class="fila-acciones" id="controles-seleccion" style="display: none;">
-                <button class="btn-primario peligro f2" id="btn-borrar-seleccion">Borrar (0)</button>
-                <button class="btn-sec f1" id="btn-cancelar-seleccion">Cancelar</button>
-            </div>
-
-            <!-- CONTROLES ASIGNADOS -->
-            <div class="fila-acciones" id="controles-asignados" style="display: none;">
-                <button class="btn-sec f1" id="btn-modo-seleccionar-asignados">☑️ Seleccionar para devolver</button>
-            </div>
-
-            <!-- MODO SELECCIÓN ASIGNADOS -->
-            <div class="fila-acciones" id="controles-seleccion-asignados" style="display: none;">
-                <button class="btn-sec peligro f2" id="btn-liberar-seleccion">Devolver (0)</button>
-                <button class="btn-sec f1" id="btn-cancelar-seleccion-asignados">Cancelar</button>
-            </div>
-        </section>
-
-        <!-- VISTA 3: SUBIDA DE DOCUMENTOS -->
-        <section class="vista" id="vista-docs" hidden>
-            <h1 class="titulo-vista">Documentos</h1>
-            <input type="text" id="input-patente-doc" class="campo" placeholder="PATENTE" maxlength="8" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="done">
-            <p id="info-patente-doc" class="meta info-pat"></p>
-
-            <!-- CARPETA INTERACTIVA DE DOCUMENTOS (los 4 botones son las hojas) -->
-            <div class="folder-wrapper-reactbits">
-                <div class="folder" id="folder-reactbits" onclick="toggleCarpeta()" role="button" tabindex="0" aria-label="Abrir o cerrar documentos"
-                     onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();toggleCarpeta();}">
-                    <div class="folder__back">
-                        <div class="botones-carpeta" id="grid-botones-carpeta">
-                            <button class="btn-doc paper" onclick="event.stopPropagation()" data-doc="soap"><span><svg class="i" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg></span>SOAP</button>
-                            <button class="btn-doc paper" onclick="event.stopPropagation()" data-doc="permiso"><span><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></span>Permiso</button>
-                            <button class="btn-doc paper" onclick="event.stopPropagation()" data-doc="padron"><span><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M6.5 16c.6-1.4 1.6-2 2.5-2s1.9.6 2.5 2M14 10h4M14 14h3"/></svg></span>Padrón</button>
-                            <button class="btn-doc paper" onclick="event.stopPropagation()" data-doc="revision"><span><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/></svg></span>Revisión</button>
-                        </div>
-                        <div class="folder__front"></div>
-                        <div class="folder__front right"></div>
-                    </div>
-                </div>
-                
-            </div>
-            <p class="meta" id="meta-docs">Escribe la patente y elige el documento (PDF).</p>
-
-            <div class="progreso" id="barra-progreso-contenedor" style="display: none;">
-                <div id="barra-progreso" style="width: 0%;"></div>
-            </div>
-
-            <input type="file" id="input-archivo" accept="application/pdf" hidden>
-        </section>
-
-        <!-- VISTA 4: AVISOS DE VENCIMIENTO -->
-        <section class="vista" id="vista-avisos" hidden>
-            <h1 class="titulo-vista">Avisos</h1>
-            <div class="seg" id="seg-avisos">
-                <button class="on" data-av="lista">Por enviar</button>
-                <button data-av="cal">Calendario</button>
-                <button data-av="env">Enviados</button>
-            </div>
-            <div id="av-contenido"></div>
-        </section>
-    </div>
-
-    <!-- BOTÓN FLOTANTE NUEVO CLIENTE -->
-    <button id="btn-flotante-cliente" aria-label="Nuevo cliente"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-
-    <nav class="tabbar">
-        <button class="tab activa" data-vista="clientes"><span><svg class="i" viewBox="0 0 24 24"><path d="M4 14l1.6-5A2 2 0 017.5 7.5h9a2 2 0 011.9 1.5L20 14v4h-2.5v-1.5h-11V18H4z"/><circle cx="7.5" cy="13.5" r=".7"/><circle cx="16.5" cy="13.5" r=".7"/></svg></span>Clientes</button>
-        <button class="tab" data-vista="boveda"><span><svg class="i" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3M14 9l2 2"/></svg></span>Códigos</button>
-        <button class="tab" data-vista="docs"><span><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg></span>Documentos</button>
-        <button class="tab" data-vista="avisos"><span><svg class="i" viewBox="0 0 24 24"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8M13.7 20a2 2 0 01-3.4 0"/></svg></span>Avisos<b class="tab-badge" id="badge-avisos" hidden>0</b></button>
-    </nav>
-
-    <!-- HOJA: VINCULAR TARJETA -->
-    <div class="sheet-fondo" id="sheet-vincular" hidden>
-        <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-titulo">
-            <h3 id="sheet-titulo">Vincular tarjeta</h3>
-            <p class="meta" id="sheet-sub"></p>
-            <input type="url" id="input-url-tarjeta" placeholder="Pega el enlace de la tarjeta" autocomplete="off" autocapitalize="off">
-            <button class="btn-primario" id="btn-confirmar-vinculo">Vincular y activar</button>
-            <button class="btn-sec" id="btn-cancelar-vinculo">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- HOJA: ASIGNAR CÓDIGO -->
-    <div class="sheet-fondo" id="sheet-asignar" hidden>
-        <div class="sheet" role="dialog" aria-modal="true">
-            <h3>Asignar código</h3>
-            <p class="meta" id="sheet-sub-asignar"></p>
-            <input type="text" id="input-nombre-asignar" placeholder="Nombre (Ej: Juan Pérez)" autocomplete="off" autocapitalize="words">
-            <input type="tel" id="input-telefono-asignar" placeholder="WhatsApp (Ej: 56912345678) - Opcional" autocomplete="off">
-            <button class="btn-primario wa" id="btn-confirmar-asignar">Asignar y enviar por WhatsApp</button>
-            <button class="btn-sec" id="btn-cancelar-asignar">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- HOJA: LIBERAR CÓDIGO (Asignados) -->
-    <div class="sheet-fondo" id="sheet-liberar" hidden>
-        <div class="sheet" role="dialog" aria-modal="true">
-            <h3>Opciones del código</h3>
-            <p class="meta" id="sheet-sub-liberar"></p>
-            <button class="btn-primario" id="btn-copiar-asignado">Copiar código</button>
-            <button class="btn-sec peligro" id="btn-confirmar-liberar">Devolver a Disponibles</button>
-            <button class="btn-sec" id="btn-cancelar-liberar">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- HOJA: BORRAR CÓDIGO (Usados) -->
-    <div class="sheet-fondo" id="sheet-borrar" hidden>
-        <div class="sheet" role="dialog" aria-modal="true">
-            <h3 class="peligro">Eliminar código</h3>
-            <p class="meta" id="sheet-sub-borrar"></p>
-            <button class="btn-primario peligro" id="btn-confirmar-borrar">Borrar permanentemente</button>
-            <button class="btn-sec" id="btn-cancelar-borrar">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- HOJA: BORRAR TODOS LOS USADOS -->
-    <div class="sheet-fondo" id="sheet-borrar-todos" hidden>
-        <div class="sheet" role="dialog" aria-modal="true">
-            <h3 class="peligro">Vaciar usados</h3>
-            <p class="meta">¿Estás seguro de borrar TODOS los códigos quemados? Esta acción no se puede deshacer.</p>
-            <button class="btn-primario peligro" id="btn-confirmar-borrar-todos">Sí, borrar todos</button>
-            <button class="btn-sec" id="btn-cancelar-borrar-todos">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- HOJA: CONFIRMAR SUBIDA DE DOCUMENTO -->
-    <div class="sheet-fondo" id="sheet-subida" hidden>
-        <div class="sheet" role="dialog" aria-modal="true">
-            <h3>Confirmar subida</h3>
-            <p class="meta" id="sheet-sub-subida"></p>
-            <button class="btn-primario" id="btn-confirmar-subida">Sí, subir y reemplazar</button>
-            <button class="btn-sec" id="btn-cancelar-subida">Cancelar</button>
-        </div>
-    </div>
-
-    <!-- HOJA: FICHA MAESTRA (CREAR/EDITAR CLIENTE) -->
-    <div class="sheet-fondo" id="sheet-ficha-cliente" hidden>
-        <div class="sheet" role="dialog" aria-modal="true">
-            <h3 id="titulo-ficha-cliente">Nuevo Cliente</h3>
-            <p class="meta">Registra los datos básicos. Los PDFs los subes después.</p>
-
-            <input type="hidden" id="input-ficha-id">
-
-            <input type="text" id="input-ficha-patente" class="campo-pat" placeholder="Patente (Ej: DDGG56)" maxlength="8" autocomplete="off" autocapitalize="characters">
-            <input type="text" id="input-ficha-nombre" placeholder="Nombre completo" autocomplete="off" autocapitalize="words">
-            <input type="email" id="input-ficha-correo" placeholder="Correo electrónico (Opcional)" autocomplete="off" autocapitalize="off">
-            <input type="tel" id="input-ficha-telefono" placeholder="WhatsApp (Ej: 56912345678) (Opcional)" autocomplete="off">
-
-            <p class="subtitulo">Vencimientos (opcionales)</p>
-            <div class="grupo-fechas">
-                <div class="fecha"><label>SOAP</label><input type="date" id="input-ficha-soap"></div>
-                <div class="fecha"><label>Revisión Técnica</label><input type="date" id="input-ficha-revision"></div>
-                <div class="fecha"><label>Permiso de Circulación</label><input type="date" id="input-ficha-permiso"></div>
-            </div>
-
-            <button class="btn-primario" id="btn-guardar-ficha">Guardar Cliente</button>
-            <button class="btn-sec" id="btn-cancelar-ficha">Cancelar</button>
-        </div>
-    </div>
-
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
-    <script>
-        const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const tokenAcceso = urlParams.get('token') || sessionStorage.getItem('nx_token');
-
-        if (!tokenAcceso) {
-            window.location.href = "index.html";
-        } else {
-            sessionStorage.setItem('nx_token', tokenAcceso);
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        let baseVehiculos = [];
-
-        async function inicializarPanel() {
-            try {
-                const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/ver_resumen_admin`, {
-                    method: 'POST',
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ p_clave: tokenAcceso })
-                });
-
-                if (!res.ok) throw new Error("Acceso denegado");
-                
-                baseVehiculos = await res.json();
-                document.getElementById('badge-contador').innerText = `${baseVehiculos.length} Registrados`;
-                aplicarFiltros();
-
-            } catch (err) {
-                window.location.href = "index.html";
-            }
-        }
-
-        let vistaClientes = 'A'; // Iniciamos mostrando los Activos
-
-        function cambiarVistaClientes(vista) {
-            vistaClientes = vista;
-            document.getElementById('tab-activos').classList.toggle('activa', vista === 'A');
-            document.getElementById('tab-pendientes').classList.toggle('activa', vista === 'P');
-            aplicarFiltros();
-        }
-
-        function aplicarFiltros() {
-            const termino = document.getElementById('input-busqueda').value.trim().toUpperCase();
-            const orden = document.getElementById('select-orden').value;
-
-            // 1. Actualizar el globito rojo con el TOTAL real de pendientes en la base de datos
-            const totalPendientes = baseVehiculos.filter(v => v.estado_cuenta !== 'A').length;
-            const badge = document.getElementById('badge-pendientes');
-            if (totalPendientes > 0) {
-                badge.textContent = totalPendientes;
-                badge.hidden = false;
-            } else {
-                badge.hidden = true;
-            }
-
-            // 2. Filtrar por la barra de búsqueda
-            let lista = baseVehiculos.filter(v => {
-                const p = (v.patente || '').toUpperCase();
-                const n = (v.nombre_cliente || '').toUpperCase();
-                return p.includes(termino) || n.includes(termino);
-            });
-
-            // 3. Separar las listas según la burbuja tocada (Activos o Pendientes)
-            if (vistaClientes === 'A') {
-                lista = lista.filter(v => v.estado_cuenta === 'A');
-            } else {
-                lista = lista.filter(v => v.estado_cuenta !== 'A');
-            }
-
-            // 2. Aplicar ordenamiento
-            lista.sort((a, b) => {
-                if (orden === 'escaneos_desc') return b.cantidad_escaneos - a.cantidad_escaneos;
-                if (orden === 'escaneos_asc') return a.cantidad_escaneos - b.cantidad_escaneos;
-                if (orden === 'id_desc') return b.id - a.id;
-                if (orden === 'id_asc') return a.id - b.id;
-            });
-
-            dibujarTarjetas(lista);
-        }
-
-        function dibujarTarjetas(lista) {
-            const contenedor = $('contenedor-lista');
-            contenedor.innerHTML = '';
-
-            if (lista.length === 0) {
-                contenedor.innerHTML = '<p class="estado-mensaje">No se encontraron resultados.</p>';
-                return;
-            }
-
-            lista.forEach(item => {
-                const esActivo = item.estado_cuenta === 'A';
-                
-                // Analizador de documentos faltantes
-                const faltan = [];
-                if (!item.url_soap) faltan.push('🛡️ SOAP');
-                if (!item.url_permiso) faltan.push('📄 Permiso');
-                if (!item.url_revision) faltan.push('🔧 Rev');
-                if (!item.url_padron) faltan.push('🪪 Padrón');
-
-                let htmlFaltan = '';
-                if (faltan.length > 0) {
-                    htmlFaltan = `<div style="margin-top: 6px; font-size: 11px; color: #b91c1c; font-weight: 600; background: #fef2f2; padding: 4px 8px; border-radius: 6px; display: inline-block;">Falta: ${faltan.join(' · ')}</div>`;
-                }
-
-                const card = document.createElement('div');
-                card.className = 'card';
-                
-                const btnLapiz = `<button class="btn-editar" data-id="${item.id}">✏️</button>`;
-
-                card.innerHTML = `
-                    ${btnLapiz}
-                    <div class="datos">
-                        <span class="patente">${esc(item.patente || 'S/PAT')}</span>
-                        <p class="cliente">${esc(item.nombre_cliente || 'Propietario no asignado')}</p>
-                        <span class="estado-pill ${esActivo ? 'estado-a' : 'estado-p'}">
-                            ${esActivo ? 'ACTIVO' : 'PENDIENTE'}
-                        </span>
-                        ${htmlFaltan}
-                    </div>
-                    <div class="escaneos-col">
-                        <span class="escaneos-num">${item.cantidad_escaneos}</span>
-                        <span class="escaneos-tag">Lecturas</span>
-                        <span class="id-tag">ID: ${item.id}</span>
-                    </div>
-                `;
-                
-                // El botón de Vincular solo aparece si la tarjeta NO está activa
-                if (!esActivo) {
-                    const divAcciones = document.createElement('div');
-                    
-                    const btnVincular = document.createElement('button');
-                    btnVincular.className = 'btn-vincular';
-                    btnVincular.textContent = 'Vincular Tarjeta';
-                    btnVincular.dataset.id = item.id;
-                    btnVincular.dataset.patente = item.patente || 'S/PAT';
-                    
-                    divAcciones.appendChild(btnVincular);
-                    card.appendChild(divAcciones);
-                }
-                
-                contenedor.appendChild(card);
-            });
-        }
-
-        /* ================= UTILIDADES ================= */
-        const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        const $ = id => document.getElementById(id);
-        const HEAD = { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` };
-
-        let toastTimer;
-        function toast(msg, tipo = 'ok') {
-            const t = $('toast');
-            t.textContent = msg;
-            t.className = `toast ver ${tipo}`;
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.classList.remove('ver'), 2600);
-        }
-
-        // Llamada RPC: siempre envía la clave; la validación real ocurre en el servidor.
-        async function rpc(nombre, args = {}) {
-            const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${nombre}`, {
-                method: 'POST',
-                headers: { ...HEAD, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ p_clave: tokenAcceso, ...args })
-            });
-            if (!res.ok) {
-                let detalle = '';
-                try { detalle = (await res.json()).message || ''; } catch (_) {}
-                throw new Error(detalle || `Error ${res.status}`);
-            }
-            const txt = await res.text();
-            return txt ? JSON.parse(txt) : null;
-        }
-
-        async function copiar(texto) {
-            try { await navigator.clipboard.writeText(texto); return true; }
-            catch (_) {
-                const ta = document.createElement('textarea');
-                ta.value = texto; ta.style.cssText = 'position:fixed;opacity:0';
-                document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, 99999);
-                const ok = document.execCommand('copy');
-                ta.remove(); return ok;
-            }
-        }
-
-        /* ================= NAVEGACIÓN ================= */
-        document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.toggle('activa', t === tab));
-            ['clientes', 'boveda', 'docs'].forEach(v => $('vista-' + v).hidden = v !== tab.dataset.vista);
-            if (tab.dataset.vista === 'boveda') cargarCodigos();
-            
-            // Oculta el botón flotante (+) si no estás en "Clientes"
-            $('btn-flotante-cliente').style.display = (tab.dataset.vista === 'clientes') ? 'flex' : 'none';
-            window.scrollTo({ top: 0 });
-        }));
-
-        /* ================= MÓDULO 1: BÓVEDA ================= */
-        let estadoCodigos = 'D';
-        let codigoAAsignar = null;
-        let modoSeleccion = false;
-        let codigosSeleccionados = new Set();
-
-        async function cargarCodigos() {
-            const grid = $('grid-codigos');$('meta-codigos').textContent = 'Cargando...';
-            try {
-                const filas = await rpc('listar_codigos', { p_estado: estadoCodigos });
-                grid.innerHTML = '';
-                $('meta-codigos').textContent = filas.length
-                    ? (estadoCodigos === 'D' ? `${filas.length} disponibles · toca uno para asignarlo` : `${filas.length} códigos`)
-                    : 'No hay códigos en esta categoría.';
-                
-                filas.forEach(f => {
-                    const b = document.createElement('button');
-                    b.className = 'codigo';
-                    
-                    if (estadoCodigos === 'A' && f.referencia) {
-                        b.innerHTML = `${f.codigo} <br><span style="font-size:13px; color:var(--ink-soft); font-family:var(--font-body); letter-spacing:normal;">👤 ${f.referencia}</span>`;
-                    } else {
-                        b.textContent = f.codigo;
-                    }
-                    
-                    b.dataset.codigo = f.codigo; 
-                    grid.appendChild(b);
-                });
-            } catch (e) {
-                $('meta-codigos').textContent = '';
-                toast('Error: ' + e.message, 'error');
-            }
-        }
-
-        // --- MANEJO DE PESTAÑAS (BURBUJAS) ---
-        function salirModoSeleccion() {
-            modoSeleccion = false;
-            codigosSeleccionados.clear();
-            
-            // Oculta las barras de selección activa
-            $('controles-seleccion').style.display = 'none';$('controles-seleccion-asignados').style.display = 'none';
-            
-            // Muestra los botones de entrada según la pestaña
-            $('controles-usados').style.display = (estadoCodigos === 'U') ? 'flex' : 'none';$('controles-asignados').style.display = (estadoCodigos === 'A') ? 'flex' : 'none';
-            
-            document.querySelectorAll('.codigo').forEach(c => c.classList.remove('seleccionado'));
-        }
-
-        $('chips-codigos').addEventListener('click', e => {             const chip = e.target.closest('.chip'); if (!chip) return;             document.querySelectorAll('.chip').forEach(c => c.classList.toggle('activa', c === chip));             estadoCodigos = chip.dataset.estado;                          salirModoSeleccion();$('btn-generar').style.display = (estadoCodigos === 'D') ? 'block' : 'none';
-            cargarCodigos();
-        });
-
-        // --- AL TOCAR CUALQUIER CÓDIGO ---
-        $('grid-codigos').addEventListener('click', async e => {
-            const b = e.target.closest('.codigo'); if (!b || !b.dataset.codigo) return;
-            
-            // Si estamos en MODO MULTI-SELECCIÓN (Marcando con el dedo)
-            if (modoSeleccion) {
-                if (codigosSeleccionados.has(b.dataset.codigo)) {
-                    codigosSeleccionados.delete(b.dataset.codigo);
-                    b.classList.remove('seleccionado');
-                } else {
-                    codigosSeleccionados.add(b.dataset.codigo);
-                    b.classList.add('seleccionado');
-                }
-                
-                // Actualiza el número en el botón correcto según la pestaña
-                if (estadoCodigos === 'U') $('btn-borrar-seleccion').textContent = `Borrar (${codigosSeleccionados.size})`;
-                if (estadoCodigos === 'A') $('btn-liberar-seleccion').textContent = `Devolver (${codigosSeleccionados.size})`;
-                return;
-            }
-
-            // Si es MODO NORMAL (Abrir hojas elegantes)
-            codigoAAsignar = b.dataset.codigo;
-            
-            if (estadoCodigos === 'D') {
-                $('sheet-sub-asignar').textContent = `Código seleccionado: ${codigoAAsignar}`;
-                $('input-nombre-asignar').value = '';
-                $('input-telefono-asignar').value = '';
-                document.body.style.overflow = 'hidden';
-                $('sheet-asignar').hidden = false;
-                setTimeout(() => $('input-nombre-asignar').focus(), 50);              } else if (estadoCodigos === 'A') {$('sheet-sub-liberar').textContent = `Asignado a este cliente`;
-                document.body.style.overflow = 'hidden';
-                $('sheet-liberar').hidden = false;
-            } else if (estadoCodigos === 'U') {
-                $('sheet-sub-borrar').textContent = `Código a eliminar: ${codigoAAsignar}`;
-                document.body.style.overflow = 'hidden';
-                $('sheet-borrar').hidden = false;
-            }
-        });
-
-        // ================= NUEVO: MODO MULTI-SELECCIÓN ASIGNADOS =================
-        $('btn-modo-seleccionar-asignados').addEventListener('click', () => {
-            modoSeleccion = true;
-            $('controles-asignados').style.display = 'none';
-            $('controles-seleccion-asignados').style.display = 'flex';$('btn-liberar-seleccion').textContent = `Devolver (0)`;
-        });
-
-        $('btn-cancelar-seleccion-asignados').addEventListener('click', salirModoSeleccion);
-
-        $('btn-liberar-seleccion').addEventListener('click', async () => {
-            if (codigosSeleccionados.size === 0) return toast('⚠️ Marca al menos un código', 'error');
-            const btn = $('btn-liberar-seleccion');
-            btn.disabled = true; btn.textContent = "Devolviendo...";
-
-            try {
-                const promesas = Array.from(codigosSeleccionados).map(c => rpc('liberar_codigo_admin', { p_codigo: c }));
-                await Promise.all(promesas);
-                
-                toast(`${codigosSeleccionados.size} devueltos a Disponibles`);
-                salirModoSeleccion();
-                cargarCodigos();
-            } catch (err) { toast('Error: ' + err.message, 'error'); btn.disabled = false; }
-        });
-
-        // ================= MODO MULTI-SELECCIÓN USADOS =================
-        $('btn-modo-seleccionar').addEventListener('click', () => {
-            modoSeleccion = true;
-            $('controles-usados').style.display = 'none';
-            $('controles-seleccion').style.display = 'flex';$('btn-borrar-seleccion').textContent = `Borrar (0)`;
-        });
-
-        $('btn-cancelar-seleccion').addEventListener('click', salirModoSeleccion);
-
-        $('btn-borrar-seleccion').addEventListener('click', async () => {
-            if (codigosSeleccionados.size === 0) return toast('⚠️ Marca al menos un código', 'error');
-            const btn = $('btn-borrar-seleccion');
-            btn.disabled = true; btn.textContent = "Borrando...";
-
-            try {
-                const promesas = Array.from(codigosSeleccionados).map(c => rpc('borrar_codigo_admin', { p_codigo: c }));
-                await Promise.all(promesas);
-                
-                toast(`${codigosSeleccionados.size} códigos eliminados`);
-                salirModoSeleccion();
-                cargarCodigos();
-            } catch (err) { toast('Error: ' + err.message, 'error'); btn.disabled = false; }
-        });
-
-        // ================= HOJA: ASIGNAR (DISPONIBLES) & WHATSAPP =================
-        const cerrarSheetAsignar = () => { $('sheet-asignar').hidden = true; document.body.style.overflow = '';};
-        $('btn-cancelar-asignar').addEventListener('click', cerrarSheetAsignar);$('sheet-asignar').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarSheetAsignar(); });
-
-        $('btn-confirmar-asignar').addEventListener('click', async () => {
-            if (!codigoAAsignar) return;
-            const ref = $('input-nombre-asignar').value.trim();
-            const tel = $('input-telefono-asignar').value.trim().replace(/\D/g, ''); 
-            
-            if (!ref) return toast('⚠️ Ingresa a quién le darás el código', 'error');
-
-            const btn = $('btn-confirmar-asignar'); 
-            btn.disabled = true; btn.textContent = "Asignando...";
-
-            try {
-                await copiar(codigoAAsignar);
-                await rpc('asignar_codigo_admin', { p_codigo: codigoAAsignar, p_referencia: ref });
-
-                const mensaje = `Para activar tu Tarjeta NFC y dejar tus documentos configurados, sigue estos pasos:\n\n1. Ingresa a nuestra plataforma: 👉 https://mynexuz.cl/registro.html\n\n2. Pega el código de activación que te envié abajo 👇\n\nIngresa tu patente, tus datos y sube tus 4 documentos en PDF (SOAP, Permiso de Circulación, Revisión Técnica y Padrón).\n\nApenas completes el registro, grabamos tu tarjeta física con tu perfil digital y te la entregamos lista para usar.`;
-                const urlWa = tel ? `https://wa.me/${tel}?text=${encodeURIComponent(mensaje)}` : `https://wa.me/?text=${encodeURIComponent(mensaje)}`;
-
-                window.location.href = urlWa;
-                
-                toast(`Asignado a ${ref} y copiado`);
-                $('input-telefono-asignar').value = ''; 
-                cerrarSheetAsignar(); 
-                cargarCodigos(); 
-            } catch (err) { toast('Error: ' + err.message, 'error'); } 
-            finally { btn.disabled = false; btn.textContent = "Asignar y enviar por WhatsApp"; }
-        });
-
-        // ================= HOJA: LIBERAR O COPIAR 1x1 (ASIGNADOS) =================
-        const cerrarSheetLiberar = () => { $('sheet-liberar').hidden = true; document.body.style.overflow = '';};
-        $('btn-cancelar-liberar').addEventListener('click', cerrarSheetLiberar);$('sheet-liberar').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarSheetLiberar(); });
-
-        $('btn-copiar-asignado').addEventListener('click', async () => {
-            if (await copiar(codigoAAsignar)) toast(`Copiado: ${codigoAAsignar}`);
-            cerrarSheetLiberar();
-        });
-
-        $('btn-confirmar-liberar').addEventListener('click', async () => {
-            const btn = $('btn-confirmar-liberar'); btn.disabled = true; btn.textContent = "Devolviendo...";
-            try {
-                await rpc('liberar_codigo_admin', { p_codigo: codigoAAsignar });
-                toast('Código devuelto a Disponibles');
-                cerrarSheetLiberar(); cargarCodigos();
-            } catch (err) { toast('Error: ' + err.message, 'error'); }
-            finally { btn.disabled = false; btn.textContent = "Devolver a Disponibles"; }
-        });
-
-        // ================= HOJA: BORRAR 1x1 (USADOS) =================
-        const cerrarSheetBorrar = () => { $('sheet-borrar').hidden = true; document.body.style.overflow = '';};
-        $('btn-cancelar-borrar').addEventListener('click', cerrarSheetBorrar);$('sheet-borrar').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarSheetBorrar(); });
-
-        $('btn-confirmar-borrar').addEventListener('click', async () => {
-            const btn = $('btn-confirmar-borrar'); btn.disabled = true; btn.textContent = "Borrando...";
-            try {
-                await rpc('borrar_codigo_admin', { p_codigo: codigoAAsignar });
-                toast('Código eliminado');
-                cerrarSheetBorrar(); cargarCodigos();
-            } catch (err) { toast('Error: ' + err.message, 'error'); }
-            finally { btn.disabled = false; btn.textContent = "Borrar permanentemente"; }
-        });
-
-        // ================= HOJA: VACIAR TODOS LOS USADOS =================
-        const cerrarSheetBorrarTodos = () => { $('sheet-borrar-todos').hidden = true; document.body.style.overflow = '';};
-        $('btn-cancelar-borrar-todos').addEventListener('click', cerrarSheetBorrarTodos);$('sheet-borrar-todos').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarSheetBorrarTodos(); });
-
-        $('btn-limpiar-usados').addEventListener('click', () => {document.body.style.overflow = 'hidden';$('sheet-borrar-todos').hidden = false; });
-
-        $('btn-confirmar-borrar-todos').addEventListener('click', async () => {
-            const btn = $('btn-confirmar-borrar-todos'); btn.disabled = true; btn.textContent = "Borrando todo...";
-            try {
-                await rpc('borrar_todos_usados_admin');
-                toast('Limpieza completa. Códigos eliminados.');
-                cerrarSheetBorrarTodos(); cargarCodigos();
-            } catch (err) { toast('Error: ' + err.message, 'error'); } 
-            finally { btn.disabled = false; btn.textContent = "Sí, borrar todos"; }
-        });
-
-        // ================= GENERAR 20 CÓDIGOS =================
-        $('btn-generar').addEventListener('click', async () => {
-            if (!confirm('¿Generar 20 códigos nuevos?')) return;
-            const btn = $('btn-generar'); btn.disabled = true;
-            try {
-                await rpc('generar_codigos', { p_cantidad: 20 });
-                toast('20 códigos generados');
-                estadoCodigos = 'D';
-                document.querySelectorAll('.chip').forEach(c => c.classList.toggle('activa', c.dataset.estado === 'D'));
-                $('btn-generar').style.display = 'block';
-                await cargarCodigos();
-            } catch (e) { toast('Error al generar: ' + e.message, 'error'); }
-            finally { btn.disabled = false; }
-        });
-
-        /* ================= MÓDULO 2: VINCULADOR ================= */
-        let vehiculoAVincular = null;
-        const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-        function extraerId(texto) {
-            texto = texto.trim();
-            try { const id = new URL(texto).searchParams.get('id'); if (id) return id.trim(); } catch (_) {}
-            const i = texto.indexOf('=');
-            return (i >= 0 ? texto.slice(i + 1) : texto).split('&')[0].trim();
-        }
-
-        $('contenedor-lista').addEventListener('click', e => {
-            const b = e.target.closest('.btn-vincular'); if (!b) return;
-            vehiculoAVincular = { id: Number(b.dataset.id), patente: b.dataset.patente };
-            $('sheet-sub').textContent = `Vehículo ${vehiculoAVincular.patente}`;
-            $('input-url-tarjeta').value = '';
-            document.body.style.overflow = 'hidden';
-            $('sheet-vincular').hidden = false;
-            setTimeout(() => $('input-url-tarjeta').focus(), 50);
-        });
-
-        const cerrarSheet = () => { $('sheet-vincular').hidden = true; vehiculoAVincular = null; document.body.style.overflow = '';};
-        $('btn-cancelar-vinculo').addEventListener('click', cerrarSheet);
-        $('sheet-vincular').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarSheet(); });
-
-        $('btn-confirmar-vinculo').addEventListener('click', async () => {
-            if (!vehiculoAVincular) return;
-            const id = extraerId($('input-url-tarjeta').value);
-            if (!UUID_RE.test(id)) return toast('El enlace no contiene un ID válido', 'error');
-            const btn = $('btn-confirmar-vinculo'); btn.disabled = true;
-            try {
-                await rpc('vincular_tarjeta', { p_id_vehiculo: vehiculoAVincular.id, p_codigo_seguro: id });
-                toast(`${vehiculoAVincular.patente} activada`);
-                cerrarSheet();
-                await inicializarPanel(); // <--- RECARGA MÁGICA EN VIVO
-            } catch (e) { toast('No se pudo vincular: ' + e.message, 'error'); }
-            finally { btn.disabled = false; }
-        });
-
-        /* ================= MÓDULO 3: SUBIDA DE DOCUMENTOS ================= */
-        let docPendiente = null;
-        let vehiculoDocActual = null;
-        let archivoPendiente = null; // NUEVO: Guarda el archivo mientras confirmas
-        const normPatente = s => s.toUpperCase().replace(/[^A-Z0-9]/g, '');
-
-        // 1. VALIDACIÓN EN TIEMPO REAL
-        $('input-patente-doc').addEventListener('input', e => { 
-            const pat = normPatente(e.target.value);
-            e.target.value = pat; 
-            
-            const info = $('info-patente-doc');
-            vehiculoDocActual = baseVehiculos.find(v => (v.patente || '').toUpperCase() === pat);
-            
-            if (pat.length < 5) {
-                info.textContent = '';
-            } else if (vehiculoDocActual) {
-                info.innerHTML = `✅ ${pat} · ${vehiculoDocActual.nombre_cliente || 'Sin nombre'}`;
-                info.style.color = '#166534'; 
-            } else {
-                info.innerHTML = `❌ Patente no registrada`;
-                info.style.color = '#b91c1c'; 
-            }
-        });
-
-        // 2. BOTONES DE DOCUMENTOS
-        document.querySelectorAll('.btn-doc').forEach(btn => btn.addEventListener('click', () => {
-            const pat = normPatente($('input-patente-doc').value);
-            if (pat.length < 5) return toast('Ingresa una patente válida', 'error');
-            if (!vehiculoDocActual) return toast('⚠️ Patente no existe. Registra al cliente primero.', 'error');
-
-            docPendiente = btn.dataset.doc;
-            $('input-archivo').value = '';$('input-archivo').click();   
-        }));
-
-        // 3. CAPTURAR ARCHIVO Y ABRIR HOJA ELEGANTE
-        $('input-archivo').addEventListener('change', e => {
-            const file = e.target.files[0]; if (!file || !docPendiente) return;
-            const pat = normPatente($('input-patente-doc').value);
-            const esPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
-            
-            if (!esPdf) return toast('El archivo debe ser un PDF', 'error');
-            if (file.size > 10 * 1024 * 1024) return toast('El PDF supera los 10 MB', 'error');
-
-            // Guardamos el archivo y abrimos la hoja elegante en vez del mensaje web
-            archivoPendiente = file;
-            $('sheet-sub-subida').innerHTML = `¿Subir <b>${docPendiente.toUpperCase()}</b> para la patente <b>${pat}</b>?<br><br>⚠️ Si ya existe un documento anterior, será reemplazado permanentemente.`;
-            document.body.style.overflow = 'hidden';
-            $('sheet-subida').hidden = false;
-        });
-
-        // 4. CONTROLES DE LA HOJA DE SUBIDA Y BARRA DE PROGRESO
-        const cerrarSheetSubida = () => { 
-            $('sheet-subida').hidden = true; 
-            archivoPendiente = null; 
-            $('input-archivo').value = ''; 
-            document.body.style.overflow = '';
-        };
         
-        $('btn-cancelar-subida').addEventListener('click', cerrarSheetSubida);$('sheet-subida').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarSheetSubida(); });
+        <!-- NOMBRE INTER BOLD -->
+        <h1 class="welcome" id="client-name">Cargando...</h1>
+        
+        <!-- PATENTE TEKO LIGHT (Separada en 3 bloques) -->
+        <div class="patente-box">
+            <div class="patente-wrapper-vertical" id="patente-posicion-vertical">
+                <span class="par-letras" id="par1">- -</span>
+                <span class="par-letras" id="par2">- -</span>
+                <span class="par-numeros" id="par3">- -</span>
+            </div>
+        </div>
 
-        $('btn-confirmar-subida').addEventListener('click', () => {
-            if (!archivoPendiente || !docPendiente) return;
-            const file = archivoPendiente;
-            const pat = normPatente($('input-patente-doc').value);
-            const nombre = `${pat}_${docPendiente}.pdf`;
-            const botones = document.querySelectorAll('.btn-doc');
+        <!-- BOTONES POPPINS SEMI BOLD (Mismo orden que en tu imagen) -->
+        <div class="buttons-container">
+            <a href="#" id="link-permiso" class="btn" target="_blank" rel="noopener noreferrer">
+                <img src="img/tarjeta/Icono Permiso Circulacion.svg" class="btn-icon" alt="Permiso">
+                <span class="btn-text">Permiso de Circulación</span>
+            </a>
             
-            cerrarSheetSubida(); // Ocultamos la hoja
-            botones.forEach(b => b.disabled = true);
+            <a href="#" id="link-revision" class="btn" target="_blank" rel="noopener noreferrer">
+                <img src="img/tarjeta/Icono Revision.svg" class="btn-icon" alt="Revisión">
+                <span class="btn-text">Revisión Técnica</span>
+            </a>
             
-            $('meta-docs').textContent = `Preparando ${nombre}...`;
-            $('barra-progreso-contenedor').style.display = 'block';$('barra-progreso').style.width = '0%';
+            <a href="#" id="link-soap" class="btn" target="_blank" rel="noopener noreferrer">
+                <img src="img/tarjeta/Icono Soap.svg" class="btn-icon" alt="SOAP">
+                <span class="btn-text">Seguro Obligatorio (SOAP)</span>
+            </a>
 
-            const url = `${SUPABASE_URL}/storage/v1/object/documentos_autos/${encodeURIComponent(nombre)}`;
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', url, true);
-            xhr.setRequestHeader('apikey', SUPABASE_ANON_KEY);
-            xhr.setRequestHeader('Authorization', `Bearer ${SUPABASE_ANON_KEY}`);
-            xhr.setRequestHeader('Content-Type', 'application/pdf');
-            xhr.setRequestHeader('x-upsert', 'true');
+            <a href="#" id="link-padron" class="btn" target="_blank" rel="noopener noreferrer">
+                <img src="img/tarjeta/Icono Padron.svg" class="btn-icon" alt="Padrón">
+                <span class="btn-text">Cert. Inscripción (Padrón)</span>
+            </a>
+        </div>
 
-            xhr.upload.onprogress = (event) => {
-                if (event.lengthComputable) {
-                    const percent = Math.round((event.loaded / event.total) * 100);
-                    $('meta-docs').textContent = `Subiendo... ${percent}%`;
-                    $('barra-progreso').style.width = `${percent}%`;
+        <!-- FOOTER INTER REGULAR -->
+        <div class="footer">
+            Información protegida | Validez Ley N° 19.799<br>
+            MyNexuz.cl © 2026
+        </div>
+    </div>
+
+   <script>
+
+    function cerrarPopup() {
+        const popup = document.getElementById('popup-vencimiento');
+        const caja = document.getElementById('popup-caja');
+        popup.style.opacity = '0';
+        caja.style.transform = 'scale(0.9)';
+        setTimeout(() => { popup.style.display = 'none'; }, 300);
+    }
+
+    function quitarCargador() {
+        const tiempoTranscurrido = Date.now() - inicioCarga;
+        const tiempoRestante = Math.max(0, TIEMPO_MINIMO_CARGA - tiempoTranscurrido);
+
+        // Espera el tiempo restante para cumplir siempre los 3 segundos exactos
+        setTimeout(() => {
+            const loader = document.getElementById('loading-screen');
+            const container = document.querySelector('.container');
+            const header = document.querySelector('.header-curve');
+
+            if (loader) {
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+            }
+            if (header) { header.style.opacity = '1'; }
+            if (container) { container.style.opacity = '1'; }
+        }, tiempoRestante);
+    }
+
+    const SUPABASE_URL = "https://ofeqicztagixejyqvuof.supabase.co"; 
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9mZXFpY3p0YWdpeGVqeXF2dW9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwMzcxMjAsImV4cCI6MjA5ODYxMzEyMH0.mMGzCSy2lCU-8hGMPblVCsY4YWtKldfP0CBCCaAolmQ";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const idUrl = urlParams.get('id');
+
+    const TIEMPO_MINIMO_CARGA = 1500; // ⏱️ Puedes cambiar este valor (en milisegundos)
+    const inicioCarga = Date.now();
+
+    const VERSION_TERMINOS = "v1.0";
+    let escaneoYaRegistrado = false;
+
+    // 1. FUNCIÓN REUTILIZABLE: Dibuja la tarjeta en pantalla (Sirve para Online y Offline)
+    function renderizarVehiculo(vehiculo) {
+        if (vehiculo.estado_cuenta === "P") {
+            const patenteSegura = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, "");
+            mostrarPantallaError("⏳ Tarjeta en Proceso", `Los documentos de este vehículo (${patenteSegura}) fueron recibidos y están en revisión. Tu credencial se activará en cuanto el equipo confirme la operación.`);
+            return;
+        }
+
+        // 1. PRIMERO: Sumamos +1 al contador solo UNA vez por visita
+        if (escaneoYaRegistrado === false) {
+            registrarEscaneo(vehiculo.patente);
+            escaneoYaRegistrado = true; // Cerramos el candado para que no vuelva a sumar si recarga
+        }
+
+        // BLOQUEO: Si no ha aceptado o tiene una versión vieja de los términos
+        if (!vehiculo.terms_accepted || vehiculo.terms_version !== VERSION_TERMINOS) {
+            quitarCargador();
+            document.getElementById('popup-terminos').style.display = 'flex';
+            
+            const chkTerminos = document.getElementById('chk-terminos');
+            const btnAceptar = document.getElementById('btn-aceptar-terminos');
+            
+            // Lógica: Si marca el círculo, el botón cobra vida
+            chkTerminos.addEventListener('change', function() {
+                if(this.checked) {
+                    btnAceptar.disabled = false;
+                    btnAceptar.style.opacity = '1';
+                    btnAceptar.style.cursor = 'pointer';
+                    btnAceptar.style.backgroundColor = '#00B4D8'; // Se ilumina de celeste Nexuz
+                } else {
+                    btnAceptar.disabled = true;
+                    btnAceptar.style.opacity = '0.5';
+                    btnAceptar.style.cursor = 'not-allowed';
+                    btnAceptar.style.backgroundColor = '#11222F'; // Se vuelve a apagar
                 }
+            });
+
+            // Cuando el botón ya está encendido y lo presionan
+            btnAceptar.onclick = function() {
+                this.innerHTML = "Guardando...";
+                this.disabled = true;
+                aceptarTerminos(vehiculo); 
             };
+            return; 
+        }
 
-            xhr.onload = async () => {
-                botones.forEach(b => b.disabled = false);
-                $('barra-progreso-contenedor').style.display = 'none';
+        document.getElementById('client-name').innerText = vehiculo.nombre_cliente || "Propietario";
+        const patenteLimpia = (vehiculo.patente || "------").replace(/[^a-zA-Z0-9]/g, ""); 
+        document.getElementById('par1').innerText = patenteLimpia.substring(0, 2); 
+        document.getElementById('par2').innerText = patenteLimpia.substring(2, 4); 
+        document.getElementById('par3').innerText = patenteLimpia.substring(4, 6); 
 
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    // Magia: Construimos el link público y se lo mandamos a Supabase
-                    const urlPublica = `${SUPABASE_URL}/storage/v1/object/public/documentos_autos/${encodeURIComponent(nombre)}`;
+        let documentosPorVencer = [];
+
+        function aplicarEstado(btnId, urlPdf, fechaVencimiento, nombreDocumento) {
+            const btn = document.getElementById(btnId);
+            if(urlPdf) {
+                btn.href = urlPdf; 
+                if(fechaVencimiento) {
+                    const hoy = new Date(); 
+                    const fechaVen = new Date(fechaVencimiento + "T23:59:59"); 
+                    const diferenciaTiempo = fechaVen - hoy;
+                    const diasRestantes = Math.ceil(diferenciaTiempo / (1000 * 60 * 60 * 24));
                     
-                    try {
-                        await rpc('enlazar_documento_admin', { p_patente: pat, p_tipo: docPendiente, p_url: urlPublica });
-                        toast(`${docPendiente.toUpperCase()} subido y enlazado a ${pat}`);
-                        $('meta-docs').textContent = `Último documento: ${nombre}`;
-                        await inicializarPanel(); // <--- RECARGA MÁGICA EN VIVO
-                    } catch (err) {
-                        toast('Se subió, pero no se enlazó: ' + err.message, 'error');
+                    const spanEstado = document.createElement('span');
+                    spanEstado.className = 'badge'; 
+
+                    if (diasRestantes < 0) {
+                        spanEstado.classList.add('badge-vencido'); 
+                        btn.style.border = "1px solid #EF4444"; 
+                    } else if (diasRestantes <= 15) {
+                        spanEstado.classList.add('badge-alerta'); 
+                        btn.style.border = "1px solid #F59E0B";
+                        documentosPorVencer.push(`${nombreDocumento} (en ${diasRestantes} días)`);
+                    } else {
+                        spanEstado.classList.add('badge-vigente'); 
                     }
-                } else {
-                    let d = ''; try { d = JSON.parse(xhr.responseText).message || ''; } catch (_) {}
-                    toast('Falló la subida: ' + (d || `Error ${xhr.status}`), 'error');
-                    $('meta-docs').textContent = 'Escribe la patente y elige el documento (PDF).';
+                    btn.appendChild(spanEstado);
                 }
-                docPendiente = null;
-            };
-
-            xhr.onerror = () => {
-                botones.forEach(b => b.disabled = false);
-                $('barra-progreso-contenedor').style.display = 'none';
-                docPendiente = null;
-                toast('Error de red al subir', 'error');
-                $('meta-docs').textContent = 'Verifica tu conexión móvil.';
-            };
-
-            xhr.send(file);
-        });
-
-        /* ================= MÓDULO 4: FICHA MAESTRA (CREAR/EDITAR CLIENTE) ================= */
-        const cerrarFichaCliente = () => { 
-            $('sheet-ficha-cliente').hidden = true; 
-            document.body.style.overflow = ''; // <-- DESCONGELA EL FONDO
-        };
-        $('btn-cancelar-ficha').addEventListener('click', cerrarFichaCliente);$('sheet-ficha-cliente').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarFichaCliente(); });
-
-        // Limpia la patente de guiones o minúsculas mientras escribes
-        $('input-ficha-patente').addEventListener('input', e => {
-            e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        });
-
-        // 1. ABRIR FICHA PARA CREAR (Al tocar el botón +)
-        $('btn-flotante-cliente').addEventListener('click', () => {
-            document.body.style.overflow = 'hidden'; // <-- CONGELA EL FONDO
-            $('titulo-ficha-cliente').textContent = "Nuevo Cliente";
-            $('input-ficha-id').value = '';$('input-ficha-patente').value = '';
-            $('input-ficha-patente').disabled = false; // Permitimos escribir la patente$('input-ficha-nombre').value = '';
-            $('input-ficha-correo').value = '';$('input-ficha-telefono').value = '';
-            $('input-ficha-soap').value = '';$('input-ficha-revision').value = '';
-            $('input-ficha-permiso').value = '';$('sheet-ficha-cliente').hidden = false;
-            setTimeout(() => $('input-ficha-patente').focus(), 50);
-        });
-
-       // 2. ABRIR FICHA PARA EDITAR (Al tocar el botón oculto en la tarjeta)
-        $('contenedor-lista').addEventListener('click', e => {
-            const btnEditar = e.target.closest('.btn-editar');
-            if (!btnEditar) return;
-            
-            const id = Number(btnEditar.dataset.id);
-            const cliente = baseVehiculos.find(v => v.id === id); 
-            if (!cliente) return;
-            document.body.style.overflow = 'hidden'; // <-- CONGELA EL FONDO
-
-            $('titulo-ficha-cliente').textContent = "Editar Cliente";
-            $('input-ficha-id').value = cliente.id; 
-            $('input-ficha-patente').value = cliente.patente || '';
-            $('input-ficha-patente').disabled = true; // Bloqueamos la patente
-            $('input-ficha-nombre').value = cliente.nombre_cliente || '';
-            $('input-ficha-correo').value = cliente.email || '';
-            $('input-ficha-telefono').value = cliente.telefono || '';
-            
-            $('input-ficha-soap').value = cliente.vencimiento_soap || '';
-            $('input-ficha-revision').value = cliente.vencimiento_revision || '';
-            $('input-ficha-permiso').value = cliente.vencimiento_permiso || '';
-            
-            $('sheet-ficha-cliente').hidden = false;
-        });
-
-        // 3. GUARDAR LOS DATOS EN SUPABASE
-        $('btn-guardar-ficha').addEventListener('click', async () => {
-            const id = $('input-ficha-id').value;
-            const pat = $('input-ficha-patente').value.trim();
-            const nom = $('input-ficha-nombre').value.trim();
-            const cor = $('input-ficha-correo').value.trim();
-            let telLimpio = $('input-ficha-telefono').value.trim().replace(/\D/g, '');
-            let tel = '';
-            if (telLimpio) {
-                if (telLimpio.length === 8) tel = '+569' + telLimpio;
-                else if (telLimpio.startsWith('569')) tel = '+' + telLimpio;
-                else tel = '+' + telLimpio; // Por si acaso ya traía su código de área
-            }
-            const vSoap = $('input-ficha-soap').value || null;
-            const vRev = $('input-ficha-revision').value || null;
-            const vPer = $('input-ficha-permiso').value || null;
-
-            if (pat.length < 5) return toast('⚠️ Patente inválida', 'error');
-            if (!nom) return toast('⚠️ Ingresa el nombre del cliente', 'error');
-
-            const btn = $('btn-guardar-ficha');
-            btn.disabled = true; btn.textContent = "Guardando...";
-
-            try {
-                if (id) {
-                    // MODO EDITAR: Actualiza los datos
-                    await rpc('editar_cliente_admin', {
-                        p_id_vehiculo: Number(id),
-                        p_nombre: nom,
-                        p_correo: cor,
-                        p_telefono: tel,
-                        p_venc_soap: vSoap,
-                        p_venc_revision: vRev,
-                        p_venc_permiso: vPer
-                    });
-                    toast(`Cliente ${pat} actualizado correctamente`);
-                } else {
-                    // MODO CREAR: Nuevo registro en blanco
-                    await rpc('crear_cliente_admin', {
-                        p_patente: pat,
-                        p_nombre: nom,
-                        p_correo: cor,
-                        p_telefono: tel,
-                        p_venc_soap: vSoap,
-                        p_venc_revision: vRev,
-                        p_venc_permiso: vPer
-                    });
-                    toast(`Cliente ${pat} registrado`);
-                    cambiarVistaClientes('P'); // Te mueve automático a la pestaña Pendientes
-                }
-                
-                cerrarFichaCliente();
-                await inicializarPanel(); // Recarga la base de datos para mostrar los cambios
-            } catch (err) {
-                toast('Error: ' + err.message, 'error');
-            } finally {
-                btn.disabled = false; btn.textContent = "Guardar Cliente";
-            }
-        });
-
-        // ================= ANIMACIÓN DE CARPETA =================
-        function toggleCarpeta() {
-            const folder = document.getElementById('folder-reactbits');
-            const grid = document.getElementById('grid-botones-carpeta');
-            const texto = document.getElementById('texto-carpeta');
-            
-            // Alterna las clases que ejecutan las animaciones de CSS
-            folder.classList.toggle('open');
-            grid.classList.toggle('visible');
-            
-            // Esconde el texto de instrucción cuando la carpeta está abierta
-            if (folder.classList.contains('open')) {
-                texto.style.opacity = '0';
             } else {
-                texto.style.opacity = '1';
+                btn.style.display = 'none'; 
             }
         }
 
-        inicializarPanel();
-    </script>
-    <!-- AVISOS: lógica nueva en un bloque aparte; el script principal queda intacto -->
+        aplicarEstado('link-revision', vehiculo.url_revision, vehiculo.vencimiento_revision, "Revisión Técnica");
+        aplicarEstado('link-soap', vehiculo.url_soap, vehiculo.vencimiento_soap, "SOAP");
+        aplicarEstado('link-permiso', vehiculo.url_permiso, vehiculo.vencimiento_permiso, "Permiso");
+        aplicarEstado('link-padron', vehiculo.url_padron, null, "Cert. Inscripción (Padrón)");
+        
+        quitarCargador();
+
+        if (documentosPorVencer.length > 0) {
+            const popup = document.getElementById('popup-vencimiento');
+            const caja = document.getElementById('popup-caja');
+            const mensaje = document.getElementById('popup-mensaje');
+            
+            if (documentosPorVencer.length === 1) {
+                mensaje.innerText = "Tu " + documentosPorVencer[0] + " vencerá pronto. Recuerda renovarlo.";
+            } else {
+                mensaje.innerText = "Tu " + documentosPorVencer.join(" y tu ") + " vencerán pronto. Recuerda renovarlos.";
+            }
+
+            popup.style.display = 'flex';
+            setTimeout(() => { popup.style.opacity = '1'; caja.style.transform = 'scale(1)'; }, 50);
+        }
+    }
+
+    // 2. FUNCIÓN: Aviso de lectura Offline
+    function mostrarAvisoOffline(texto) {
+        const aviso = document.createElement('div');
+        aviso.style.position = 'fixed'; aviso.style.bottom = '0'; aviso.style.left = '0';
+        aviso.style.width = '100%'; aviso.style.backgroundColor = '#D97706';
+        aviso.style.color = '#fff'; aviso.style.textAlign = 'center';
+        aviso.style.padding = '10px'; aviso.style.fontFamily = 'Inter, sans-serif';
+        aviso.style.fontSize = '12px'; aviso.style.fontWeight = '600'; aviso.style.zIndex = '99999';
+        aviso.innerText = texto;
+        document.body.appendChild(aviso);
+    }
+
+    // 3. LÓGICA PRINCIPAL: Intentar conectar, si falla, buscar en Caché
+    if (idUrl) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 9000);
+
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/obtener_vehiculo_publico`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id_tarjeta: idUrl }),
+            signal: controller.signal
+        })
+        .then(response => {
+            clearTimeout(timeoutId);
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.length > 0) {
+                const vehiculo = data[0];
+                
+                // NUEVO: Guardar una copia de seguridad en el celular
+                try {
+                    localStorage.setItem(`nx_cache_${idUrl}`, JSON.stringify({ data: vehiculo, fecha: Date.now() }));
+                } catch(e) {}
+                
+                renderizarVehiculo(vehiculo);
+            } else {
+                mostrarPantallaError("🔒 Tarjeta Inactiva", "Esta tarjeta aún no tiene documentos vinculados. Si la acabas de adquirir, espera a que nuestro equipo cargue tu información, o regístrate en el enlace que te enviamos.");
+            }
+        })
+        .catch(error => {
+            clearTimeout(timeoutId);
+            
+            // NUEVO: Si la red falla, buscar la copia de seguridad
+            const cache = localStorage.getItem(`nx_cache_${idUrl}`);
+            if (cache) {
+                const { data, fecha } = JSON.parse(cache);
+                const horasDesdeCache = Math.round((Date.now() - fecha) / 3600000);
+                
+                renderizarVehiculo(data); // Dibuja la tarjeta con datos viejos
+                setTimeout(() => {
+                    mostrarAvisoOffline(`Sin internet. Mostrando respaldo de hace ${horasDesdeCache}h.`);
+                }, 800);
+                return; // Corta la ejecución para que no muestre el error genérico
+            }
+
+            // Si no hay caché y no hay internet, muestra el error de siempre
+            if (error.name === 'AbortError' || !navigator.onLine) {
+                mostrarPantallaError("⚠️ Error de Conexión", "La señal de internet es débil y no hay respaldos guardados. Por favor reintenta.");
+            } else {
+                mostrarPantallaError("⚠️ Error de Servidor", "No pudimos conectar con el servidor seguro de Nexuz.");
+            }
+        });
+    } else {
+        mostrarPantallaError("❌ Acceso Inválido", "No se detectó ninguna credencial digital. Escanea una tarjeta válida.");
+    }
+
+    // 4. PANTALLA DE ERROR / PROCESO (Diseño Nexuz con íconos SVG)
+    function mostrarPantallaError(titulo, mensaje) {
+        quitarCargador();
+        
+        // Detecta si es un error crítico o un estado "En Proceso"
+        const esError = titulo.toLowerCase().includes("denegado") || titulo.toLowerCase().includes("error") || titulo.toLowerCase().includes("inválido") || titulo.toLowerCase().includes("inactiva");
+        
+        // Colores Nexuz: Rojo para errores, Celeste para "En Proceso"
+        const colorTema = esError ? "#EF4444" : "#00B4D8"; 
+        const colorFondoIcono = esError ? "rgba(239, 68, 68, 0.15)" : "rgba(0, 180, 216, 0.15)";
+        
+        // Limpiamos los emojis viejos del texto por si quedaron en tu código
+        const tituloLimpio = titulo.replace(/🔒|⏳|⚠️|❌/g, '').trim();
+        
+        // ÍCONOS SVG PREMIUM (Reemplazan a los emojis)
+        // Si es error muestra un candado, si es proceso muestra un reloj.
+        const iconoSVG = esError 
+            ? `<svg viewBox="0 0 24 24" fill="none" stroke="${colorTema}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 32px; height: 32px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>`
+           : `<svg viewBox="0 0 24 24" fill="none" stroke="${colorTema}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width: 34px; height: 34px;"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>`;
+
+        document.body.innerHTML = `
+            <div style="background-color: #11222F; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; width: 100%;">
+                
+                <div style="background: #ffffff; border: 1px solid rgba(17,34,47,0.10); border-radius: 24px; padding: 40px 25px; text-align: center; max-width: 360px; width: 100%; box-shadow: 0 40px 80px -20px rgba(17,34,47,0.35);">
+                    
+                    <!-- Círculo de color dinámico con el ícono SVG -->
+                    <div style="background-color: ${colorFondoIcono}; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                        ${iconoSVG}
+                    </div>
+                    
+                    <h2 style="color: #11222F; font-family: 'Poppins', sans-serif; font-size: 22px; margin: 0 0 12px 0; font-weight: 600;">${tituloLimpio}</h2>
+                    
+                    <!-- Aquí se imprime el texto que ya contiene la patente -->
+                    <p style="color: #4b5b66; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.6; margin: 0 0 30px 0; font-weight: 400;">${mensaje}</p>
+                    
+                    <a href="javascript:window.location.reload();" style="display: inline-block; background-color: #11222F; color: #ffffff; text-decoration: none; padding: 14px 30px; border-radius: 30px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 600; transition: transform 0.2s; box-shadow: 0 10px 25px -5px rgba(17,34,47,0.2);" onmousedown="this.style.transform='scale(0.95)'" onmouseup="this.style.transform='scale(1)'" ontouchstart="this.style.transform='scale(0.95)'" ontouchend="this.style.transform='scale(1)'">Actualizar</a>
+                </div>
+
+                <div style="margin-top: 4vh; color: #8996a0; font-family: 'Inter', sans-serif; font-size: 11px; text-align: center; letter-spacing: 0.5px; line-height: 1.5;">Nexuz Chile<br>Información Protegida</div>
+            </div>
+        `;
+    }
+    function aceptarTerminos(vehiculo) {
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/aceptar_terminos_vehiculo`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            // Enviamos la patente y la versión actual
+            body: JSON.stringify({ p_patente: vehiculo.patente, p_version: VERSION_TERMINOS })
+        })
+        .then(() => {
+            document.getElementById('popup-terminos').style.display = 'none';
+            vehiculo.terms_accepted = true;
+            vehiculo.terms_version = VERSION_TERMINOS;
+            renderizarVehiculo(vehiculo); 
+        })
+        .catch(err => console.error("Error al guardar términos", err));
+    }
+    // FUNCIÓN SEGURA PARA EL CONTADOR DE ESCANEOS (Vía RPC)
+    function registrarEscaneo(patente) {
+        fetch(`${SUPABASE_URL}/rest/v1/rpc/sumar_escaneo_vehiculo`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ p_patente: patente })
+        }).catch(e => console.log("Contador offline"));
+    }
+</script>
+    
+    <!-- ANIMACIÓN DESLIZAR DE LOS BOTONES (bloque independiente, no modifica el JS anterior) -->
     <script>
     (function () {
-        /* ===== EDITA AQUÍ el mensaje de WhatsApp ===== */
-        const NOMBRE_DOC = { soap: 'SOAP', permiso: 'Permiso de Circulación', revision: 'Revisión Técnica' };
-        function mensaje(v, items) {
-            const nombre = (v.nombre_cliente || '').trim().split(' ')[0];
-            const lista = items.map(i => `${NOMBRE_DOC[i.doc]} (${fmtLargo(i.venc)})`).join(', ');
-            const urgente = items.some(i => i.vent === 7);
-            return `Hola ${nombre} 👋, te escribimos de Nexuz Chile.\n\n` +
-                   `En tu vehículo ${v.patente} ${items.length > 1 ? 'vencen' : 'vence'}: ${lista}.\n\n` +
-                   `${urgente ? '⚠️ Queda muy poco tiempo. ' : ''}Si quieres, te ayudamos a renovarlo a tiempo. 🚗`;
-        }
-        /* ============================================= */
+        var reducir = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var estado = new WeakMap();
+        var overlay = null;
 
-        const DOCS = ['soap', 'permiso', 'revision'];
-        const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-        const parse = s => { if (!s) return null; const [y, m, d] = String(s).slice(0, 10).split('-').map(Number); return new Date(y, m - 1, d); };
-        const hoy = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
-        const ymd = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        const dif = (a, b) => Math.round((a - b) / 864e5);
-        const fmtCorto = s => { const d = parse(s); return `${d.getDate()} ${MESES[d.getMonth()].slice(0, 3)}`; };
-        const fmtLargo = s => { const d = parse(s); return `${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`; };
-        const key = (id, doc, venc, vent) => `${id}|${doc}|${String(venc).slice(0, 10)}|${vent}`;
+        function ease(t) { return 1 - Math.pow(1 - t, 3); }
 
-        let registro = [], setEnv = new Set(), registroOk = true, ultimaBase = null, modo = 'lista';
-        let calMes = new Date(hoy().getFullYear(), hoy().getMonth(), 1), calSel = null;
-        const cont = () => $('av-contenido');
-
-        async function cargarRegistro() {
-            try { registro = (await rpc('listar_avisos_admin')) || []; registroOk = true; }
-            catch (_) { registro = []; registroOk = false; }
-            setEnv = new Set(registro.map(r => key(r.id_vehiculo, r.documento, r.vencimiento, r.ventana)));
+        // Mueve la perilla (transform), el texto (opacity), el icono (opacity) y centra el punto de estado al llegar
+        function setP(btn, p) {
+            var st = estado.get(btn);
+            st.p = p;
+            btn.style.setProperty('--tx', (p * st.max) + 'px');
+            st.texto.style.opacity = Math.max(0, 1 - p * 1.25);
+            st.icono.style.opacity = Math.max(0, 1 - Math.max(0, (p - 0.55) / 0.35));
+            if (st.badge) st.badge.style.transform = 'translate3d(' + (-st.bshift * p) + 'px,0,0)';
         }
 
-        // Avisos que corresponden hoy: 30 días (entre 8 y 30) o 7 días (7 o menos, hasta 30 vencido)
-        function pendientes(v) {
-            const t = hoy(), out = [];
-            DOCS.forEach(doc => {
-                const f = parse(v['vencimiento_' + doc]); if (!f) return;
-                const d = dif(f, t); if (d > 30 || d < -30) return;
-                const vent = d > 7 ? 30 : 7, venc = ymd(f);
-                if (!setEnv.has(key(v.id, doc, venc, vent))) out.push({ doc, venc, d, vent });
+        function animar(btn, desde, hasta, ms, fin) {
+            var st = estado.get(btn);
+            cancelAnimationFrame(st.raf);
+            var t0 = performance.now();
+            (function paso(t) {
+                var k = Math.min(1, (t - t0) / ms);
+                setP(btn, desde + (hasta - desde) * ease(k));
+                if (k < 1) { st.raf = requestAnimationFrame(paso); } else if (fin) { fin(); }
+            })(t0);
+        }
+
+        // La perilla llega hasta el final del botón (donde está el punto de estado)
+        function medir(btn) {
+            var st = estado.get(btn);
+            var b = btn.getBoundingClientRect();
+            var i = st.icono.getBoundingClientRect();
+            var izqBase = i.left - st.p * st.max;
+            var destino = b.right - btn.clientLeft - 5 - i.width;
+            st.max = Math.max(0, destino - izqBase);
+            st.ancho = Math.max(1, st.max);
+            if (st.badge) {
+                var r = st.badge.getBoundingClientRect();
+                var centroBadge = r.left + r.width / 2 + st.bshift * st.p;
+                st.bshift = centroBadge - (destino + i.width / 2);
+            }
+            setP(btn, st.p);
+        }
+
+        function quitarOverlay(rapido) {
+            if (!overlay) return;
+            var o = overlay; overlay = null;
+            if (rapido) { o.remove(); return; }
+            o.style.transition = 'opacity .3s ease'; o.style.opacity = '0';
+            setTimeout(function () { o.remove(); }, 320);
+        }
+
+        // Transición: un círculo Nexuz crece desde la perilla hasta cubrir la pantalla, con el logo latiendo
+        function crearOverlay(btn) {
+            var st = estado.get(btn);
+            var r = st.icono.getBoundingClientRect();
+            var cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+            var W = window.innerWidth, H = window.innerHeight;
+            var radio = Math.max(Math.hypot(cx, cy), Math.hypot(W - cx, cy), Math.hypot(cx, H - cy), Math.hypot(W - cx, H - cy));
+
+            overlay = document.createElement('div');
+            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100dvh;overflow:hidden;z-index:20000;';
+
+            var c = document.createElement('div');
+            c.style.cssText = 'position:absolute;border-radius:50%;background:#11222F;will-change:transform;' +
+                'left:' + (cx - radio) + 'px;top:' + (cy - radio) + 'px;width:' + (radio * 2) + 'px;height:' + (radio * 2) + 'px;' +
+                'transform:scale(' + (28 / radio) + ');transition:transform .48s cubic-bezier(.65,0,.25,1);';
+            overlay.appendChild(c);
+
+            var logoSrc = document.querySelector('.header-curve img');
+            if (logoSrc) {
+                var cont = document.createElement('div');
+                cont.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s ease .22s;';
+                var logo = document.createElement('img');
+                logo.src = logoSrc.src;
+                logo.style.cssText = 'width:90px;height:auto;animation:nxLogo 1.6s ease-in-out infinite;';
+                cont.appendChild(logo);
+                overlay.appendChild(cont);
+                requestAnimationFrame(function () { requestAnimationFrame(function () { cont.style.opacity = '1'; }); });
+            }
+
+            document.body.appendChild(overlay);
+            requestAnimationFrame(function () { requestAnimationFrame(function () { c.style.transform = 'scale(1)'; }); });
+        }
+
+        function reiniciar(btn) { animar(btn, estado.get(btn).p, 0, 350); }
+
+        function completar(btn) {
+            var st = estado.get(btn);
+            st.lock = true;
+            animar(btn, st.p, 1, st.p > 0.5 ? 150 : 380, function () {
+                var url = btn.getAttribute('href');
+                if (!url || url === '#') { st.lock = false; reiniciar(btn); return; }
+                crearOverlay(btn);
+                // Se navega cuando el círculo ya casi cubre la pantalla: el cambio de página queda tapado
+                setTimeout(function () { window.location.href = url; }, 400);
+                // Respaldo: si no carga (sin internet), se retira la transición y la perilla vuelve
+                setTimeout(function () {
+                    if (st.lock) { st.lock = false; st.arrastrando = false; quitarOverlay(false); reiniciar(btn); }
+                }, 6000);
             });
-            return out;
-        }
-        function grupos() {
-            return baseVehiculos.map(v => ({ v, items: pendientes(v) })).filter(g => g.items.length)
-                .sort((a, b) => Math.min(...a.items.map(i => i.d)) - Math.min(...b.items.map(i => i.d)));
-        }
-        function actualizarBadge() {
-            const n = registroOk ? grupos().length : 0, b = $('badge-avisos');
-            b.textContent = n; b.hidden = n === 0;
         }
 
-        function cuando(d) { return d < 0 ? `Vencido hace ${-d} d` : d === 0 ? 'Vence hoy' : d === 1 ? 'Mañana' : `En ${d} días`; }
+        function iniciar(btn) {
+            var st = { p: 0, max: 0, ancho: 1, bshift: 0, raf: 0, x0: 0, base: 0, arrastrando: false, activo: false, lock: false,
+                       icono: btn.querySelector('.btn-icon'), texto: btn.querySelector('.btn-text') };
+            estado.set(btn, st);
+            // El punto de estado se agrega después (cuando llegan los datos), así que se busca al momento de usarlo
+            Object.defineProperty(st, 'badge', { get: function () { return btn.querySelector('.badge'); } });
 
-        function vistaLista() {
-            const g = grupos();
-            if (!g.length) {
-                // próximo día en que te toca avisar
-                const t = hoy(); let prox = null, n = new Set();
-                baseVehiculos.forEach(v => DOCS.forEach(doc => {
-                    const f = parse(v['vencimiento_' + doc]); if (!f) return;
-                    [30, 7].forEach(k => { const a = new Date(f); a.setDate(a.getDate() - k);
-                        if (a > t && !setEnv.has(key(v.id, doc, ymd(f), k))) {
-                            if (!prox || a < prox) { prox = a; n = new Set(); }
-                            if (+a === +prox) n.add(v.id);
-                        } });
-                }));
-                return `<div class="av-vacio"><b>Todo al día ✅</b>${prox ? `Próximo aviso: ${prox.getDate()} de ${MESES[prox.getMonth()]} (${n.size} cliente${n.size > 1 ? 's' : ''}).` : 'No hay vencimientos próximos registrados.'}</div>`;
-            }
-            return `<p class="meta">${g.length} cliente${g.length > 1 ? 's' : ''} por avisar</p>` + g.map(({ v, items }) => {
-                const tel = (v.telefono || '').replace(/\D/g, '');
-                return `<div class="av-card"><div class="av-head"><span class="av-pat">${esc(v.patente || 'S/PAT')}</span><span class="av-nom">${esc(v.nombre_cliente || 'Sin nombre')}</span></div>
-                <ul class="av-docs">${items.map(i => `<li><span>${NOMBRE_DOC[i.doc]}<small>vence el ${fmtCorto(i.venc)}</small></span><span class="av-tag ${i.vent === 7 ? 'urg' : ''}">${cuando(i.d)}</span></li>`).join('')}</ul>
-                ${tel ? `<button class="btn-primario wa" data-send="${v.id}">Enviar WhatsApp</button>` : `<p class="meta">Sin WhatsApp: agrégalo en la ficha del cliente.</p>`}</div>`;
-            }).join('');
+            btn.addEventListener('dragstart', function (e) { e.preventDefault(); });
+
+            btn.addEventListener('pointerdown', function (e) {
+                if (st.lock || (e.pointerType === 'mouse' && e.button !== 0)) return;
+                cancelAnimationFrame(st.raf);
+                medir(btn);
+                st.x0 = e.clientX; st.base = st.p; st.activo = true; st.arrastrando = false;
+            });
+
+            btn.addEventListener('pointermove', function (e) {
+                if (!st.activo || st.lock) return;
+                var dx = e.clientX - st.x0;
+                if (!st.arrastrando && Math.abs(dx) > 8) {
+                    st.arrastrando = true;
+                    try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+                }
+                if (st.arrastrando) setP(btn, Math.min(1, Math.max(0, st.base + dx / st.ancho)));
+            });
+
+            btn.addEventListener('pointerup', function () {
+                if (!st.activo) return;
+                st.activo = false;
+                if (st.arrastrando) {
+                    if (st.p > 0.7) { completar(btn); } else { reiniciar(btn); }
+                }
+            });
+
+            btn.addEventListener('pointercancel', function () {
+                st.activo = false;
+                if (!st.lock) reiniciar(btn);
+            });
+
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (st.lock) return;
+                if (st.arrastrando) { st.arrastrando = false; return; } // ya lo manejó el arrastre
+                var url = btn.getAttribute('href');
+                if (reducir) { if (url && url !== '#') window.location.href = url; return; }
+                // TOQUE SIMPLE: hace la misma animación de deslizar sola
+                medir(btn);
+                completar(btn);
+            });
         }
 
-        function mapas() {
-            const exp = {}, avi = {}, t = hoy();
-            baseVehiculos.forEach(v => DOCS.forEach(doc => {
-                const f = parse(v['vencimiento_' + doc]); if (!f) return; const k = ymd(f);
-                (exp[k] ??= []).push({ v, doc });
-                [30, 7].forEach(n => { const a = new Date(f); a.setDate(a.getDate() - n);
-                    if (a >= t && !setEnv.has(key(v.id, doc, k, n))) (avi[ymd(a)] ??= []).push({ v, doc, n }); });
-            }));
-            return { exp, avi };
-        }
-        function vistaCal() {
-            const { exp, avi } = mapas(), y = calMes.getFullYear(), m = calMes.getMonth(), hk = ymd(hoy());
-            const ini = (new Date(y, m, 1).getDay() + 6) % 7, dias = new Date(y, m + 1, 0).getDate();
-            let celdas = ['L','M','M','J','V','S','D'].map(s => `<div class="cal-sem">${s}</div>`).join('') + '<div></div>'.repeat(ini);
-            for (let d = 1; d <= dias; d++) {
-                const k = ymd(new Date(y, m, d)), e = exp[k], a = avi[k];
-                const nE = e ? new Set(e.map(x => x.v.id)).size : 0;
-                celdas += `<button class="cal-d ${k === hk ? 'hoy' : ''} ${k === calSel ? 'sel' : ''}" data-d="${k}"><i>${d}</i><span class="cal-pts">${nE ? `<s></s>${nE}` : ''}${a ? '<s class="c"></s>' : ''}</span></button>`;
-            }
-            let det = '';
-            if (calSel) {
-                const por = arr => { const mp = {}; (arr || []).forEach(x => (mp[x.v.id] ??= { v: x.v, docs: [], n: x.n }).docs.push(NOMBRE_DOC[x.doc])); return Object.values(mp); };
-                const lin = o => `<p><b>${esc(o.v.patente || '')}</b> · ${esc(o.v.nombre_cliente || 'Sin nombre')}<br><span>${o.docs.join(', ')}</span></p>`;
-                const E = por(exp[calSel]), A = por(avi[calSel]);
-                det = `<div class="av-dia"><h4>${fmtLargo(calSel)}</h4>
-                    ${E.length ? `<h4 style="color:var(--danger)">Vencen (${E.length})</h4>${E.map(lin).join('')}` : ''}
-                    ${A.length ? `<h4 style="color:#00778f">Te toca avisar (${A.length})</h4>${A.map(lin).join('')}` : ''}
-                    ${!E.length && !A.length ? '<p><span>Sin vencimientos ni avisos este día.</span></p>' : ''}</div>`;
-            }
-            return `<div class="cal"><div class="cal-top"><button data-mes="-1" aria-label="Mes anterior">‹</button><b>${MESES[m][0].toUpperCase() + MESES[m].slice(1)} ${y}</b><button data-mes="1" aria-label="Mes siguiente">›</button></div>
-                <div class="cal-grid">${celdas}</div>
-                <div class="cal-leyenda"><span><s></s>Vence</span><span><s class="c"></s>Te toca avisar</span></div></div>${det}`;
-        }
+        document.querySelectorAll('.buttons-container .btn').forEach(iniciar);
 
-        function vistaEnv() {
-            const r = [...registro].sort((a, b) => String(b.enviado_en).localeCompare(String(a.enviado_en))).slice(0, 40);
-            if (!r.length) return '<div class="av-vacio"><b>Aún no hay envíos</b>Aquí verás los avisos que marques como enviados.</div>';
-            return r.map((x, i) => { const v = baseVehiculos.find(b => b.id === x.id_vehiculo), f = new Date(x.enviado_en);
-                return `<div class="av-env"><div><b>${esc(v ? v.patente : '#' + x.id_vehiculo)}</b> · ${NOMBRE_DOC[x.documento] || x.documento}
-                <small>Aviso de ${x.ventana} días · vence ${fmtCorto(x.vencimiento)} · enviado ${f.getDate()} ${MESES[f.getMonth()].slice(0, 3)}</small></div><button data-undo="${i}">Deshacer</button></div>`; }).join('');
+        // Al volver a la tarjeta (botón "atrás"), todo queda en reposo
+        function reposo() {
+            quitarOverlay(true);
+            document.querySelectorAll('.buttons-container .btn').forEach(function (btn) {
+                var st = estado.get(btn);
+                if (st && !st.activo) { st.lock = false; st.arrastrando = false; setP(btn, 0); }
+            });
         }
-
-        function render() {
-            actualizarBadge();
-            if ($('vista-avisos').hidden) return;
-            document.querySelectorAll('#seg-avisos button').forEach(b => b.classList.toggle('on', b.dataset.av === modo));
-            const aviso = registroOk ? '' : '<div class="av-banner">⚠️ Falta crear la tabla de avisos en Supabase (archivo SQL). Mientras tanto puedes enviar mensajes, pero no se guardará el registro.</div>';
-            cont().innerHTML = aviso + (modo === 'lista' ? vistaLista() : modo === 'cal' ? vistaCal() : vistaEnv());
-        }
-
-        async function enviar(id) {
-            const v = baseVehiculos.find(x => x.id === id); if (!v) return;
-            const items = pendientes(v); if (!items.length) return;
-            let tel = (v.telefono || '').replace(/\D/g, ''); if (tel.length === 9) tel = '56' + tel;
-            if (!tel) return toast('Este cliente no tiene WhatsApp', 'error');
-            window.open(`https://wa.me/${tel}?text=${encodeURIComponent(mensaje(v, items))}`, '_blank'); // primero abrir (gesto del usuario)
-            try {
-                await Promise.all(items.map(i => rpc('marcar_aviso_admin', { p_id_vehiculo: id, p_documento: i.doc, p_vencimiento: i.venc, p_ventana: i.vent })));
-                items.forEach(i => { registro.push({ id_vehiculo: id, documento: i.doc, vencimiento: i.venc, ventana: i.vent, enviado_en: new Date().toISOString() }); setEnv.add(key(id, i.doc, i.venc, i.vent)); });
-                toast(`Aviso a ${v.patente} registrado`);
-            } catch (e) { toast('No se pudo guardar el registro: ' + e.message, 'error'); }
-            render();
-        }
-        async function deshacer(i) {
-            const r = [...registro].sort((a, b) => String(b.enviado_en).localeCompare(String(a.enviado_en)))[i]; if (!r) return;
-            try {
-                await rpc('deshacer_aviso_admin', { p_id_vehiculo: r.id_vehiculo, p_documento: r.documento, p_vencimiento: String(r.vencimiento).slice(0, 10), p_ventana: r.ventana });
-                registro = registro.filter(x => x !== r); setEnv.delete(key(r.id_vehiculo, r.documento, r.vencimiento, r.ventana));
-                toast('Envío deshecho: vuelve a "Por enviar"');
-            } catch (e) { toast('Error: ' + e.message, 'error'); }
-            render();
-        }
-
-        // Eventos
-        $('seg-avisos').addEventListener('click', e => { const b = e.target.closest('button'); if (b) { modo = b.dataset.av; render(); } });
-        cont().addEventListener('click', e => {
-            const s = e.target.closest('[data-send]'); if (s) return enviar(Number(s.dataset.send));
-            const u = e.target.closest('[data-undo]'); if (u) return deshacer(Number(u.dataset.undo));
-            const m = e.target.closest('[data-mes]'); if (m) { calMes = new Date(calMes.getFullYear(), calMes.getMonth() + Number(m.dataset.mes), 1); return render(); }
-            const d = e.target.closest('[data-d]'); if (d) { calSel = d.dataset.d === calSel ? null : d.dataset.d; render(); }
-        });
-        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
-            $('vista-avisos').hidden = t.dataset.vista !== 'avisos';
-            if (t.dataset.vista === 'avisos') render();
-        }));
-
-        // Se engancha a la carga de datos del panel (sin modificarla): cuando llega una base nueva, relee el registro
-        const _aplicar = aplicarFiltros;
-        aplicarFiltros = function () {
-            _aplicar.apply(this, arguments);
-            if (baseVehiculos !== ultimaBase) { ultimaBase = baseVehiculos; cargarRegistro().then(render); }
-        };
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) reposo(); });
+        window.addEventListener('pageshow', reposo);
     })();
     </script>
+
+    <!-- ESCALA SEGÚN EL TAMAÑO DE PANTALLA (bloque independiente) -->
+    <script>
+    (function () {
+        function ajustarEscala() {
+            var h = window.innerHeight, w = window.innerWidth;
+            var k = 1 + Math.max(0, h - 760) / 760 * 0.85; // crece solo en pantallas altas
+            k = Math.min(k, 1.3);                           // tope
+            k = Math.min(k, (w - 60) / 260);                // que la patente nunca se salga a lo ancho
+            k = Math.max(1, k);                             // nunca más pequeño que el diseño original
+            document.documentElement.style.setProperty('--k', k.toFixed(3));
+        }
+        ajustarEscala();
+        window.addEventListener('resize', ajustarEscala);
+        window.addEventListener('orientationchange', ajustarEscala);
+    })();
+    </script>
+
 </body>
 </html>

@@ -479,13 +479,112 @@
         .fm-op.on .ck { opacity: 1; transform: none; }
         @media (prefers-reduced-motion: reduce) { .fm, .fm.ver { transition: none; } }
 
+
+        /* ================= MODO VENTAS (motivación + guion) — 100% CSS, sin JS ================= */
+        .nx-logo { display: block; line-height: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+        .nx-toggle { position: fixed; opacity: 0; pointer-events: none; width: 0; height: 0; }
+        .nx-fondo {
+            position: fixed; inset: 0; z-index: 70; background: rgba(17,34,47,.45);
+            -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+            display: none; align-items: flex-end; justify-content: center; animation: fundido .25s ease-out;
+        }
+        .nx-toggle:checked ~ .nx-fondo { display: flex; }
+        body:has(.nx-toggle:checked) { overflow: hidden; }
+        .nx-cierre-fondo { position: absolute; inset: 0; cursor: default; }
+        .nx-sheet {
+            position: relative; width: 100%; max-width: 440px; background: var(--bg); border-radius: 28px 28px 0 0;
+            padding: 10px 18px calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px;
+            max-height: 92dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+            box-shadow: 0 -10px 40px rgba(17,34,47,.18); animation: sube .42s var(--spring); scrollbar-width: none;
+        }
+        .nx-sheet::-webkit-scrollbar { display: none; }
+        .nx-sheet::before { content: ""; width: 38px; height: 5px; border-radius: 99px; background: rgba(17,34,47,.18); margin: 0 auto 2px; flex-shrink: 0; }
+        .nx-kicker { font: 600 11px var(--font-body); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); padding: 4px 4px 0; }
+        .nx-titulo { font: 600 28px/1.12 var(--font-display); letter-spacing: -.02em; color: var(--primary); padding: 0 4px; }
+        .nx-titulo em { font-style: normal; color: var(--accent); }
+        .nx-sub { font-size: 14px; line-height: 1.5; color: var(--ink-soft); padding: 0 4px; }
+
+        /* Tarjeta oscura 1 de 5 */
+        .nx-hero {
+            position: relative; overflow: hidden; background: var(--primary); color: #fff; border-radius: 24px; padding: 22px 20px 20px;
+            box-shadow: var(--shadow);
+        }
+        .nx-hero::after { content: ""; position: absolute; right: -50px; top: -50px; width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle, rgba(0,180,216,.35), transparent 70%); pointer-events: none; }
+        .nx-hero-num { font: 500 76px/.9 var(--font-numeric); color: var(--accent); letter-spacing: 1px; position: relative; z-index: 1; }
+        .nx-hero-num span { font-size: 34px; color: rgba(255,255,255,.55); letter-spacing: 0; }
+        .nx-hero p { position: relative; z-index: 1; margin-top: 10px; font-size: 14px; line-height: 1.5; color: rgba(255,255,255,.82); }
+        .nx-hero p b { color: #fff; }
+        .nx-puntos { position: relative; z-index: 1; display: flex; gap: 8px; margin-top: 16px; }
+        .nx-puntos i { flex: 1; height: 34px; border-radius: 12px; background: rgba(255,255,255,.1); display: grid; place-items: center; font: 600 11px var(--font-display); font-style: normal; color: rgba(255,255,255,.5); }
+        .nx-puntos i.si { background: var(--accent); color: var(--primary); box-shadow: 0 0 0 4px rgba(0,180,216,.25); animation: nxlatido 2.2s ease-in-out infinite; }
+        @keyframes nxlatido { 50% { box-shadow: 0 0 0 8px rgba(0,180,216,.08); } }
+
+        /* Valor de cada NO */
+        .nx-valor { background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 14px; }
+        .nx-valor-n { font: 500 44px/1 var(--font-numeric); color: var(--accent); letter-spacing: 1px; flex-shrink: 0; }
+        .nx-valor p { font-size: 13px; line-height: 1.45; color: var(--ink); }
+        .nx-valor p b { font-weight: 700; }
+
+        /* Misión: 3 NO (contador táctil sin JS) */
+        .nx-bloque { background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 20px; padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; }
+        .nx-h { font: 600 15px var(--font-display); color: var(--primary); }
+        .nx-h small { display: block; font: 500 12px var(--font-body); color: var(--ink-soft); margin-top: 2px; }
+        .nx-chk { position: absolute; opacity: 0; pointer-events: none; }
+        .nx-fila-no { display: flex; gap: 10px; }
+        .nx-no-b {
+            flex: 1; min-height: 66px; border-radius: 16px; background: var(--fill); border: 1px solid transparent; color: var(--ink-soft);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer;
+            font: 500 32px/1 var(--font-numeric); letter-spacing: 1px; transition: background .25s var(--spring), color .25s, transform .15s; -webkit-tap-highlight-color: transparent;
+        }
+        .nx-no-b small { font: 600 10px var(--font-body); letter-spacing: .08em; text-transform: uppercase; }
+        .nx-no-b:active { transform: scale(.96); }
+        #nx-n1:checked ~ .nx-fila-no label[for="nx-n1"],
+        #nx-n2:checked ~ .nx-fila-no label[for="nx-n2"],
+        #nx-n3:checked ~ .nx-fila-no label[for="nx-n3"] { background: var(--accent); color: #fff; box-shadow: 0 8px 20px rgba(0,180,216,.28); }
+        .nx-ok { display: none; font-size: 13px; line-height: 1.45; font-weight: 600; color: var(--primary); background: rgba(0,180,216,.12); border-radius: 14px; padding: 12px 14px; }
+        #nx-n1:checked ~ #nx-n2:checked ~ #nx-n3:checked ~ .nx-ok { display: block; }
+
+        /* Lista de mentalidad */
+        .nx-lista { display: flex; flex-direction: column; gap: 10px; }
+        .nx-item { display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; line-height: 1.5; color: var(--ink); }
+        .nx-item b { color: var(--primary); }
+        .nx-item .n { flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: rgba(0,180,216,.14); color: var(--accent); display: grid; place-items: center; font: 600 12px var(--font-display); margin-top: 1px; }
+
+        /* Guion */
+        .nx-guion { background: var(--fill); border-radius: 14px; padding: 13px 14px; font-size: 14px; line-height: 1.55; color: var(--primary); font-style: italic; }
+        .nx-etq { font: 600 11px var(--font-body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); padding: 2px 4px 0; }
+        .nx-det { background: var(--bg-card); border: 1px solid var(--primary-line); border-radius: 14px; overflow: hidden; }
+        .nx-det summary { list-style: none; cursor: pointer; padding: 13px 14px; font: 600 13px var(--font-body); color: var(--primary); display: flex; justify-content: space-between; align-items: center; gap: 10px; -webkit-tap-highlight-color: transparent; }
+        .nx-det summary::-webkit-details-marker { display: none; }
+        .nx-det summary::after { content: "+"; font: 500 22px/1 var(--font-numeric); color: var(--accent); flex-shrink: 0; transition: transform .25s var(--spring); }
+        .nx-det[open] summary::after { transform: rotate(45deg); }
+        .nx-det p { padding: 0 14px 14px; font-size: 13px; line-height: 1.55; color: var(--ink); font-style: italic; }
+
+        .nx-cierre { text-align: center; padding: 10px 6px 2px; font: 600 19px/1.3 var(--font-display); color: var(--primary); letter-spacing: -.01em; }
+        .nx-cierre em { font-style: normal; color: var(--accent); }
+        label.nx-btn { display: grid; place-items: center; text-align: center; cursor: pointer; }
+        @media (prefers-reduced-motion: reduce) { .nx-sheet, .nx-fondo { animation: none; } .nx-puntos i.si { animation: none; } .nx-no-b, .nx-det summary::after { transition: none; } }
+
+        /* FIX: los bloques no se aplastan dentro de la hoja */
+        .nx-sheet > * { flex-shrink: 0; }
+        /* Logo ahora es botón "volver al inicio" */
+        button.nx-logo { background: none; border: 0; padding: 0; }
+        .nx-der { display: flex; align-items: center; gap: 10px; }
+        /* Botón visible Modo ventas (mismo estilo que el badge de la cabecera) */
+        .nx-ico {
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(0,180,216,.16); color: var(--accent);
+            display: grid; place-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent;
+            transition: transform .2s var(--spring), background .2s;
+        }
+        .nx-ico svg.i { width: 18px; height: 18px; stroke-width: 2; }
+        .nx-ico:active { transform: scale(.9); background: rgba(0,180,216,.28); }
     </style>
 </head>
 <body>
 
     <div class="header-curve">
-        <img src="img/logo.svg" alt="Nexuz">
-        <span class="badge-total" id="badge-contador">Conectando...</span>
+        <button type="button" id="nx-logo-home" class="nx-logo" aria-label="Volver al inicio"><img src="img/logo.svg" alt="Nexuz"></button>
+        <div class="nx-der"><span class="badge-total" id="badge-contador">Conectando...</span><label for="nx-mot" class="nx-ico" aria-label="Modo ventas" role="button"><svg class="i" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></label></div>
     </div>
 
     <div class="container">
@@ -734,6 +833,85 @@
             <p class="meta" id="cf-texto"></p>
             <button class="btn-primario" id="cf-ok">Confirmar</button>
             <button class="btn-sec" id="cf-cancel">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- ================= MODO VENTAS (toca el logo para abrir) ================= -->
+    <input type="checkbox" id="nx-mot" class="nx-toggle" tabindex="-1" aria-hidden="true">
+    <div class="nx-fondo">
+        <label for="nx-mot" class="nx-cierre-fondo" aria-hidden="true"></label>
+        <div class="nx-sheet" role="dialog" aria-modal="true" aria-label="Modo ventas">
+
+            <div class="nx-kicker">Nexuz · Modo ventas</div>
+            <h2 class="nx-titulo">Hoy vas a escuchar “no”. <em>Y eso está perfecto.</em></h2>
+            <p class="nx-sub">Los vendedores que ganan no son los que reciben menos rechazos. Son los que reciben más, porque abordaron a más gente.</p>
+
+            <div class="nx-hero">
+                <div class="nx-hero-num">1<span> de cada </span>5</div>
+                <p><b>4 personas</b> dirán que no o andarán apuradas. <b>1 dirá sí</b> y serán <b>$14.990</b> para ti. Es matemática, no suerte.</p>
+                <div class="nx-puntos" aria-hidden="true"><i>NO</i><i>NO</i><i>NO</i><i>NO</i><i class="si">SÍ</i></div>
+            </div>
+
+            <div class="nx-valor">
+                <div class="nx-valor-n">≈ $3.000</div>
+                <p>Eso vale <b>cada “no”</b> que escuches ($14.990 ÷ 5). No te están rechazando: te están <b>pagando por adelantado</b>.</p>
+            </div>
+
+            <div class="nx-bloque">
+                <input type="checkbox" id="nx-n1" class="nx-chk">
+                <input type="checkbox" id="nx-n2" class="nx-chk">
+                <input type="checkbox" id="nx-n3" class="nx-chk">
+                <div class="nx-h">Tu misión de hoy: 3 “no” rápidos<small>Toca cada uno cuando lo consigas. Solo eso. El sí viene solo.</small></div>
+                <div class="nx-fila-no">
+                    <label for="nx-n1" class="nx-no-b">NO<small>#1</small></label>
+                    <label for="nx-n2" class="nx-no-b">NO<small>#2</small></label>
+                    <label for="nx-n3" class="nx-no-b">NO<small>#3</small></label>
+                </div>
+                <div class="nx-ok">🔥 Listo, ya pagaste el peaje. La siguiente persona puede ser tu sí.</div>
+            </div>
+
+            <div class="nx-etq">Mentalidad</div>
+            <div class="nx-bloque">
+                <div class="nx-lista">
+                    <div class="nx-item"><span class="n">1</span><div><b>El “no” no es contra ti.</b> Es contra el apuro, la desconfianza o el día que trae. No te conoce lo suficiente como para rechazarte.</div></div>
+                    <div class="nx-item"><span class="n">2</span><div><b>No vendes una tarjeta.</b> Le ahorras el mal rato de buscar papeles arrugados frente a Carabineros. Estás ayudando.</div></div>
+                    <div class="nx-item"><span class="n">3</span><div><b>Son solo 10 segundos.</b> La vergüenza dura 5. La venta se disfruta todo el mes.</div></div>
+                    <div class="nx-item"><span class="n">4</span><div><b>Un “no” hoy no es un “no” para siempre.</b> Deja el WhatsApp y el video de 5 segundos hace el resto (como pasó con don Cristian).</div></div>
+                </div>
+            </div>
+
+            <div class="nx-etq">Antes de abordar</div>
+            <div class="nx-bloque">
+                <div class="nx-lista">
+                    <div class="nx-item"><span class="n">1</span><div><b>Respira hondo</b> una vez y sonríe.</div></div>
+                    <div class="nx-item"><span class="n">2</span><div><b>Cuenta 3, 2, 1</b> y camina hacia la primera persona, sin pensarlo.</div></div>
+                    <div class="nx-item"><span class="n">3</span><div>Lo difícil es el primer paso. <b>Después, fluye.</b></div></div>
+                </div>
+            </div>
+
+            <div class="nx-etq">⚡ Rompehielos (10 segundos)</div>
+            <div class="nx-guion">“Hola, buenas tardes, disculpe la molestia. Le robo solo 10 segundos porque ando mostrando una tecnología nueva para conductores aquí en Vallenar. ¿Su celular tiene pago sin contacto (NFC)?”</div>
+
+            <div class="nx-etq">📲 La demostración</div>
+            <p class="nx-sub" style="padding-top:0">Pasa tu tarjeta de prueba por su celular y remata mientras mira la pantalla:</p>
+            <div class="nx-guion">“Reúne tu SOAP, Permiso y Revisión en un toque, 100% legal bajo la Ley 19.799 para no buscar papeles arrugados frente a Carabineros, y te avisa antes de que venzan. Se la dejo configurada y lista hoy por $14.990.”</div>
+
+            <div class="nx-etq">🛡️ Si te dicen que no (o dudan)</div>
+            <details class="nx-det"><summary>“No me interesa / ando apurado”</summary>
+                <p>“¡Cero problema! Si gusta deme su WhatsApp y le mando un video de 5 segundos para que lo vea tranquilo en la tarde. ¡Que tenga un excelente día!”</p></details>
+            <details class="nx-det"><summary>“Lo voy a pensar”</summary>
+                <p>“Obvio, pensarlo es lo correcto. Deme su WhatsApp, le mando el video de 5 segundos y si le hace sentido me escribe.”</p></details>
+            <details class="nx-det"><summary>“¿Y si no hay señal en la carretera?”</summary>
+                <p>“La tarjeta es la comodidad del día a día en el 99% de los controles en ciudad. Como respaldo de oro, recomendamos siempre descargar los 3 PDFs en la carpeta de Archivos del teléfono.”</p></details>
+            <details class="nx-det"><summary>“¿Le paso la tarjeta al Carabinero?”</summary>
+                <p>“No. Usted acerca la tarjeta a su propio teléfono y solo le exhibe la pantalla al fiscalizador. Jamás pierde el control ni le entrega sus cosas a nadie.”</p></details>
+            <details class="nx-det"><summary>“¿Por qué no guardarlo gratis en Google Drive?”</summary>
+                <p>“Se puede, pero cuando te paran los nervios traicionan y no encuentras el archivo entre el desorden o el spam. Nexuz compra tranquilidad mental en 1 segundo y te avisa antes de que venza cada papel.”</p></details>
+            <details class="nx-det"><summary>“Mi celular no tiene NFC”</summary>
+                <p>“¡Sin problema, gracias por su tiempo! ¿Conoce a alguien que ande en auto y tenga un celular más nuevo? Con gusto le muestro.”</p></details>
+
+            <div class="nx-cierre">Un “no” más y estás más cerca del sí.<br><em>Sal a buscar el tuyo.</em></div>
+            <label for="nx-mot" class="btn-primario nx-btn">Vamos a vender</label>
         </div>
     </div>
 
@@ -1975,6 +2153,21 @@ if (paramTab === 'avisos') {
         })();
 
         decorar();
+    })();
+    </script>
+
+    <!-- Logo = volver al inicio (script aparte, no modifica el JS existente) -->
+    <script>
+    (function () {
+        var logo = document.getElementById('nx-logo-home');
+        if (!logo) return;
+        logo.addEventListener('click', function () {
+            var vista = document.getElementById('vista-clientes');
+            if (vista && vista.hidden) { var t = document.querySelector('.tab[data-vista="clientes"]'); if (t) t.click(); }
+            var q = document.getElementById('input-busqueda');
+            if (q) { if (q.value) { q.value = ''; q.dispatchEvent(new Event('input', { bubbles: true })); } q.blur(); }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
     })();
     </script>
 
